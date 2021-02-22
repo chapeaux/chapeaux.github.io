@@ -38,30 +38,25 @@
 
         <div class="content container">
             
-                <div class="posts">
-                    
-                    <pfe-card color="base">
-                        <h3 slot="pfe-card--header">
-                            <a href="https:&#x2F;&#x2F;localhost:4430&#x2F;about&#x2F;">About Chapeaux</a>
-                        </h3>
-                        <p>2021-02-22 - Learn about the history and philosophy behind the Chapeaux project.</p>
-                        <pfe-cta slot="pfe-card--footer">
-                          <a href="https:&#x2F;&#x2F;localhost:4430&#x2F;about&#x2F;">Read more</a>
-                        </pfe-cta>
-                    </pfe-card>
-                    
-                    <pfe-card color="base">
-                        <h3 slot="pfe-card--header">
-                            <a href="https:&#x2F;&#x2F;localhost:4430&#x2F;content&#x2F;">Chapeaux: web development tools for the many hats you wear.</a>
-                        </h3>
-                        <p>2021-02-18 - Chapeaux is a digital supply chain that delivers web assets for developers and stakeholders.</p>
-                        <pfe-cta slot="pfe-card--footer">
-                          <a href="https:&#x2F;&#x2F;localhost:4430&#x2F;content&#x2F;">Read more</a>
-                        </pfe-cta>
-                    </pfe-card>
-                    
-                </div>
-            
+<div class="post">
+  <pfe-band color="darker" aside-desktop="right" aside-mobile="bottom" aside-height="full" type="container">
+    <header slot="pfe-band--header">
+      <h2>About Chapeaux</h2>
+      <p class="custom-band-summary">2021-02-22 - Learn about the history and philosophy behind the Chapeaux project.</p>
+    </header>
+    <article>
+      <p>About Chapeaux</p>
+
+    </article>
+    <footer slot="pfe-band--footer">
+      <pfe-cta priority="primary" on="light" pfelement="" class="PFElement" has_link="">
+        <a href="#">Learn more</a>
+      </pfe-cta>
+    </footer>
+  </pfe-band>
+</div>
+
+
         </div>
         <script type="module" src="scripts/pfe-band/dist/pfe-band.min.js"></script>
         <script type="module" src="scripts/pfe-card/dist/pfe-card.min.js"></script>

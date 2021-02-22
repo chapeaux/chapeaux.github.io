@@ -15,8 +15,16 @@ $cpxteal: #43ADAF;
     --cpx-teal: $cpxteal;
 }
 
-h1,h2 {
+h1,h2,h3 {
     font-family: 'Oswald', sans-serif;
+}
+
+.posts {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+pfe-card {
+    
 }
 
 /* DEMO FILE ONLY, NOT FOR PRODUCTION USE */

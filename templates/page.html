@@ -2,8 +2,20 @@
 
 {% block content %}
 <div class="post">
-  <h1 class="post-title">{{ page.title }}</h1>
-  <span class="post-date">{{ page.date | date(format="%Y-%m-%d") }}</span>
-  {{ page.content | safe }}
+  <pfe-band color="darker" aside-desktop="right" aside-mobile="bottom" aside-height="full" type="container">
+    <header slot="pfe-band--header">
+      <h2>{{ page.title }}</h2>
+      <p class="custom-band-summary">{{ page.date | date(format="%Y-%m-%d") }} - {{ page.description }}</p>
+    </header>
+    <article>
+      {{ page.content | safe }}
+    </article>
+    <footer slot="pfe-band--footer">
+      <pfe-cta priority="primary" on="light" pfelement="" class="PFElement" has_link="">
+        <a href="#">Learn more</a>
+      </pfe-cta>
+    </footer>
+  </pfe-band>
 </div>
+
 {% endblock content %}

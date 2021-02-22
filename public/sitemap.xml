@@ -4,6 +4,10 @@
         <loc>https://localhost:4430/</loc>
     </url>
     <url>
+        <loc>https://localhost:4430/about/</loc>
+        <lastmod>2021-02-22</lastmod>
+    </url>
+    <url>
         <loc>https://localhost:4430/content/</loc>
         <lastmod>2021-02-18</lastmod>
     </url>
