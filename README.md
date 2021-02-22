@@ -23,3 +23,34 @@ A relatively unopinionated toolset built around enterprise-grade, functional, we
 * Containers
 * Service request and response handling
 * Auto-complete/suggest data
+
+## Brand Details
+
+### Colors
+
+* Dark Blue - 1D4174 | 29,65,116
+* Orange - F7823C | 247,130,60
+* Yellow - FFEA6C | 255,234,108
+* Teal - 43ADAF | 67,173,175
+* Blue - 0499C5 | 4,153,197
+
+### Fonts
+
+* Logo - Oswald
+* Site - Overpass Mono
+*   ```html
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=Oswald;700&family=Overpass+Mono:wght@400;700&display=swap" rel="stylesheet">
+    ```
+    
+    OR 
+
+    ```css 
+    @import url('https://fonts.googleapis.com/css2?family=Oswald&family=Overpass+Mono:wght@400;700&display=swap');
+    ```
+
+* ```css
+    font-family: 'Oswald', sans-serif;
+    font-family: 'Overpass Mono', monospace;
+    ```
