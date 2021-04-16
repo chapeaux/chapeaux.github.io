@@ -23,9 +23,25 @@ h1,h2,h3 {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
 }
-pfe-card {
-    
-}
+
+@supports (display: grid) {
+    .cta-layout,
+    .card-layout {
+      display: grid;
+      grid-row-gap: 10px;
+      grid-column-gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      margin-top: 0;
+      margin-left: 0;
+    }
+  }
+  
+  .cta-layout > *:not([class~="layout"]),
+  .card-layout .cta-align > * {
+    margin-top: 10px;
+    margin-left: 20px;
+  }
+  
 
 /* DEMO FILE ONLY, NOT FOR PRODUCTION USE */
 :root {
