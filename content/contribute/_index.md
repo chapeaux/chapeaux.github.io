@@ -1,12 +1,12 @@
 +++
-title = "Getting Started"
+title = "Contribute"
 description = "Get up and running with Chapeaux web development tools"
 template = "section.html"
 +++
 
 ## What is Chapeaux?
 
-Chapeaux is a digital supply chain for web assets — providing web development tools for the many hats you wear. The project is organized around three pillars:
+Chapeaux is a digital supply chain for web assets — providing web development tools for the many hats you wear. The project is organized around three stages:
 
 - **Develop** — Create enterprise-grade, functional web development tools
 - **Discover** — Centralize web assets in a searchable, metadata-rich catalog

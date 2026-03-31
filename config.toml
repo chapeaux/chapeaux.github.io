@@ -1,6 +1,6 @@
 base_url = "https://chapeaux.github.io"
 title = "Chapeaux"
-description = "A Digital Supply Chain for Web Assets"
+description = "Web development tools for the many hats you wear."
 default_language = "en"
 compile_sass = false
 build_search_index = false
@@ -12,19 +12,23 @@ highlight_code = true
 highlight_theme = "base16-ocean-dark"
 
 [extra]
-tagline = "Web development tools for the many hats you wear."
+tagline = "A Digital Supply Chain for Web Assets"
 github_org = "https://github.com/chapeaux"
 logo = "/images/chapeaux_logo_default.svg"
 logo_reverse = "/images/chapeaux_logo_reverse.svg"
 icon = "/images/chapeaux_icon_default.svg"
 
 [[extra.nav]]
-name = "Getting Started"
-url = "/getting-started/"
+name = "Contribute"
+url = "/contribute/"
 
 [[extra.nav]]
 name = "Projects"
 url = "/projects/"
+
+[[extra.nav]]
+name = "About"
+url = "/about/"
 
 [[extra.nav]]
 name = "Blog"
@@ -33,7 +37,3 @@ url = "/blog/"
 [[extra.nav]]
 name = "Chapellerie"
 url = "/chapellerie/"
-
-[[extra.nav]]
-name = "About"
-url = "/about/"

@@ -20,7 +20,7 @@ Current components use the `cpx-*` naming convention and include tools for searc
 
 ### Discover
 
-Centralize the ability to find web assets in an enterprise-wide catalog. The Discover pillar aims to improve the findability of common assets, provide demos and documentation, and build a curated list with useful metadata and analytics.
+Centralize the ability to find web assets in an enterprise-wide catalog. The Discover stage aims to improve the findability of common assets, provide demos and documentation, and build a curated list with useful metadata and analytics.
 
 The catalog leverages semantic web technologies including RDF, SPARQL, and Oxigraph to enable rich, queryable metadata about available assets.
 
