@@ -699,7 +699,7 @@ main {
     margin-top: var(--space-xl);
     margin-bottom: var(--space-md);
     padding-bottom: var(--space-sm);
-    border-bottom: 2px solid var(--cpx-yellow);
+    border-bottom: 2px solid var(--cpx-orange);
 
     &:first-child {
       margin-top: 0;
