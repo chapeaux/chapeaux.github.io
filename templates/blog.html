@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Blog — {{ config.title }}{% endblock %}
+{% block description %}News and updates from the Chapeaux Project{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <h1>Blog</h1>
+    <p>News and updates from the Chapeaux Project</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="content-page">
+    {% for page in section.pages %}
+    <div class="post-item">
+      <h3><a href="{{ page.permalink }}">{{ page.title }}</a></h3>
+      <div class="post-meta">{{ page.date | date(format="%B %d, %Y") }}</div>
+      {% if page.description %}
+      <p>{{ page.description }}</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+
+    {% if section.pages | length == 0 %}
+    <p>No posts yet. Check back soon!</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock content %}

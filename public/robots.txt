@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://localhost:4430/sitemap.xml

@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Projects — {{ config.title }}{% endblock %}
+{% block description %}Explore the Chapeaux ecosystem of web development tools{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <h1>Projects</h1>
+    <p>Explore the Chapeaux ecosystem of web development tools</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="section">
+    {{ section.content | safe }}
+
+    <section class="pillar-section pillar-section--develop">
+      <h2>Develop <span class="badge badge--active">Active</span></h2>
+      <p>Create enterprise-grade, functional web development tools — secure, scalable, and stable.</p>
+      <div class="grid grid--3">
+        {% for page in section.pages %}
+        {% if page.extra.pillar == "develop" %}
+        <div class="repo-card">
+          <h3><a href="{{ page.extra.github_url }}">{{ page.title }}</a></h3>
+          <p class="repo-card__desc">{{ page.description }}</p>
+          <div class="card__meta">
+            <span class="badge badge--active">{{ page.extra.status }}</span>
+            {% if page.extra.language %}
+            <span class="badge badge--language">{{ page.extra.language }}</span>
+            {% endif %}
+            <a href="{{ page.extra.github_url }}" class="repo-card__link">GitHub &rarr;</a>
+          </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="pillar-section pillar-section--discover">
+      <h2>Discover <span class="badge badge--in-progress">In Progress</span></h2>
+      <p>A central web asset catalog — improving findability through RDF, SPARQL, and knowledge graphs. Providing demos, documentation, and curated metadata for enterprise web assets.</p>
+      <div class="grid grid--3">
+        {% for page in section.pages %}
+        {% if page.extra.pillar == "discover" %}
+        <div class="repo-card">
+          <h3><a href="{{ page.extra.github_url }}">{{ page.title }}</a></h3>
+          <p class="repo-card__desc">{{ page.description }}</p>
+          <div class="card__meta">
+            <span class="badge badge--in-progress">{{ page.extra.status }}</span>
+            {% if page.extra.language %}
+            <span class="badge badge--language">{{ page.extra.language }}</span>
+            {% endif %}
+            <a href="{{ page.extra.github_url }}" class="repo-card__link">GitHub &rarr;</a>
+          </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="pillar-section pillar-section--deliver">
+      <h2>Deliver <span class="badge badge--coming-soon">Coming Soon</span></h2>
+      <p>Standardized delivery of web assets beyond the NodeJS/NPM ecosystem — allowing packaging, bundling, and a la carte consumption of assets.</p>
+      <div class="grid grid--3">
+        {% for page in section.pages %}
+        {% if page.extra.pillar == "deliver" %}
+        <div class="repo-card">
+          <h3><a href="{{ page.extra.github_url }}">{{ page.title }}</a></h3>
+          <p class="repo-card__desc">{{ page.description }}</p>
+          <div class="card__meta">
+            <span class="badge badge--coming-soon">{{ page.extra.status }}</span>
+            {% if page.extra.language %}
+            <span class="badge badge--language">{{ page.extra.language }}</span>
+            {% endif %}
+            <a href="{{ page.extra.github_url }}" class="repo-card__link">GitHub &rarr;</a>
+          </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="pillar-section">
+      <h2>Tools &amp; Infrastructure</h2>
+      <p>Supporting tools, starter kits, and infrastructure for the Chapeaux ecosystem.</p>
+      <div class="grid grid--3">
+        {% for page in section.pages %}
+        {% if page.extra.pillar == "tools" %}
+        <div class="repo-card">
+          <h3><a href="{{ page.extra.github_url }}">{{ page.title }}</a></h3>
+          <p class="repo-card__desc">{{ page.description }}</p>
+          <div class="card__meta">
+            <span class="badge badge--active">{{ page.extra.status }}</span>
+            {% if page.extra.language %}
+            <span class="badge badge--language">{{ page.extra.language }}</span>
+            {% endif %}
+            <a href="{{ page.extra.github_url }}" class="repo-card__link">GitHub &rarr;</a>
+          </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock content %}

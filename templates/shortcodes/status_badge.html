@@ -1,0 +1,9 @@
+{% if status == "Active" %}
+<span class="badge badge--active">Active</span>
+{% elif status == "In Progress" %}
+<span class="badge badge--in-progress">In Progress</span>
+{% elif status == "Coming Soon" %}
+<span class="badge badge--coming-soon">Coming Soon</span>
+{% else %}
+<span class="badge">{{ status }}</span>
+{% endif %}

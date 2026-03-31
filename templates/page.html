@@ -1,21 +1,21 @@
-{% extends "index.html" %}
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} — {{ config.title }}{% endblock %}
+{% block description %}{{ page.description | default(value=config.description) }}{% endblock %}
 
 {% block content %}
-<div class="post">
-  <pfe-band color="darker" aside-desktop="right" aside-mobile="bottom" aside-height="full" type="container">
-    <header slot="pfe-band--header">
-      <h2>{{ page.title }}</h2>
-      <p class="custom-band-summary">{{ page.date | date(format="%Y-%m-%d") }} - {{ page.description }}</p>
-    </header>
-    <article>
-      {{ page.content | safe }}
-    </article>
-    <footer slot="pfe-band--footer">
-      <pfe-cta priority="primary" on="light" pfelement="" class="PFElement" has_link="">
-        <a href="#">Learn more</a>
-      </pfe-cta>
-    </footer>
-  </pfe-band>
+<div class="page-header">
+  <div class="container">
+    <h1>{{ page.title }}</h1>
+    {% if page.description %}
+    <p>{{ page.description }}</p>
+    {% endif %}
+  </div>
 </div>
 
+<div class="container">
+  <div class="content-page">
+    {{ page.content | safe }}
+  </div>
+</div>
 {% endblock content %}

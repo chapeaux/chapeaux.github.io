@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} — {{ config.title }}{% endblock %}
+{% block description %}{{ page.description | default(value="") }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <h1>{{ page.title }}</h1>
+  </div>
+</div>
+
+<div class="container">
+  <article class="blog-post">
+    <div class="post-meta">
+      {{ page.date | date(format="%B %d, %Y") }}
+      {% if page.reading_time %}
+      &middot; {{ page.reading_time }} min read
+      {% endif %}
+    </div>
+    {{ page.content | safe }}
+    <p><a href="/blog/">&larr; All posts</a></p>
+  </article>
+</div>
+{% endblock content %}

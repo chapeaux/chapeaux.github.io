@@ -1,17 +1,39 @@
-# The URL the site will be built for
-# base_url = "https://cheapeaux.github.io"
-base_url = "https://localhost:4430"
-
-# Whether to automatically compile all Sass files in the sass directory
-compile_sass = true
-
-# Whether to build a search index to be used later on by a JavaScript library
-build_search_index = true
+base_url = "https://chapeaux.github.io"
+title = "Chapeaux"
+description = "A Digital Supply Chain for Web Assets"
+default_language = "en"
+compile_sass = false
+build_search_index = false
+generate_feeds = true
+feed_filenames = ["atom.xml"]
 
 [markdown]
-# Whether to do syntax highlighting
-# Theme can be customised by setting the `highlight_theme` variable to a theme supported by Zola
 highlight_code = true
+highlight_theme = "base16-ocean-dark"
 
 [extra]
-# Put all your custom variables here
+tagline = "Web development tools for the many hats you wear."
+github_org = "https://github.com/chapeaux"
+logo = "/images/chapeaux_logo_default.svg"
+logo_reverse = "/images/chapeaux_logo_reverse.svg"
+icon = "/images/chapeaux_icon_default.svg"
+
+[[extra.nav]]
+name = "Getting Started"
+url = "/getting-started/"
+
+[[extra.nav]]
+name = "Projects"
+url = "/projects/"
+
+[[extra.nav]]
+name = "Blog"
+url = "/blog/"
+
+[[extra.nav]]
+name = "Chapellerie"
+url = "/chapellerie/"
+
+[[extra.nav]]
+name = "About"
+url = "/about/"

@@ -1,66 +1,92 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+{% extends "base.html" %}
 
-      <!-- Enable responsiveness on mobile devices-->
-      <!-- viewport-fit=cover is to support iPhone X rounded corners and notch in landscape-->
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+{% block title %}Chapeaux — {{ config.extra.tagline }}{% endblock %}
 
-      <title>{% block title %}{{ config.title }}{% endblock title %}</title>
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <img src="{{ config.extra.logo_reverse }}" alt="Chapeaux" class="hero__logo">
+    <h1>{{ config.extra.tagline }}</h1>
+    <p class="hero__tagline">{{ config.description }}</p>
+    <div class="hero__actions">
+      <a href="/getting-started/" class="btn btn--primary">Get Started</a>
+      <a href="/projects/" class="btn btn--secondary">View Projects</a>
+    </div>
+  </div>
+</section>
 
-      <!-- CSS -->
-      <link rel="stylesheet" href="/scripts/pfe-styles/dist/pfe-base.css">
-      <link rel="stylesheet" href="/scripts/pfelement/dist/pfelement.min.css">
-      <link rel="stylesheet" href="{{ get_url(path="chapeaux.css", trailing_slash=false) }}">
-      
-      {% if config.generate_feed %}
-        <link rel="alternate" type={% if config.feed_filename == "atom.xml" %}"application/atom+xml"{% else %}"application/rss+xml"{% endif %} title="RSS" href="{{ get_url(path=config.feed_filename) | safe }}">
-      {% endif %}
-
-      {% block extra_head %}
-      {% endblock extra_head %}
-    </head>
-
-    <body>
-        {% block sidebar %}
-            <div class="sidebar">
-                <div>
-                    <div class="sidebar-about">
-                        {% block sidebar_about %}
-                            <a href="{{ config.base_url }}"><h1>{{ config.title }}</h1></a>
-                            {% if config.description %}
-                            <p class="lead">{{config.description}}</p>
-                            {% endif %}
-                        {% endblock sidebar_about %}
-                    </div>
-
-                </div>
-            </div>
-        {% endblock sidebar %}
-
-        <div class="content container">
-            {% block content %}
-                <div class="posts">
-                    {% for page in section.pages | reverse %}
-                    <pfe-card color="base">
-                        <h3 slot="pfe-card--header">
-                            <a href="{{ page.permalink }}">{{ page.title }}</a>
-                        </h3>
-                        <p>{{ page.date | date(format="%Y-%m-%d") }} - {{ page.description }}</p>
-                        <pfe-cta slot="pfe-card--footer">
-                          <a href="{{ page.permalink }}">Read more</a>
-                        </pfe-cta>
-                    </pfe-card>
-                    {% endfor %}
-                </div>
-            {% endblock content %}
+<section class="section pillars">
+  <div class="container">
+    <h2>The Three Pillars</h2>
+    <div class="grid grid--3">
+      <div class="card card--pillar card--develop">
+        <div class="pillar-card__icon">&#9881;</div>
+        <h3>Develop</h3>
+        <p>Create enterprise-grade, functional web development tools. Secure, scalable, and stable.</p>
+        <div class="pillar-card__status">
+          <span class="badge badge--active">Active</span>
         </div>
-        <script type="module" src="scripts/pfe-band/dist/pfe-band.min.js"></script>
-        <script type="module" src="scripts/pfe-card/dist/pfe-card.min.js"></script>
-        <script type="module" src="scripts/pfe-cta/dist/pfe-cta.min.js"></script>
-        <script type="module" src="scripts/pfe-datetime/dist/pfe-datetime.min.js"></script>
-    </body>
+      </div>
+      <div class="card card--pillar card--discover">
+        <div class="pillar-card__icon">&#128269;</div>
+        <h3>Discover</h3>
+        <p>A central catalog to find, explore, and understand available web assets across the enterprise.</p>
+        <div class="pillar-card__status">
+          <span class="badge badge--in-progress">In Progress</span>
+        </div>
+      </div>
+      <div class="card card--pillar card--deliver">
+        <div class="pillar-card__icon">&#128230;</div>
+        <h3>Deliver</h3>
+        <p>Standardized delivery of web assets in a variety of methods — beyond the NPM ecosystem.</p>
+        <div class="pillar-card__status">
+          <span class="badge badge--coming-soon">Coming Soon</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-</html>
+<section class="section section--alt value-props">
+  <div class="container">
+    <h2>Why Chapeaux?</h2>
+    <div class="grid grid--2">
+      <div class="value-prop">
+        <h3>Framework Agnostic</h3>
+        <p>Reduces reliance on external libraries and frameworks. Your tools work regardless of the stack.</p>
+      </div>
+      <div class="value-prop">
+        <h3>Enterprise Ready</h3>
+        <p>Built for scale with security, stability, and compliance as first-class concerns.</p>
+      </div>
+      <div class="value-prop">
+        <h3>Developer Productivity</h3>
+        <p>Reusable tools and assets that let teams focus on solving problems, not reinventing solutions.</p>
+      </div>
+      <div class="value-prop">
+        <h3>Open Source</h3>
+        <p>Community-driven development with open governance and transparent decision-making.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% set blog = get_section(path="blog/_index.md", metadata_only=true) %}
+{% if blog.pages | length > 0 %}
+<section class="section">
+  <div class="container">
+    <h2>Latest Updates</h2>
+    {% for post in blog.pages | slice(end=3) %}
+    <div class="post-item">
+      <h3><a href="{{ post.permalink }}">{{ post.title }}</a></h3>
+      <div class="post-meta">{{ post.date | date(format="%B %d, %Y") }}</div>
+      {% if post.description %}
+      <p>{{ post.description }}</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+    <p><a href="/blog/">View all posts &rarr;</a></p>
+  </div>
+</section>
+{% endif %}
+{% endblock content %}
