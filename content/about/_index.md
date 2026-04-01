@@ -6,15 +6,15 @@ template = "section.html"
 
 ## A Digital Supply Chain for Web Assets
 
-Chapeaux provides web development tools for the many hats you wear. In an enterprise environment, developers and stakeholders juggle diverse requirements, frameworks, and standards. Chapeaux aims to simplify this by providing a cohesive ecosystem of tools and assets that work across the enterprise — regardless of the technology stack.
+Chapeaux began as an effort to craft functional (meaning no user interface) web components helping teams with small or no dedicated frontend teams implement shared functionality across sites. The Project expanded as more needs arose in the enterprise. Developers and stakeholders have to juggle diverse requirements, frameworks, and standards; the Chapeaux Project aims to simplify things by providing a cohesive ecosystem of tools and assets that work across the enterprise — regardless of the technology stack.
 
 ## The Three Ds
 
-The project is organized around three primary concerns:
+The project is organized around three primary stages:
 
 ### Develop
 
-Create enterprise-grade, functional web development tools that are secure, scalable, and stable. The tools are designed to be UI-neutral when possible — focusing on functionality over visual style. This means they can be used in any design system or framework context.
+Create enterprise-grade, functional web components and tools that are secure, scalable, and stable. The components and tools are designed to be UI-neutral and dependency-free when possible — focusing on functionality over visual style. This means they can be used in any design system or framework context.
 
 Current components use the `cpx-*` naming convention and include tools for search, user management, content delivery, data layers, and more.
 

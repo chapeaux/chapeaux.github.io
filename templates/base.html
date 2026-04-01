@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}{{ config.title }}{% endblock title %}</title>
   <meta name="description" content="{% block description %}{{ config.description }}{% endblock %}">
-  <link rel="icon" type="image/png" href="/images/favicon.png">
+  <link rel="icon" type="image/png" href="/images/favicon_2026.png">
   <link rel="stylesheet" href="/chapeaux.css">
   {% if config.generate_feeds %}
   <link rel="alternate" type="application/atom+xml" title="Chapeaux Feed" href="{{ get_url(path="atom.xml") | safe }}">
@@ -16,8 +16,7 @@
   <header class="site-header">
     <div class="container">
       <a href="{{ config.base_url }}" class="site-logo">
-        <img src="{{ config.extra.icon }}" alt="Chapeaux">
-        <span>Chapeaux</span>
+        <img src="{{ config.extra.logo_wide }}" alt="Chapeaux">
       </a>
 
       <nav>

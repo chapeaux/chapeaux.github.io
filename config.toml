@@ -14,9 +14,10 @@ highlight_theme = "base16-ocean-dark"
 [extra]
 tagline = "A Digital Supply Chain for Web Assets"
 github_org = "https://github.com/chapeaux"
-logo = "/images/chapeaux_logo_default.svg"
-logo_reverse = "/images/chapeaux_logo_reverse.svg"
-icon = "/images/chapeaux_icon_default.svg"
+logo = "/images/chapeaux_logo_aiux_2026.svg"
+logo_wide = "/images/chapeaux_logo_wide_default_2026.svg"
+logo_reverse = "/images/chapeaux_logo_aiux_reverse_2026.svg"
+icon = "/images/chapeaux_icon_default_2026.svg"
 
 [[extra.nav]]
 name = "Contribute"

@@ -1,6 +1,6 @@
 +++
 title = "Contribute"
-description = "Get up and running with Chapeaux web development tools"
+description = "Join the club!"
 template = "section.html"
 +++
 

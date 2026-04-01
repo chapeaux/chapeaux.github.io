@@ -135,8 +135,15 @@
   /* Backgrounds */
   --cpx-gradient: radial-gradient(ellipse at 20% 80%, rgb(67 173 175 / 0.15) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 20%, rgb(4 153 197 / 0.2) 0%, transparent 50%),
-    linear-gradient(135deg, var(--cpx-purple) 0%, var(--cpx-blue) 100%);
+    linear-gradient(135deg, var(--cpx-gray-70) 0%, var(--cpx-purple-70) 100%);
+  --cpx-conical: conic-gradient(from 110deg, var(--cpx-orange), var(--cpx-teal) 5%, var(--cpx-teal) 18%, var(--cpx-purple) 30%, var(--cpx-purple) 40%, var(--cpx-blue) 85%, var(--cpx-orange) 100%);
   --cpx-horizontal-rule: linear-gradient(to right, var(--cpx-blue), var(--cpx-teal), var(--cpx-yellow), var(--cpx-orange));
+  --cpx-hat: radial-gradient(ellipse 98% 150% at 24% 72%, transparent 60%, var(--white) 60%, var(--white) 61%,  transparent 61%),
+    radial-gradient(ellipse 95% 52% at 30% 62%, transparent 71%, var(--white) 72%, var(--white) 73%,  transparent 74%),
+    radial-gradient(circle at 40% 15%, var(--cpx-blue) 60%, transparent 89%),
+    radial-gradient(ellipse 94% 50% at 30% 62%, var(--cpx-purple) 72%, transparent 71%),
+    linear-gradient(to top left, transparent -20%, var(--cpx-teal) 20%, transparent 40%),
+    linear-gradient(242deg, transparent -16%, var(--cpx-orange) 15%, var(--cpx-orange) 24%, transparent 32%)
 }
 
 /* === Base === */
