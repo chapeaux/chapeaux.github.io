@@ -6,5 +6,5 @@ weight = 3
 stage ="develop"
 status = "Active"
 github_url = "https://github.com/chapeaux/cpx-eddl"
-language = "JavaScript"
+language = "TypeScript"
 +++

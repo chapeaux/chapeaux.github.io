@@ -6,5 +6,5 @@ weight = 5
 stage ="develop"
 status = "Active"
 github_url = "https://github.com/chapeaux/cpx-user"
-language = "JavaScript"
+language = "TypeScript"
 +++
