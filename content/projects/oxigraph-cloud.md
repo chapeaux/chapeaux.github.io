@@ -6,5 +6,5 @@ weight = 13
 stage ="discover"
 status = "In Progress"
 github_url = "https://github.com/chapeaux/oxigraph-cloud"
-language = "C++"
+language = "Rust"
 +++

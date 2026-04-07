@@ -14,13 +14,13 @@ The project is organized around three primary stages:
 
 ### Develop
 
-Create enterprise-grade, functional web components and tools that are secure, scalable, and stable. The components and tools are designed to be UI-neutral and dependency-free when possible — focusing on functionality over visual style. This means they can be used in any design system or framework context, and consumed in a diversity of ways (no runtime-specific ecosystem necessary).
+Create enterprise-grade, functional web assets and development tools that are secure, scalable, and stable. The components and tools are designed to be UI-neutral and dependency-free when possible — focusing on functionality over visual style. This means they can be used in any design system or framework context, and consumed in a diversity of ways (no runtime-specific ecosystem necessary).
 
 Current web components use the `cpx-*` naming convention and include tools for search, user management, content delivery, data layers, and more. The tools don't follow a specific naming convention, but are often named after some type of headwear. 
 
 ### Discover
 
-Centralize the ability to find web assets in an enterprise-wide catalog. The Discover stage aims to improve the findability of common assets, provide demos and documentation, and build a curated list with useful metadata and analytics.
+A central catalog to find, explore, and understand available web assets and development tools across the enterprise. The Discover stage aims to improve the findability of common assets, provide demos and documentation, and build a curated list with useful metadata and analytics.
 
 The catalog leverages semantic web technologies including RDF, SPARQL, and Oxigraph to enable rich, queryable metadata about available assets.
 

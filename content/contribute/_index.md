@@ -8,31 +8,9 @@ template = "section.html"
 
 Chapeaux is a digital supply chain for web assets — providing web development tools for the many hats you wear. The project is organized around three stages:
 
-- **Develop** — Create enterprise-grade, functional web development tools
-- **Discover** — Centralize web assets in a searchable, metadata-rich catalog
+- **Develop** — Create enterprise-grade, functional web assets and development tools
+- **Discover** — A central catalog to find, explore, and understand available web assets and development tools across the enterprise
 - **Deliver** — Distribute assets through standardized, flexible delivery channels
-
-## Quick Start with cpx-components
-
-The `cpx-components` library is the primary entry point for using Chapeaux tools in your projects.
-
-### Installation
-
-```bash
-npm install @chapeaux/cpx-components
-```
-
-### Usage
-
-Import the components you need and use them in your HTML:
-
-```html
-<script type="module">
-  import '@chapeaux/cpx-components';
-</script>
-```
-
-Components use the `cpx-*` naming convention and are designed to be functional and UI-neutral where possible.
 
 ## Explore the Ecosystem
 
@@ -40,10 +18,11 @@ Visit the [Projects](/projects/) page to see all available tools and their curre
 
 ### Key Repositories
 
-- **[cpx-components](https://github.com/chapeaux/cpx-components)** — Core web components library
-- **[chapellerie](https://github.com/chapeaux/chapellerie)** — Playground for demos and testing
+- **[cpx-store](https://github.com/chapeaux/cpx-store)** — Reactive state management web component
+- **[cpx-eddl](https://github.com/chapeaux/cpx-eddl)** — Event-Driven Data Layer components for analytics and tracking
 - **[beret](https://github.com/chapeaux/beret)** — RDF knowledge graph for codebase exploration
-- **[chapka](https://github.com/chapeaux/chapka)** — Starter kit for getting involved
+- **[oxigraph-cloud](https://github.com/chapeaux/oxigraph-cloud)** — Distributed Oxigraph deployment with SHACL validation
+- **[geoff](https://github.com/chapeaux/geoff)** — Web asset delivery and distribution tool
 
 ## Contributing
 

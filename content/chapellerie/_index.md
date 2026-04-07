@@ -29,6 +29,5 @@ Follow the setup instructions in the repository README to get the playground run
 
 ## Related Tools
 
-- **[deno-starter](https://github.com/chapeaux/deno-starter)** — Deno 2.1 devfile setup for quick project bootstrapping
 - **[poire](https://github.com/chapeaux/poire)** — Pair programming devfile and repo example
 - **[chapka](https://github.com/chapeaux/chapka)** — Starter kit for open source participation
