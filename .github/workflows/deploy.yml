@@ -20,18 +20,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Zola
+      - name: Install Geoff
         uses: taiki-e/install-action@v2
         with:
-          tool: zola@0.19.2
+          tool: chapeaux-geoff
 
       - name: Build
-        run: zola build
+        run: geoff build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./public
+          path: ./dist
 
   deploy:
     needs: build

@@ -1,10 +1,12 @@
 +++
 title = "cpx-result"
 description = "Search result display web component"
-weight = 14
-[extra]
-stage = "develop"
-status = "Active"
-github_url = "https://github.com/chapeaux/cpx-result"
-language = "TypeScript"
+template = "page.html"
+type = "Web Page"
+
+[rdf.custom]
+"geoff:stage" = "develop"
+"geoff:status" = "Active"
+"geoff:githubUrl" = "https://github.com/chapeaux/cpx-result"
+"geoff:language" = "TypeScript"
 +++

@@ -3,36 +3,42 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}{{ config.title }}{% endblock title %}</title>
-  <meta name="description" content="{% block description %}{{ config.description }}{% endblock %}">
+  <title>{% block title %}{{ title }} — {{ config.title }}{% endblock title %}</title>
+  {% if description %}<meta name="description" content="{{ description }}">{% endif %}
   <link rel="icon" type="image/png" href="/images/favicon_2026.png">
   <link rel="stylesheet" href="/chapeaux.css">
-  {% if config.generate_feeds %}
-  <link rel="alternate" type="application/atom+xml" title="Chapeaux Feed" href="{{ get_url(path="atom.xml") | safe }}">
+  {% if json_ld %}
+  <script type="application/ld+json">
+  {{ json_ld | safe }}
+  </script>
   {% endif %}
   {% block extra_head %}{% endblock %}
 </head>
 <body>
   <header class="site-header">
     <div class="container">
-      <a href="{{ config.base_url }}" class="site-logo">
-        <img src="{{ config.extra.logo_wide }}" alt="Chapeaux">
+      <a href="/" class="site-logo">
+        <img src="/images/chapeaux_logo_wide_default_2026.svg" alt="Chapeaux">
       </a>
 
       <nav>
         <ul class="site-nav">
-          {% for link in config.extra.nav %}
-          <li><a href="{{ link.url }}">{{ link.name }}</a></li>
-          {% endfor %}
+          <li><a href="/contribute/">Contribute</a></li>
+          <li><a href="/projects/">Projects</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/chapellerie/">Chapellerie</a></li>
         </ul>
       </nav>
 
       <details class="mobile-menu">
         <summary aria-label="Menu">&#9776;</summary>
         <ul class="mobile-nav">
-          {% for link in config.extra.nav %}
-          <li><a href="{{ link.url }}">{{ link.name }}</a></li>
-          {% endfor %}
+          <li><a href="/contribute/">Contribute</a></li>
+          <li><a href="/projects/">Projects</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/chapellerie/">Chapellerie</a></li>
         </ul>
       </details>
     </div>
@@ -46,18 +52,20 @@
     <div class="container">
       <div class="footer-content">
         <div class="footer-brand">
-          <img src="{{ config.extra.logo_reverse }}" alt="Chapeaux">
-          <p>{{ config.extra.tagline }}</p>
+          <img src="/images/chapeaux_logo_aiux_reverse_2026.svg" alt="Chapeaux">
+          <p>A Digital Supply Chain for Web Assets</p>
         </div>
         <ul class="footer-links">
-          {% for link in config.extra.nav %}
-          <li><a href="{{ link.url }}">{{ link.name }}</a></li>
-          {% endfor %}
-          <li><a href="{{ config.extra.github_org }}">GitHub</a></li>
+          <li><a href="/contribute/">Contribute</a></li>
+          <li><a href="/projects/">Projects</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/chapellerie/">Chapellerie</a></li>
+          <li><a href="https://github.com/chapeaux">GitHub</a></li>
         </ul>
       </div>
       <div class="footer-bottom">
-        <p>&copy; {{ now() | date(format="%Y") }} Chapeaux Project. Open source under the MIT License.</p>
+        <p>&copy; 2026 Chapeaux Project. Open source under the MIT License.</p>
       </div>
     </div>
   </footer>

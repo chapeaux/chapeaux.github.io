@@ -1,10 +1,12 @@
 +++
 title = "cpx-tab-stream"
 description = "Media streaming web component"
-weight = 19
-[extra]
-stage = "develop"
-status = "Active"
-github_url = "https://github.com/chapeaux/cpx-tab-stream"
-language = "TypeScript"
+template = "page.html"
+type = "Web Page"
+
+[rdf.custom]
+"geoff:stage" = "develop"
+"geoff:status" = "Active"
+"geoff:githubUrl" = "https://github.com/chapeaux/cpx-tab-stream"
+"geoff:language" = "TypeScript"
 +++

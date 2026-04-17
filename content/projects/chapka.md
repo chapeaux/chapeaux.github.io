@@ -1,9 +1,11 @@
 +++
 title = "chapka"
 description = "Starter kit for open source participation in Chapeaux"
-weight = 31
-[extra]
-stage ="tools"
-status = "Active"
-github_url = "https://github.com/chapeaux/chapka"
+template = "page.html"
+type = "Web Page"
+
+[rdf.custom]
+"geoff:stage" = "tools"
+"geoff:status" = "Active"
+"geoff:githubUrl" = "https://github.com/chapeaux/chapka"
 +++

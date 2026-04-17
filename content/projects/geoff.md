@@ -1,9 +1,12 @@
 +++
 title = "geoff"
-description = "Web asset delivery and distribution tool"
-weight = 22
-[extra]
-stage = "deliver"
-status = "Coming Soon"
-github_url = "https://github.com/chapeaux/geoff"
+description = "Semantic static site generator with RDF knowledge graph"
+template = "page.html"
+type = "Web Page"
+
+[rdf.custom]
+"geoff:stage" = "deliver"
+"geoff:status" = "Coming Soon"
+"geoff:githubUrl" = "https://github.com/chapeaux/geoff"
+"geoff:language" = "Rust"
 +++

@@ -1,10 +1,12 @@
 +++
 title = "chapellerie"
 description = "Playground for demos, testing, and experimentation"
-weight = 30
-[extra]
-stage ="tools"
-status = "Active"
-github_url = "https://github.com/chapeaux/chapellerie"
-language = "TypeScript"
+template = "page.html"
+type = "Web Page"
+
+[rdf.custom]
+"geoff:stage" = "tools"
+"geoff:status" = "Active"
+"geoff:githubUrl" = "https://github.com/chapeaux/chapellerie"
+"geoff:language" = "TypeScript"
 +++

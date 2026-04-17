@@ -2,6 +2,7 @@
 title = "Contribute"
 description = "Join the club!"
 template = "section.html"
+type = "Web Page"
 +++
 
 ## What is Chapeaux?

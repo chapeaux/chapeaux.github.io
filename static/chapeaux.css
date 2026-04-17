@@ -201,8 +201,8 @@ code {
 }
 
 pre {
-  background: var(--cpx-purple);
-  color: rgb(255 255 255 / 0.9);
+  background: var(--cpx-dark-blue);
+  color: var(--cpx-red-05);
   padding: var(--space-md);
   border-radius: 4px;
   overflow-x: auto;

@@ -1,10 +1,12 @@
 +++
 title = "poire"
 description = "Pair programming devfile and repository example"
-weight = 33
-[extra]
-stage ="tools"
-status = "Active"
-github_url = "https://github.com/chapeaux/poire"
-language = "TypeScript"
+template = "page.html"
+type = "Web Page"
+
+[rdf.custom]
+"geoff:stage" = "tools"
+"geoff:status" = "Active"
+"geoff:githubUrl" = "https://github.com/chapeaux/poire"
+"geoff:language" = "TypeScript"
 +++

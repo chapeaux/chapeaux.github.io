@@ -1,10 +1,12 @@
 +++
 title = "cpx-scaffold"
 description = "Shared build, serve, and test tooling for Chapeaux web components"
-weight = 36
-[extra]
-stage = "tools"
-status = "Active"
-github_url = "https://github.com/chapeaux/cpx-scaffold"
-language = "TypeScript"
+template = "page.html"
+type = "Web Page"
+
+[rdf.custom]
+"geoff:stage" = "tools"
+"geoff:status" = "Active"
+"geoff:githubUrl" = "https://github.com/chapeaux/cpx-scaffold"
+"geoff:language" = "TypeScript"
 +++

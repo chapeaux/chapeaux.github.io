@@ -1,10 +1,12 @@
 +++
 title = "cpx-shaper"
 description = "Data shaping web component"
-weight = 17
-[extra]
-stage = "develop"
-status = "Active"
-github_url = "https://github.com/chapeaux/cpx-shaper"
-language = "TypeScript"
+template = "page.html"
+type = "Web Page"
+
+[rdf.custom]
+"geoff:stage" = "develop"
+"geoff:status" = "Active"
+"geoff:githubUrl" = "https://github.com/chapeaux/cpx-shaper"
+"geoff:language" = "TypeScript"
 +++

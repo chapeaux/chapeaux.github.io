@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block title %}Projects — {{ config.title }}{% endblock %}
-{% block description %}Explore the Chapeaux ecosystem of web development tools{% endblock %}
 
 {% block content %}
 <div class="page-header">
@@ -13,92 +12,87 @@
 
 <div class="container">
   <div class="section">
-    {{ section.content | safe }}
 
+    {% set develop = sparql(query="SELECT ?title ?desc ?status ?language ?url WHERE { GRAPH ?g { ?s <urn:geoff:ontology:stage> 'develop' ; <http://schema.org/name> ?title . OPTIONAL { ?s <http://schema.org/description> ?desc } OPTIONAL { ?s <urn:geoff:ontology:status> ?status } OPTIONAL { ?s <urn:geoff:ontology:language> ?language } OPTIONAL { ?s <urn:geoff:ontology:githubUrl> ?url } } } ORDER BY ?title") %}
     <section class="stage-section stage-section--develop">
       <h2>Develop <span class="badge badge--active">Active</span></h2>
       <p>Create enterprise-grade, functional web assets and development tools — secure, scalable, and stable.</p>
       <div class="grid grid--3">
-        {% for page in section.pages %}
-        {% if page.extra.stage == "develop" %}
+        {% for project in develop %}
         <div class="repo-card">
-          <h3><a href="{{ page.extra.github_url }}">{{ page.title }}</a></h3>
-          <p class="repo-card__desc">{{ page.description }}</p>
+          <h3><a href="{{ project.url }}">{{ project.title }}</a></h3>
+          {% if project.desc %}<p class="repo-card__desc">{{ project.desc }}</p>{% endif %}
           <div class="card__meta">
-            <span class="badge badge--active">{{ page.extra.status }}</span>
-            {% if page.extra.language %}
-            <span class="badge badge--language">{{ page.extra.language }}</span>
+            <span class="badge badge--active">{{ project.status }}</span>
+            {% if project.language %}
+            <span class="badge badge--language">{{ project.language }}</span>
             {% endif %}
-            <a href="{{ page.extra.github_url }}" class="repo-card__link">GitHub &rarr;</a>
+            <a href="{{ project.url }}" class="repo-card__link">GitHub &rarr;</a>
           </div>
         </div>
-        {% endif %}
         {% endfor %}
       </div>
     </section>
 
+    {% set discover = sparql(query="SELECT ?title ?desc ?status ?language ?url WHERE { GRAPH ?g { ?s <urn:geoff:ontology:stage> 'discover' ; <http://schema.org/name> ?title . OPTIONAL { ?s <http://schema.org/description> ?desc } OPTIONAL { ?s <urn:geoff:ontology:status> ?status } OPTIONAL { ?s <urn:geoff:ontology:language> ?language } OPTIONAL { ?s <urn:geoff:ontology:githubUrl> ?url } } } ORDER BY ?title") %}
     <section class="stage-section stage-section--discover">
       <h2>Discover <span class="badge badge--in-progress">In Progress</span></h2>
       <p>A central catalog to find, explore, and understand available web assets and development tools across the enterprise.</p>
       <div class="grid grid--3">
-        {% for page in section.pages %}
-        {% if page.extra.stage == "discover" %}
+        {% for project in discover %}
         <div class="repo-card">
-          <h3><a href="{{ page.extra.github_url }}">{{ page.title }}</a></h3>
-          <p class="repo-card__desc">{{ page.description }}</p>
+          <h3><a href="{{ project.url }}">{{ project.title }}</a></h3>
+          {% if project.desc %}<p class="repo-card__desc">{{ project.desc }}</p>{% endif %}
           <div class="card__meta">
-            <span class="badge badge--in-progress">{{ page.extra.status }}</span>
-            {% if page.extra.language %}
-            <span class="badge badge--language">{{ page.extra.language }}</span>
+            <span class="badge badge--in-progress">{{ project.status }}</span>
+            {% if project.language %}
+            <span class="badge badge--language">{{ project.language }}</span>
             {% endif %}
-            <a href="{{ page.extra.github_url }}" class="repo-card__link">GitHub &rarr;</a>
+            <a href="{{ project.url }}" class="repo-card__link">GitHub &rarr;</a>
           </div>
         </div>
-        {% endif %}
         {% endfor %}
       </div>
     </section>
 
+    {% set deliver = sparql(query="SELECT ?title ?desc ?status ?language ?url WHERE { GRAPH ?g { ?s <urn:geoff:ontology:stage> 'deliver' ; <http://schema.org/name> ?title . OPTIONAL { ?s <http://schema.org/description> ?desc } OPTIONAL { ?s <urn:geoff:ontology:status> ?status } OPTIONAL { ?s <urn:geoff:ontology:language> ?language } OPTIONAL { ?s <urn:geoff:ontology:githubUrl> ?url } } } ORDER BY ?title") %}
     <section class="stage-section stage-section--deliver">
       <h2>Deliver <span class="badge badge--coming-soon">Coming Soon</span></h2>
       <p>Standardized delivery of web assets beyond the NodeJS/NPM ecosystem — allowing packaging, bundling, and a la carte consumption of assets.</p>
       <div class="grid grid--3">
-        {% for page in section.pages %}
-        {% if page.extra.stage == "deliver" %}
+        {% for project in deliver %}
         <div class="repo-card">
-          <h3><a href="{{ page.extra.github_url }}">{{ page.title }}</a></h3>
-          <p class="repo-card__desc">{{ page.description }}</p>
+          <h3><a href="{{ project.url }}">{{ project.title }}</a></h3>
+          {% if project.desc %}<p class="repo-card__desc">{{ project.desc }}</p>{% endif %}
           <div class="card__meta">
-            <span class="badge badge--coming-soon">{{ page.extra.status }}</span>
-            {% if page.extra.language %}
-            <span class="badge badge--language">{{ page.extra.language }}</span>
+            <span class="badge badge--coming-soon">{{ project.status }}</span>
+            {% if project.language %}
+            <span class="badge badge--language">{{ project.language }}</span>
             {% endif %}
-            <a href="{{ page.extra.github_url }}" class="repo-card__link">GitHub &rarr;</a>
+            <a href="{{ project.url }}" class="repo-card__link">GitHub &rarr;</a>
           </div>
         </div>
-        {% endif %}
         {% endfor %}
       </div>
     </section>
 
+    {% set tools = sparql(query="SELECT ?title ?desc ?status ?language ?url WHERE { GRAPH ?g { ?s <urn:geoff:ontology:stage> 'tools' ; <http://schema.org/name> ?title . OPTIONAL { ?s <http://schema.org/description> ?desc } OPTIONAL { ?s <urn:geoff:ontology:status> ?status } OPTIONAL { ?s <urn:geoff:ontology:language> ?language } OPTIONAL { ?s <urn:geoff:ontology:githubUrl> ?url } } } ORDER BY ?title") %}
     <section class="stage-section">
       <h2>Tools &amp; Infrastructure</h2>
       <p>Supporting tools, starter kits, and infrastructure for the Chapeaux ecosystem.</p>
       <div class="grid grid--3">
-        {% for page in section.pages %}
-        {% if page.extra.stage == "tools" %}
+        {% for project in tools %}
         <div class="repo-card">
-          <h3><a href="{{ page.extra.github_url }}">{{ page.title }}</a></h3>
-          <p class="repo-card__desc">{{ page.description }}</p>
+          <h3><a href="{{ project.url }}">{{ project.title }}</a></h3>
+          {% if project.desc %}<p class="repo-card__desc">{{ project.desc }}</p>{% endif %}
           <div class="card__meta">
-            <span class="badge badge--active">{{ page.extra.status }}</span>
-            {% if page.extra.language %}
-            <span class="badge badge--language">{{ page.extra.language }}</span>
+            <span class="badge badge--active">{{ project.status }}</span>
+            {% if project.language %}
+            <span class="badge badge--language">{{ project.language }}</span>
             {% endif %}
-            <a href="{{ page.extra.github_url }}" class="repo-card__link">GitHub &rarr;</a>
+            <a href="{{ project.url }}" class="repo-card__link">GitHub &rarr;</a>
           </div>
         </div>
-        {% endif %}
         {% endfor %}
       </div>
     </section>

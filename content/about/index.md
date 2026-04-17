@@ -2,6 +2,7 @@
 title = "About Chapeaux"
 description = "The philosophy and history behind the Chapeaux Project"
 template = "section.html"
+type = "Web Page"
 +++
 
 ## A Digital Supply Chain for Web Assets

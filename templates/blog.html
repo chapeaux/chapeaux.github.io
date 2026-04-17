@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block title %}Blog — {{ config.title }}{% endblock %}
-{% block description %}News and updates from the Chapeaux Project{% endblock %}
 
 {% block content %}
 <div class="page-header">
@@ -13,17 +12,19 @@
 
 <div class="container">
   <div class="content-page">
-    {% for page in section.pages %}
+    {% set posts = sparql(query="SELECT ?title ?date ?desc ?url WHERE { GRAPH ?g { ?s <http://schema.org/name> ?title . ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/BlogPosting> . OPTIONAL { ?s <http://schema.org/datePublished> ?date } OPTIONAL { ?s <http://schema.org/description> ?desc } OPTIONAL { ?s <http://schema.org/url> ?url } } } ORDER BY DESC(?date)") %}
+
+    {% if posts | length > 0 %}
+    {% for post in posts %}
     <div class="post-item">
-      <h3><a href="{{ page.permalink }}">{{ page.title }}</a></h3>
-      <div class="post-meta">{{ page.date | date(format="%B %d, %Y") }}</div>
-      {% if page.description %}
-      <p>{{ page.description }}</p>
+      <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
+      {% if post.date %}<div class="post-meta">{{ post.date }}</div>{% endif %}
+      {% if post.desc %}
+      <p>{{ post.desc }}</p>
       {% endif %}
     </div>
     {% endfor %}
-
-    {% if section.pages | length == 0 %}
+    {% else %}
     <p>No posts yet. Check back soon!</p>
     {% endif %}
   </div>

@@ -1,10 +1,12 @@
 +++
 title = "cpx-auth"
 description = "Authentication web component"
-weight = 18
-[extra]
-stage = "develop"
-status = "Active"
-github_url = "https://github.com/chapeaux/cpx-auth"
-language = "TypeScript"
+template = "page.html"
+type = "Web Page"
+
+[rdf.custom]
+"geoff:stage" = "develop"
+"geoff:status" = "Active"
+"geoff:githubUrl" = "https://github.com/chapeaux/cpx-auth"
+"geoff:language" = "TypeScript"
 +++

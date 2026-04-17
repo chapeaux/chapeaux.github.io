@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Chapeaux — {{ config.extra.tagline }}{% endblock %}
+{% block title %}Chapeaux — A Digital Supply Chain for Web Assets{% endblock %}
 
 {% block content %}
 <section class="hero">
   <div class="container">
-    <img src="{{ config.extra.logo_reverse }}" alt="Chapeaux" class="hero__logo">
-    <h1>{{ config.extra.tagline }}</h1>
-    <p class="hero__tagline">{{ config.description }}</p>
+    <img src="/images/chapeaux_logo_aiux_reverse_2026.svg" alt="Chapeaux" class="hero__logo">
+    <h1>A Digital Supply Chain for Web Assets</h1>
+    <p class="hero__tagline">Web development tools for the many hats you wear.</p>
     <div class="hero__actions">
       <a href="/contribute/" class="btn btn--primary">Contribute</a>
       <a href="/projects/" class="btn btn--secondary">View Projects</a>
@@ -71,18 +71,16 @@
   </div>
 </section>
 
-{% set blog = get_section(path="blog/_index.md", metadata_only=true) %}
-{% if blog.pages | length > 0 %}
+{% set posts = sparql(query="SELECT ?title ?date ?desc ?url WHERE { GRAPH ?g { ?s <http://schema.org/name> ?title . ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/BlogPosting> . OPTIONAL { ?s <http://schema.org/datePublished> ?date } OPTIONAL { ?s <http://schema.org/description> ?desc } OPTIONAL { ?s <http://schema.org/url> ?url } } } ORDER BY DESC(?date) LIMIT 3") %}
+{% if posts | length > 0 %}
 <section class="section">
   <div class="container">
     <h2>Latest Updates</h2>
-    {% for post in blog.pages | slice(end=3) %}
+    {% for post in posts %}
     <div class="post-item">
-      <h3><a href="{{ post.permalink }}">{{ post.title }}</a></h3>
-      <div class="post-meta">{{ post.date | date(format="%B %d, %Y") }}</div>
-      {% if post.description %}
-      <p>{{ post.description }}</p>
-      {% endif %}
+      <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
+      {% if post.date %}<div class="post-meta">{{ post.date }}</div>{% endif %}
+      {% if post.desc %}<p>{{ post.desc }}</p>{% endif %}
     </div>
     {% endfor %}
     <p><a href="/blog/">View all posts &rarr;</a></p>

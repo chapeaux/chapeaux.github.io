@@ -2,6 +2,7 @@
 title = "Chapellerie"
 description = "Playground for Chapeaux component demos and experiments"
 template = "section.html"
+type = "Web Page"
 +++
 
 ## The Chapeaux Playground

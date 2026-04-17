@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RDF, SPARQL, and SHACL as a Foundation for Web Applications — Chapeaux</title>
+  <meta name="description" content="An exploration of using semantic web technologies as the backbone of a modern web application — lessons learned from an experimental application project.">
+  <link rel="icon" type="image/png" href="/images/favicon_2026.png">
+  <link rel="stylesheet" href="/chapeaux.css">
+  
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org/",
+  "@id": "https://chapeaux.github.io/blog/2026-04-05-sparql",
+  "@type": "BlogPosting",
+  "datePublished": "{ \"$__toml_private_datetime\" = \"2026-04-05\" }",
+  "name": "RDF, SPARQL, and SHACL as a Foundation for Web Applications"
+}
+  </script>
+  
+  
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="site-logo">
+        <img src="/images/chapeaux_logo_wide_default_2026.svg" alt="Chapeaux">
+      </a>
+
+      <nav>
+        <ul class="site-nav">
+          <li><a href="/contribute/">Contribute</a></li>
+          <li><a href="/projects/">Projects</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/chapellerie/">Chapellerie</a></li>
+        </ul>
+      </nav>
+
+      <details class="mobile-menu">
+        <summary aria-label="Menu">&#9776;</summary>
+        <ul class="mobile-nav">
+          <li><a href="/contribute/">Contribute</a></li>
+          <li><a href="/projects/">Projects</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/chapellerie/">Chapellerie</a></li>
+        </ul>
+      </details>
+    </div>
+  </header>
+
+  <main>
+    
+<div class="page-header">
+  <div class="container">
+    <h1>RDF, SPARQL, and SHACL as a Foundation for Web Applications</h1>
+  </div>
+</div>
+
+<div class="container">
+  <article class="blog-post">
+    
+    <div class="post-meta">
+      { "$__toml_private_datetime" = "2026-04-05" }
+    </div>
+    
+    <p>Most web applications are built on relational databases (<a href="https://www.postgresql.org/">PostgreSQL</a>, <a href="https://www.mysql.com/">MySQL</a>) or document stores (<a href="https://www.mongodb.com/">MongoDB</a>, <a href="https://aws.amazon.com/dynamodb/">DynamoDB</a>). The data model is defined in application code — <abbr title="Object-Relational Mapping">ORM</abbr> schemas, <a href="https://graphql.org/">GraphQL</a> type definitions, or <abbr title="JavaScript Object Notation">JSON</abbr> schemas — and the database is treated as a dumb persistence layer. The <abbr title="Application Programming Interface">API</abbr>, the validation rules, and the <abbr title="User Interface">UI</abbr> forms are all separate concerns, maintained separately, and often drift apart.</p>
+<p>What if the data model itself could drive all of those?</p>
+<p>This article explores using <abbr title="Resource Description Framework — a W3C standard for describing data as subject-predicate-object triples, like 'Product hasCategory CloudComputing'">RDF</abbr> (Resource Description Framework, pronounced as individual letters: "R-D-F"), <abbr title="SPARQL Protocol and RDF Query Language — the SQL equivalent for querying RDF data">SPARQL</abbr> (SPARQL Protocol and RDF Query Language, pronounced "sparkle"), and <abbr title="Shapes Constraint Language — a W3C standard for defining validation rules over RDF data">SHACL</abbr> (Shapes Constraint Language, pronounced "shackle") as the foundation for a web application. The examples come from an experimental application I've been working on — a knowledge graph of an enterprise product ecosystem that powers both an AI-facing <abbr title="Model Context Protocol — an open standard that lets AI models call external tools and access data sources">MCP</abbr> server and a human-facing web <abbr title="User Interface">UI</abbr>, both driven entirely by the same data model.</p>
+<p>The goal here is not to argue that every web application should be built this way. Rather, it is to demonstrate that semantic web technologies — standards that have been maintained by the <abbr title="World Wide Web Consortium — the international standards body for the web">W3C</abbr> for over two decades, and are still actively updated (see v1.2 of <a href="https://w3c.github.io/rdf-new/spec/">RDF</a>, <a href="https://w3c.github.io/data-shapes/shacl12-overview/">SHACL</a>, and <a href="https://www.w3.org/TR/sparql12-protocol/">SPARQL</a>)  — offer a viable and innovative foundation for an <strong>AI-first software development lifecycle</strong>. In an era where AI models are becoming primary consumers of APIs and data, an approach built on open, well-specified standards adds durable value: the ontology that drives your web UI today can drive your MCP tools tomorrow, and both benefit from the same validation, internationalization, and schema evolution — without framework churn or vendor lock-in.<sup class="footnote-reference"><a href="#1">1</a></sup></p>
+<h2>Key Terms</h2>
+<p>Before diving in, a brief glossary of the core technologies:</p>
+<ul>
+<li>
+<p><strong><abbr title="Resource Description Framework">RDF</abbr></strong> — A <abbr title="World Wide Web Consortium">W3C</abbr> standard for representing data as a graph of <strong>triples</strong>: subject → predicate → object. Instead of rows in a table, you have statements like <code>Product → hasCategory → CloudComputing</code>. Think of it as a universal data format where everything is a relationship.</p>
+</li>
+<li>
+<p><strong><abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr></strong> — The query language for <abbr title="Resource Description Framework">RDF</abbr> data, analogous to <abbr title="Structured Query Language">SQL</abbr> for relational databases. Where <abbr title="Structured Query Language">SQL</abbr> queries tables with rows and columns, <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> queries graphs by matching patterns of triples.</p>
+</li>
+<li>
+<p><strong><abbr title="Web Ontology Language">OWL</abbr></strong> — Web Ontology Language (pronounced "owl"). A vocabulary built on <abbr title="Resource Description Framework">RDF</abbr> for defining classes, properties, and relationships — essentially the schema definition language for your knowledge graph. Analogous to <code>CREATE TABLE</code> in <abbr title="Structured Query Language">SQL</abbr> or type definitions in <a href="https://graphql.org/">GraphQL</a>.</p>
+</li>
+<li>
+<p><strong><abbr title="Shapes Constraint Language">SHACL</abbr></strong> — A language for expressing validation rules over <abbr title="Resource Description Framework">RDF</abbr> data. Where JSON Schema validates JSON documents, <abbr title="Shapes Constraint Language">SHACL</abbr> validates <abbr title="Resource Description Framework">RDF</abbr> graphs. The key difference: <abbr title="Shapes Constraint Language">SHACL</abbr> rules are themselves <abbr title="Resource Description Framework">RDF</abbr> data, meaning they can be queried, modified, and reasoned about programmatically.</p>
+</li>
+<li>
+<p><strong>Triplestore</strong> — A database optimized for storing and querying <abbr title="Resource Description Framework">RDF</abbr> triples. The equivalent of a relational database for graph data.</p>
+</li>
+</ul>
+<h2>The Core Idea: One Schema Rules Everything</h2>
+<p>In a typical application stack, you define your data model multiple times:</p>
+<ol>
+<li><strong>Database schema</strong> — <abbr title="Structured Query Language">SQL</abbr> tables or document shapes</li>
+<li><strong><abbr title="Application Programming Interface">API</abbr> schema</strong> — REST endpoints, <a href="https://graphql.org/">GraphQL</a> types, or protobuf definitions</li>
+<li><strong>Validation rules</strong> — <a href="https://zod.dev/">Zod</a> schemas, <a href="https://joi.dev/">Joi</a> validators, or custom code</li>
+<li><strong><abbr title="User Interface">UI</abbr> forms</strong> — <abbr title="HyperText Markup Language">HTML</abbr> form fields, often hand-coded per entity type</li>
+<li><strong>Documentation</strong> — <a href="https://www.openapis.org/">OpenAPI</a> specs, README tables</li>
+</ol>
+<p>In the <abbr title="Resource Description Framework">RDF</abbr>/<abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr>/<abbr title="Shapes Constraint Language">SHACL</abbr> approach, you define the model <strong>once</strong> as an <abbr title="Web Ontology Language">OWL</abbr> ontology:</p>
+<pre><code class="language-turtle"># Define a "Product" class (like CREATE TABLE products)
+rho:Product a owl:Class ;
+  # Human-readable labels in multiple languages
+  rdfs:label "Product"@en, "Producto"@es, "製品"@ja ;
+  # Description for documentation and AI context
+  rdfs:comment "A product or service offering"@en ;
+  # URL slug — this class will be browsable at /en/products
+  rho:slug "products" .
+
+# Define a "category" property (like ALTER TABLE products ADD COLUMN category)
+rho:category a owl:ObjectProperty ;
+  # This property belongs to Product (like a foreign key constraint)
+  rdfs:domain rho:Product ;
+  # It points to a ProductCategory instance (the referenced table)
+  rdfs:range rho:ProductCategory ;
+  rdfs:label "Category" .
+</code></pre>
+<p>This single definition drives:</p>
+<ul>
+<li><strong><abbr title="Uniform Resource Locator">URL</abbr> routing</strong> — <code>rho:slug "products"</code> maps to <code>/{lang}/products</code></li>
+<li><strong><abbr title="Application Programming Interface">API</abbr> endpoints</strong> — a <code>find-products</code> tool is auto-generated at startup</li>
+<li><strong>Form fields</strong> — the edit form for a Product shows a Category dropdown</li>
+<li><strong>Validation</strong> — <abbr title="Shapes Constraint Language">SHACL</abbr> shapes enforce that Category is required and must reference a valid ProductCategory</li>
+<li><strong><abbr title="Internationalization — adapting software for different languages and regions">i18n</abbr></strong> — the label renders as "Product" in English, "Producto" in Spanish, "製品" in Japanese</li>
+<li><strong>Graph visualization</strong> — the class appears as a node in the ontology graph with edges to related classes</li>
+</ul>
+<h2>How the MCP Server and Web Application Work Together</h2>
+<p>One of the more distinctive aspects of this architecture is that the AI-facing <abbr title="Model Context Protocol">MCP</abbr><sup class="footnote-reference"><a href="#2">2</a></sup> server and the human-facing web application are not separate systems — they share the same triplestore, the same ontology, and the same validation rules. They are two interfaces to the same knowledge graph.</p>
+<p>At startup, the <abbr title="Model Context Protocol">MCP</abbr> server introspects the <abbr title="Web Ontology Language">OWL</abbr> ontology to discover what classes exist, what properties they have, and how many instances of each class are stored. When a class crosses a configurable threshold (e.g., 10 instances), the server <strong>dynamically generates a finder tool</strong> — <code>find-products</code>, <code>find-partners</code>, <code>find-certifications</code> — that AI clients can call without writing <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr>. These tools accept natural parameters (<code>{ category: "Cloud Computing" }</code>) and translate them into the appropriate <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> queries behind the scenes.</p>
+<p>This means:</p>
+<ul>
+<li><strong>Adding a new entity type to the ontology automatically creates a new <abbr title="Model Context Protocol">MCP</abbr> tool</strong> — no code changes, no deployment</li>
+<li><strong>The same <abbr title="Shapes Constraint Language">SHACL</abbr> validation that protects the web <abbr title="User Interface">UI</abbr> forms also validates <abbr title="Model Context Protocol">MCP</abbr> tool inputs</strong> — an AI client cannot create an invalid Product any more than a human user can</li>
+<li><strong>Changes made via the <abbr title="Model Context Protocol">MCP</abbr> server appear in the web <abbr title="User Interface">UI</abbr> in real time</strong> via <abbr title="Change Data Capture — a pattern for tracking and broadcasting data changes as they occur">CDC</abbr> (Change Data Capture) notifications, and vice versa</li>
+<li><strong>The tool descriptions sent to AI clients embed the full data model summary</strong> — classes, properties, instance counts — so the AI always has up-to-date schema context</li>
+</ul>
+<p>The collaborative effect is powerful: an AI assistant can create and categorize hundreds of product entries via <abbr title="Model Context Protocol">MCP</abbr> tools, and a human editor can immediately review and refine them in the web <abbr title="User Interface">UI</abbr> — both working against the same live data, governed by the same rules.</p>
+<h2>The Positives</h2>
+<h3>1. Schema-Driven Everything</h3>
+<p>The most compelling advantage is <strong>elimination of schema duplication</strong>. In the experimental application, adding a new entity type to the knowledge graph requires:</p>
+<ol>
+<li>Define the <abbr title="Web Ontology Language">OWL</abbr> class with <code>rdfs:label</code>, <code>rdfs:comment</code>, and <code>rho:slug</code></li>
+<li>Define its properties with <code>rdfs:domain</code> and <code>rdfs:range</code></li>
+<li>Optionally add <abbr title="Shapes Constraint Language">SHACL</abbr> constraints</li>
+</ol>
+<p>That's it. The system automatically:</p>
+<ul>
+<li>Creates a new page at <code>/{lang}/{slug}</code> with list, detail, and create/edit views</li>
+<li>Generates a <code>find-{slug}</code> <abbr title="Model Context Protocol">MCP</abbr> tool for AI clients (once the class has 10+ instances)</li>
+<li>Derives form fields from <abbr title="Shapes Constraint Language">SHACL</abbr> shapes or <abbr title="Web Ontology Language">OWL</abbr> property definitions</li>
+<li>Includes the class in the graph visualization</li>
+<li>Adds it to the navigation</li>
+</ul>
+<p>In the experimental application, when a user creates a new class via the <code>create-class</code> <abbr title="Model Context Protocol">MCP</abbr> tool, the <abbr title="User Interface">UI</abbr> picks it up on the next <abbr title="Change Data Capture">CDC</abbr> event — no code changes, no deployment, no migration.</p>
+<h3>2. <abbr title="Shapes Constraint Language">SHACL</abbr> as Declarative Validation</h3>
+<p><abbr title="Shapes Constraint Language">SHACL</abbr> shapes are validation rules written as <abbr title="Resource Description Framework">RDF</abbr> — they live alongside the data, queryable and introspectable:</p>
+<pre><code class="language-turtle"># "A Product must have exactly one full name (a text string)
+#  and at least one category (a reference to another entity)"
+rho:ProductShape a sh:NodeShape ;
+  # This shape applies to all instances of the Product class
+  sh:targetClass rho:Product ;
+  sh:property [
+    # The "fullName" field...
+    sh:path rho:fullName ;
+    sh:minCount 1 ;       # ...is required (at least 1)
+    sh:maxCount 1 ;       # ...and single-valued (at most 1)
+    sh:datatype xsd:string ; # ...and must be a text string
+    sh:name "Full Name"   # ...labeled "Full Name" in forms
+  ] ;
+  sh:property [
+    # The "category" field...
+    sh:path rho:category ;
+    sh:minCount 1 ;       # ...is required
+    sh:nodeKind sh:IRI ;  # ...and must be a reference to another entity (not plain text)
+    sh:name "Category"    # ...labeled "Category" in forms
+  ] .
+</code></pre>
+<p>The <abbr title="User Interface">UI</abbr> queries these shapes to generate forms:</p>
+<ul>
+<li><code>sh:minCount 1</code> → <abbr title="HyperText Markup Language">HTML</abbr> <code>required</code> attribute</li>
+<li><code>sh:datatype xsd:date</code> → <code>&lt;input type="date"&gt;</code></li>
+<li><code>sh:nodeKind sh:IRI</code> → dropdown or multi-select with entity search</li>
+<li><code>sh:pattern</code> → <abbr title="HyperText Markup Language">HTML</abbr> <code>pattern</code> attribute for client-side regex validation</li>
+<li><code>sh:maxCount</code> absent → multi-valued field (searchable multi-select)</li>
+</ul>
+<p>The same shapes validate server-side when <a href="https://oxigraph.org/">Oxigraph</a><sup class="footnote-reference"><a href="#3">3</a></sup> receives a <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> UPDATE. If validation fails, the triplestore returns <abbr title="HyperText Transfer Protocol">HTTP</abbr> 422 with structured violations that the <abbr title="User Interface">UI</abbr> maps back to individual form fields. <strong>Client and server validate against the same rules with zero duplication.</strong></p>
+<h3>3. Graph Queries Are Natural for Connected Data</h3>
+<p><abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> excels at traversing relationships. Finding all content related to a product:</p>
+<pre><code class="language-sparql">SELECT ?content ?type ?label WHERE {
+  { ?content rho:forProduct rho:product-ocp ; a rho:TrainingCourse . BIND("Training" AS ?type) }
+  UNION
+  { ?content rho:forProduct rho:product-ocp ; a rho:BlogPost . BIND("Blog" AS ?type) }
+  UNION
+  { ?content rho:forProduct rho:product-ocp ; a rho:SummitSession . BIND("Session" AS ?type) }
+  ?content rdfs:label ?label .
+}
+</code></pre>
+<p>Try writing that join in <abbr title="Structured Query Language">SQL</abbr> across normalized tables with foreign keys. In <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr>, the relationship traversal is the natural way to query.</p>
+<p>The experimental application uses this for the graph visualization on every page — the <a href="https://js.cytoscape.org/">Cytoscape.js</a><sup class="footnote-reference"><a href="#4">4</a></sup> graph is populated by a <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> query that discovers edges between classes by scanning actual instance data:</p>
+<pre><code class="language-sparql">SELECT DISTINCT ?sourceClass ?prop ?targetClass WHERE {
+  ?s a ?sourceClass .
+  ?s ?prop ?o .
+  ?prop a owl:ObjectProperty .
+  ?o a ?targetClass .
+}
+</code></pre>
+<p>This means the visualization adapts to the data — add a new relationship type and the graph shows it without code changes.</p>
+<h3>4. Built-in Multilingual Support</h3>
+<p><abbr title="Resource Description Framework">RDF</abbr> has <strong>first-class language tags</strong> on string literals:</p>
+<pre><code class="language-turtle">rho:Product rdfs:label "Product"@en, "Producto"@es, "製品"@ja, "منتج"@ar .
+</code></pre>
+<p><abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> can filter by language:</p>
+<pre><code class="language-sparql">OPTIONAL { ?entity rdfs:label ?label . FILTER(lang(?label) IN ("es", "en", "")) }
+</code></pre>
+<p>In the experimental application, this powers 8-language support across the entire <abbr title="User Interface">UI</abbr> — and critically, <strong>the same translation mechanism is used for both content and page elements</strong>. The data labels ("Product", "Category") and the <abbr title="User Interface">UI</abbr> chrome (buttons, headers, navigation labels) all use language-tagged <abbr title="Resource Description Framework">RDF</abbr> literals queried at render time. Translations for <abbr title="User Interface">UI</abbr> elements live in a <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> named graph (<code>&lt;urn:rho:i18n&gt;</code>) alongside the content translations.</p>
+<p>This unified approach means that adding a language is an <strong>incremental, data-only operation</strong> — you add tagged literals for the strings you want to translate, and untranslated strings fall back to English. There are no <abbr title="JavaScript Object Notation">JSON</abbr> translation files to maintain, no <abbr title="Internationalization">i18n</abbr> framework to configure, and no code changes required. A translator can add Spanish labels to 20 out of 200 terms, and the application gracefully renders those 20 in Spanish while falling back to English for the rest — no "all or nothing" translation bundles.</p>
+<h3>5. The Ontology Is the <abbr title="Application Programming Interface">API</abbr> Contract</h3>
+<p>Because the <abbr title="Model Context Protocol">MCP</abbr> server introspects the ontology at startup, the <abbr title="Application Programming Interface">API</abbr> adapts to the data model. When a new class crosses the 10-instance threshold, a new finder tool appears. When a property is added, it becomes a query parameter. This is fundamentally different from REST or <a href="https://graphql.org/">GraphQL</a> where the <abbr title="Application Programming Interface">API</abbr> must be explicitly designed, implemented, and versioned.</p>
+<p>The tool description for <code>sparql-query</code> embeds the full data model summary — classes, properties, instance counts — so AI clients always have the schema context before querying. The schema <em>is</em> the documentation.</p>
+<h2>The Negatives</h2>
+<h3>1. Query Performance Considerations</h3>
+<p><abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> queries with multiple <code>OPTIONAL</code> clauses and <code>FILTER</code> expressions perform well on embedded stores (<a href="http://rocksdb.org/">RocksDB</a><sup class="footnote-reference"><a href="#5">5</a></sup>: 3–6ms per query). On distributed backends like <a href="https://tikv.org/">TiKV</a><sup class="footnote-reference"><a href="#6">6</a></sup>, the same queries can also achieve single-digit millisecond latency — but only with proper tuning.</p>
+<p>With a correctly sized block cache (large enough to hold the working set in memory), bloom filters on the default column family, and pod affinity to co-locate the query engine with TiKV nodes, the experimental application achieves <strong>6–100ms</strong> for most queries on a 50K-triple dataset across a 3-node TiKV cluster. Finder queries (substring search across 600+ entities) complete in ~10ms, paginated list queries in ~30ms, and cross-entity relationship traversals in ~40–80ms. The most complex query — a nested sub-SELECT that discovers property usage patterns by scanning all instance data — takes ~7 seconds, a cost driven by query structure rather than storage latency.</p>
+<p>These numbers represent a <strong>50–300x improvement</strong> over the initial deployment, where the same queries took 1–20 seconds. The dominant factor was TiKV's RocksDB block cache: at the default 256MB, every scan required disk I/O across the network; at 1.5GB, the entire dataset fits in memory, reducing each TiKV RPC to a memory-only operation. Sustained throughput improved from 4 req/s to over 2,000 req/s.</p>
+<p>The <code>OPTIONAL</code> pattern used for language fallback (<code>OPTIONAL { ?x rdfs:label ?l . FILTER(lang(?l) IN ("es", "en", "")) }</code>) adds some overhead — each <code>OPTIONAL</code> generates a separate scan, whereas in <abbr title="Structured Query Language">SQL</abbr> a <code>WHERE lang IN ('es', 'en')</code> would be a single index lookup. The experimental application mitigates this with aggressive caching (pre-rendered pages, 5-minute <abbr title="Time To Live — how long cached data remains valid before refresh">TTL</abbr> on introspection) and <abbr title="Change Data Capture">CDC</abbr>-driven cache invalidation.</p>
+<h3>2. Schema Evolution Without Traditional Migrations</h3>
+<p><abbr title="Resource Description Framework">RDF</abbr> is schemaless by nature. There is no <code>ALTER TABLE</code> — you simply start adding triples with new predicates. This is both a feature (zero-downtime schema evolution, no migration scripts) and a challenge (no built-in migration history or rollback mechanism).</p>
+<p><abbr title="Shapes Constraint Language">SHACL</abbr> shapes help — they enforce constraints going forward — but they don't retrofit existing data. If you add <code>sh:minCount 1</code> to a property, existing entities without that property become invalid and need to be updated.</p>
+<p>The experimental application mitigates this through <a href="https://github.com/chapeaux/oxigraph-cloud">oxigraph-cloud</a><sup class="footnote-reference"><a href="#7">7</a></sup>, which extends <a href="https://oxigraph.org/">Oxigraph</a> with a <strong>transaction changelog</strong> — every <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> UPDATE is recorded with the full set of inserted and removed quads. This provides an audit trail analogous to migration history, and the <abbr title="Change Data Capture">CDC</abbr> engine (built on the <a href="https://solidproject.org/TR/notifications-protocol">W3C Solid Notifications Protocol</a><sup class="footnote-reference"><a href="#8">8</a></sup>) broadcasts changes in real time, enabling downstream systems to react to schema evolution as it happens.</p>
+<h3>3. Tooling Ecosystem Is Smaller</h3>
+<p>The <abbr title="Structured Query Language">SQL</abbr>/<abbr title="Object-Relational Mapping">ORM</abbr> ecosystem has decades of tooling: migration frameworks, <abbr title="Object-Relational Mapping">ORM</abbr>s, admin panels, monitoring dashboards, backup tools, <abbr title="Integrated Development Environment">IDE</abbr> integrations. The <abbr title="Resource Description Framework">RDF</abbr> ecosystem has excellent standards (<abbr title="World Wide Web Consortium">W3C</abbr>-specified, well-documented) but fewer production-ready tools.</p>
+<p>The experimental application uses <a href="https://oxigraph.org/">Oxigraph</a> (a Rust <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> engine) extended with <abbr title="Shapes Constraint Language">SHACL</abbr> validation, a changelog, and a <abbr title="Change Data Capture">CDC</abbr> engine based on the <abbr title="World Wide Web Consortium">W3C</abbr> Solid Notifications Protocol. These features don't exist in vanilla Oxigraph — they were built as extensions in <a href="https://github.com/chapeaux/oxigraph-cloud">oxigraph-cloud</a>. In <a href="https://www.postgresql.org/">PostgreSQL</a>, you'd get triggers, audit logging, and logical replication out of the box.</p>
+<h3>4. Learning Curve</h3>
+<p><abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> is a powerful language but unfamiliar to most web developers. Concepts like triple patterns, graph patterns, <code>OPTIONAL</code>, <code>UNION</code>, <code>FILTER</code>, and named graphs require a mental model shift from rows-and-columns thinking. The closest analogy: if you're comfortable with <abbr title="Structured Query Language">SQL</abbr> <code>JOIN</code>s and subqueries, <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> graph patterns will feel conceptually similar — but the syntax and data model are different enough to require investment.</p>
+<p>The experimental application's <abbr title="Model Context Protocol">MCP</abbr> server mitigates this by auto-generating finder tools that abstract away <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> — users call <code>find-products</code> with <code>{ category: "Cloud Computing" }</code> instead of writing queries. But developers maintaining the system need <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> fluency.</p>
+<h3>5. Blank Nodes Add Complexity</h3>
+<p>In <abbr title="Resource Description Framework">RDF</abbr>, every piece of data is normally identified by a <abbr title="Uniform Resource Identifier — a unique identifier for a resource, like a URL">URI</abbr> — for example, <code>rho:Product</code> or <code>rho:category</code>. A <strong>blank node</strong> is an anonymous node with no <abbr title="Uniform Resource Identifier">URI</abbr>: it represents "something exists" without giving it a permanent name. Think of it like an anonymous object in <abbr title="JavaScript Object Notation">JSON</abbr> — <code>{ "minCount": 1, "datatype": "string" }</code> — embedded inside a larger structure but not independently addressable.</p>
+<p><abbr title="Shapes Constraint Language">SHACL</abbr> shapes use blank nodes extensively for property constraints (the <code>[ sh:path ... ; sh:minCount 1 ]</code> blocks in the examples above are blank nodes). This creates practical problems:</p>
+<ul>
+<li><strong>No stable identity</strong> — blank nodes get new internal <abbr title="Identifier">ID</abbr>s every time the data is loaded, so you cannot bookmark or link to a specific constraint</li>
+<li><strong>Hard to query</strong> — you cannot write <code>SELECT ... WHERE { &lt;_:constraint123&gt; sh:minCount ?min }</code> because the <abbr title="Identifier">ID</abbr> changes between loads</li>
+<li><strong><abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> limitations</strong> — <code>INSERT DATA</code> statements cannot reference blank nodes, complicating programmatic shape creation</li>
+</ul>
+<p>The experimental application works around this by loading shapes into the default graph as regular <abbr title="Resource Description Framework">RDF</abbr> and deduplicating results by property path. It's manageable but adds friction that named nodes would avoid.</p>
+<h2>Similarities to Other Approaches</h2>
+<h3>vs. GraphQL</h3>
+<p>Both <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> and <a href="https://graphql.org/">GraphQL</a> are graph query languages. Key differences:</p>
+<ul>
+<li><strong>Schema definition:</strong> <a href="https://graphql.org/">GraphQL</a> schemas are written in <abbr title="Schema Definition Language">SDL</abbr> and live in application code. <abbr title="Resource Description Framework">RDF</abbr> ontologies are data — stored in the triplestore, queryable, and modifiable at runtime.</li>
+<li><strong>Type system:</strong> <a href="https://graphql.org/">GraphQL</a> has a strict type system enforced at query time. <abbr title="Resource Description Framework">RDF</abbr> is open-world — anything can have any property. <abbr title="Shapes Constraint Language">SHACL</abbr> adds closed-world validation on writes but doesn't restrict reads.</li>
+<li><strong>Traversal:</strong> <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> can traverse arbitrary-depth relationships in a single query (property paths). <a href="https://graphql.org/">GraphQL</a> requires explicit resolver chains.</li>
+<li><strong>Ecosystem:</strong> <a href="https://graphql.org/">GraphQL</a> has massive tooling (<a href="https://www.apollographql.com/">Apollo</a>, <a href="https://relay.dev/">Relay</a>, <a href="https://hasura.io/">Hasura</a>, <a href="https://www.prisma.io/">Prisma</a>). <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> tooling is specialized and smaller.</li>
+</ul>
+<h3>vs. REST + JSON Schema</h3>
+<p>REST <abbr title="Application Programming Interface">API</abbr>s define endpoints manually. The experimental application's approach is closer to <strong>hypermedia</strong> — the ontology describes what types exist and how they relate, and the <abbr title="User Interface">UI</abbr>/<abbr title="Application Programming Interface">API</abbr> adapts automatically. <a href="https://json-schema.org/">JSON Schema</a> is used for validation in REST; <abbr title="Shapes Constraint Language">SHACL</abbr> serves the same role but is itself queryable <abbr title="Resource Description Framework">RDF</abbr> data.</p>
+<h3>vs. Event-Driven / <abbr title="Command Query Responsibility Segregation — a pattern that separates read and write operations into different models">CQRS</abbr></h3>
+<p>The experimental application's <abbr title="Change Data Capture">CDC</abbr> approach (WebSocket and <abbr title="Server-Sent Events — a standard for servers to push real-time updates to browsers over HTTP">SSE</abbr> channels delivering <abbr title="World Wide Web Consortium">W3C</abbr> Solid Notifications from the triplestore) resembles <abbr title="Command Query Responsibility Segregation">CQRS</abbr> with event sourcing. The changelog records transactions, capturing inserted and removed quads — similar to an event log. The <abbr title="User Interface">UI</abbr> subscribes to changes via <abbr title="Server-Sent Events">SSE</abbr> or WebSocket and re-renders — similar to a read model reacting to events. The difference is that the "event" is an <a href="https://www.w3.org/TR/activitystreams-core/">ActivityStreams 2.0</a> <abbr title="JavaScript Object Notation for Linked Data — a method of encoding RDF data in JSON format">JSON-LD</abbr> notification containing <abbr title="Resource Description Framework">RDF</abbr> quad deltas, not a domain event.</p>
+<h3>vs. Headless <abbr title="Content Management System">CMS</abbr></h3>
+<p>The closest analogy might be a headless <abbr title="Content Management System">CMS</abbr> where the content model drives the editing interface. In <a href="https://www.contentful.com/">Contentful</a> or <a href="https://strapi.io/">Strapi</a>, you define content types and the admin <abbr title="User Interface">UI</abbr> generates forms. In the experimental application, you define <abbr title="Web Ontology Language">OWL</abbr> classes and the forms generate themselves. The <abbr title="Resource Description Framework">RDF</abbr> approach is more flexible (arbitrary relationships, multilingual natively, graph queries) but less polished (no drag-and-drop form builder, no <abbr title="What You See Is What You Get">WYSIWYG</abbr>).</p>
+<h2>When Would You Use This?</h2>
+<p>This approach shines when:</p>
+<ul>
+<li><strong>The data is inherently a graph</strong> — products linked to partners linked to certifications linked to people</li>
+<li><strong>The schema evolves frequently</strong> — new entity types added without migrations or deployments</li>
+<li><strong>Multiple consumers need different views</strong> — AI clients, web <abbr title="User Interface">UI</abbr>, <abbr title="Application Programming Interface">API</abbr> consumers all read the same data through different lenses</li>
+<li><strong>Multilingual support is fundamental</strong> — not bolted on via <abbr title="Internationalization">i18n</abbr> files but embedded in the data</li>
+<li><strong>Validation rules should be data</strong> — queryable, modifiable at runtime, shared between client and server</li>
+<li><strong>AI integration is a first-class concern</strong> — the same ontology drives both human and AI interfaces</li>
+</ul>
+<p>It's less suitable when:</p>
+<ul>
+<li><strong>Performance is critical and access patterns are predictable</strong> — use <a href="https://www.postgresql.org/">PostgreSQL</a> with proper indexes</li>
+<li><strong>The team isn't familiar with <abbr title="Resource Description Framework">RDF</abbr></strong> — the learning curve is real</li>
+<li><strong>You need a rich ecosystem of tools</strong> — <abbr title="Object-Relational Mapping">ORM</abbr>s, admin panels, migration frameworks</li>
+<li><strong>The data is naturally tabular</strong> — financial records, time series, logs</li>
+</ul>
+<h2>Conclusion</h2>
+<p>Using <abbr title="Resource Description Framework">RDF</abbr>/<abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr>/<abbr title="Shapes Constraint Language">SHACL</abbr> as a web application foundation is unconventional but surprisingly effective for the right use case. The key insight is that <strong>the ontology becomes the single source of truth</strong> — it defines the data model, the <abbr title="Application Programming Interface">API</abbr> surface, the validation rules, the <abbr title="User Interface">UI</abbr> structure, and the internationalization, all in one place.</p>
+<p>The tradeoffs are real: query performance considerations on distributed backends, a smaller tooling ecosystem, and a steeper learning curve. But the elimination of schema duplication — one definition that drives forms, <abbr title="Application Programming Interface">API</abbr>s, validation, visualization, and <abbr title="Internationalization">i18n</abbr> — is a powerful simplification that traditional stacks achieve only with significant framework investment.</p>
+<p>More importantly, this approach is <strong>built for the AI era on the foundation of established standards</strong>. The <abbr title="World Wide Web Consortium">W3C</abbr> specifications underpinning <abbr title="Resource Description Framework">RDF</abbr>, <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr>, <abbr title="Web Ontology Language">OWL</abbr>, and <abbr title="Shapes Constraint Language">SHACL</abbr> have been stable for decades and will outlast any framework cycle. The experimental application demonstrates that a production web application can be built this way: 8 languages, <abbr title="Shapes Constraint Language">SHACL</abbr>-driven forms, auto-generated <abbr title="Application Programming Interface">API</abbr>s, real-time <abbr title="Change Data Capture">CDC</abbr>, graph visualization, and dynamic <abbr title="Model Context Protocol">MCP</abbr> tooling — all from a 500-line ontology and a <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> endpoint.</p>
+<hr />
+<div class="footnote-definition" id="1"><sup class="footnote-definition-label">1</sup>
+<p>The core specifications — <a href="https://www.w3.org/TR/rdf11-concepts/">RDF 1.1</a> (2014), <a href="https://www.w3.org/TR/sparql11-query/">SPARQL 1.1</a> (2013), <a href="https://www.w3.org/TR/owl2-overview/">OWL 2</a> (2012), <a href="https://www.w3.org/TR/shacl/">SHACL</a> (2017) — are <abbr title="World Wide Web Consortium">W3C</abbr> Recommendations with stable implementations across multiple languages and platforms.</p>
+</div>
+<div class="footnote-definition" id="2"><sup class="footnote-definition-label">2</sup>
+<p><a href="https://modelcontextprotocol.io/">Model Context Protocol (MCP)</a> is an open standard, originally developed by Anthropic, that provides a standardized way for AI models to discover and call external tools, access data sources, and interact with services.</p>
+</div>
+<div class="footnote-definition" id="3"><sup class="footnote-definition-label">3</sup>
+<p><a href="https://oxigraph.org/">Oxigraph</a> is a high-performance, embeddable <abbr title="Resource Description Framework">RDF</abbr> triplestore and <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> engine written in Rust. It supports <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> 1.1 queries and updates, and can use RocksDB or TiKV as storage backends.</p>
+</div>
+<div class="footnote-definition" id="4"><sup class="footnote-definition-label">4</sup>
+<p><a href="https://js.cytoscape.org/">Cytoscape.js</a> is an open-source JavaScript library for graph visualization and analysis, used in the experimental application to render interactive ontology graphs in the browser.</p>
+</div>
+<div class="footnote-definition" id="5"><sup class="footnote-definition-label">5</sup>
+<p><a href="http://rocksdb.org/">RocksDB</a> is an embeddable, high-performance key-value store developed by Meta (Facebook), used by Oxigraph as its default local storage backend.</p>
+</div>
+<div class="footnote-definition" id="6"><sup class="footnote-definition-label">6</sup>
+<p><a href="https://tikv.org/">TiKV</a> is a distributed, transactional key-value store originally created by PingCAP and now a <abbr title="Cloud Native Computing Foundation">CNCF</abbr> graduated project. It provides the distributed storage backend option for Oxigraph.</p>
+</div>
+<div class="footnote-definition" id="7"><sup class="footnote-definition-label">7</sup>
+<p><a href="https://github.com/chapeaux/oxigraph-cloud">oxigraph-cloud</a> is the Chapeaux project's distributed Oxigraph deployment, extended with <abbr title="Shapes Constraint Language">SHACL</abbr> validation, a transaction changelog, and a <abbr title="Change Data Capture">CDC</abbr> engine built on the <abbr title="World Wide Web Consortium">W3C</abbr> Solid Notifications Protocol.</p>
+</div>
+<div class="footnote-definition" id="8"><sup class="footnote-definition-label">8</sup>
+<p>The <a href="https://solidproject.org/TR/notifications-protocol">W3C Solid Notifications Protocol</a> defines a standard mechanism for subscribing to and receiving notifications about changes to resources — used in the experimental application for real-time <abbr title="Change Data Capture">CDC</abbr> event delivery.</p>
+</div>
+
+    <p><a href="/blog/">&larr; All posts</a></p>
+  </article>
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <img src="/images/chapeaux_logo_aiux_reverse_2026.svg" alt="Chapeaux">
+          <p>A Digital Supply Chain for Web Assets</p>
+        </div>
+        <ul class="footer-links">
+          <li><a href="/contribute/">Contribute</a></li>
+          <li><a href="/projects/">Projects</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/chapellerie/">Chapellerie</a></li>
+          <li><a href="https://github.com/chapeaux">GitHub</a></li>
+        </ul>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Chapeaux Project. Open source under the MIT License.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
