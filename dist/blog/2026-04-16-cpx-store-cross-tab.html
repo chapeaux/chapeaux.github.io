@@ -84,7 +84,7 @@ window.addEventListener('storage', (e) =&gt; {
 <p>CPX Store handles this coordination for you.</p>
 <h2>CPX Store in 30 Seconds</h2>
 <p><a href="https://github.com/chapeaux/cpx-store">CPX Store</a> is a reactive state management Web Component. It wraps a JavaScript <code>Proxy</code> around a plain object so that every property assignment is intercepted — triggering change events, recording history for undo/redo, and optionally persisting to <code>localStorage</code>.</p>
-<p>The entire base class is <a href="https://github.com/chapeaux/cpx-store/blob/main/src/cpx-store.ts">89 lines of TypeScript</a>. No dependencies. No build step required. It works in Chrome, Firefox, Safari, and Edge.</p>
+<p>The entire base class is <a href="https://github.com/chapeaux/cpx-store/blob/main/src/cpx-store.ts">about 125 lines of TypeScript</a>. No dependencies. No build step required. It works in Chrome, Firefox, Safari, and Edge.</p>
 <p>A minimal store:</p>
 <pre><code class="language-javascript">import { CPXStore } from '@chapeaux/cpx-store';
 
@@ -100,31 +100,32 @@ customElements.define('counter-store', CounterStore);
 </code></pre>
 <p>After the element connects to the <abbr title="Document Object Model">DOM</abbr>, <code>store.state.count++</code> triggers a <code>change</code> event on the element and an <code>app-state-update</code> event on <code>window</code>. Any component listening will update. The Proxy intercept means there is no <code>.setState()</code> call, no action dispatch, no reducer — just assignment.</p>
 <h2>Adding Cross-Tab Sync</h2>
-<p>To persist state, add a <code>persist</code> attribute with a storage key:</p>
+<p>To persist state and sync it across tabs, add a <code>persist</code> attribute with a storage key:</p>
 <pre><code class="language-html">&lt;counter-store persist="demo-counter"&gt;&lt;/counter-store&gt;
 </code></pre>
-<p>Now every state change is written to <code>localStorage</code> under the key <code>demo-counter</code>. To pick up changes from other tabs, add a <code>storage</code> event listener in the store constructor:</p>
+<p>That is it. CPX Store handles everything automatically:</p>
+<ol>
+<li><strong>Restore</strong> — On connect, persisted state is restored from <code>localStorage</code> before any events fire</li>
+<li><strong>Persist</strong> — Every state change is written to <code>localStorage</code> under the key <code>demo-counter</code></li>
+<li><strong>Sync</strong> — A <code>storage</code> event listener picks up changes from other tabs and applies them via the base class's <code>sync()</code> method, which guards against write-back loops automatically</li>
+</ol>
+<p>Under the hood, <code>sync()</code> sets an internal <code>_isSyncing</code> flag before applying state. This tells the Proxy's <code>set</code> trap not to write back to <code>localStorage</code> — preventing the infinite loop where Tab A writes, Tab B receives and writes back, Tab A receives again. The flag is transparent to consumers: middleware still runs, change events still fire, history still records. You never need to touch <code>_isSyncing</code> directly.</p>
+<p>The <code>sync()</code> method is also the public <abbr title="Application Programming Interface">API</abbr> for applying remote state from any transport — <abbr title="Server-Sent Events">SSE</abbr>, WebSockets, Solid, or anything else. More on that in the <a href="#beyond-tabs-cross-device-state-sync">cross-device section</a> below.</p>
+<h3>Side Effects with <code>onStorageChanged</code></h3>
+<p>If you need to do something when remote state arrives — whether from another tab or from <code>sync()</code> — override <code>onStorageChanged</code>. It works like the native Web Components <code>attributeChangedCallback</code> pattern: the base class handles the plumbing, and you get a clean hook for domain logic.</p>
 <pre><code class="language-javascript">class CounterStore extends CPXStore {
   constructor() {
     super({ count: 0, theme: 'light' });
+  }
 
-    window.addEventListener('storage', (e) =&gt; {
-      if (e.key === this.getAttribute('persist')) {
-        this._isSyncing = true;
-        Object.assign(this.state, JSON.parse(e.newValue));
-        this._isSyncing = false;
-      }
-    });
+  onStorageChanged(newState, oldState) {
+    if (newState.theme !== oldState.theme) {
+      document.body.className = newState.theme;
+    }
   }
 }
 </code></pre>
-<p>That is the entire cross-tab sync implementation. Three lines of meaningful code inside the listener:</p>
-<ol>
-<li><strong>Guard</strong> — only react to storage events for <em>this</em> store's key</li>
-<li><strong>Flag</strong> — set <code>_isSyncing</code> to prevent the Proxy's <code>set</code> trap from writing back to <code>localStorage</code> (breaking the loop)</li>
-<li><strong>Apply</strong> — <code>Object.assign</code> through the Proxy so all downstream listeners fire as usual</li>
-</ol>
-<p>The <code>_isSyncing</code> flag is the key insight. When a tab receives a sync, it needs to update its Proxy state (so <abbr title="User Interface">UI</abbr> components re-render), but it must <em>not</em> write back to <code>localStorage</code> (which would trigger another <code>storage</code> event in the originating tab). The flag short-circuits the persistence step while preserving everything else — middleware still runs, change events still fire, history still records.</p>
+<p>The callback receives the new state (already applied) and a snapshot of the old state, so you can compare and act on specific changes. If you don't need side effects, don't override it — cross-tab sync works without it.</p>
 <h2>A Fun Demo: The Tab Party</h2>
 <p>Here is a complete example you can paste into a single <abbr title="HyperText Markup Language">HTML</abbr> file and open in multiple tabs. It synchronizes a click counter and a color theme across every tab on the same origin.</p>
 <pre><code class="language-html">&lt;!DOCTYPE html&gt;
@@ -171,14 +172,6 @@ customElements.define('counter-store', CounterStore);
           { count: 0, theme: '' },
           [(prop, val) =&gt; console.log(`[sync] ${prop} = ${val}`)]
         );
-
-        window.addEventListener('storage', (e) =&gt; {
-          if (e.key === this.getAttribute('persist')) {
-            this._isSyncing = true;
-            Object.assign(this.state, JSON.parse(e.newValue));
-            this._isSyncing = false;
-          }
-        });
       }
     }
 
@@ -187,13 +180,6 @@ customElements.define('counter-store', CounterStore);
     // Wait for the element to connect, then wire up the UI
     await customElements.whenDefined('party-store');
     const store = document.querySelector('party-store');
-
-    // Restore persisted state on load
-    const saved = localStorage.getItem('tab-party');
-    if (saved) {
-      const data = JSON.parse(saved);
-      Object.assign(store.state, data);
-    }
 
     // Render on every change
     store.addEventListener('change', (e) =&gt; {
@@ -228,10 +214,10 @@ customElements.define('counter-store', CounterStore);
 <p>Tab A clicks "+1". The Proxy <code>set</code> trap fires: middleware logs the change, history records a snapshot, <code>localStorage.setItem('tab-party', ...)</code> persists the new state, and a <code>change</code> event updates Tab A's <abbr title="User Interface">UI</abbr>.</p>
 </li>
 <li>
-<p>The browser delivers a <code>storage</code> event to Tabs B, C, D (every other tab on the same origin). Each tab's <code>PartyStore</code> receives it, sets <code>_isSyncing = true</code>, and applies the new state via <code>Object.assign</code>. The Proxy fires <code>change</code> events for each updated property, updating the <abbr title="User Interface">UI</abbr> — but the persistence step is skipped because <code>_isSyncing</code> is true.</p>
+<p>The browser delivers a <code>storage</code> event to Tabs B, C, D (every other tab on the same origin). The base class receives it, sets <code>_isSyncing = true</code>, applies the new state via <code>Object.assign</code> through the Proxy, then calls <code>onStorageChanged</code> (if overridden). The Proxy fires <code>change</code> events for each updated property, updating the <abbr title="User Interface">UI</abbr> — but the persistence step is skipped because <code>_isSyncing</code> is true.</p>
 </li>
 <li>
-<p>Result: all tabs are in sync, no loops, no server, no WebSockets.</p>
+<p>Result: all tabs are in sync, no loops, no server, no WebSockets. The <code>PartyStore</code> class is 8 lines — no manual event listeners, no restore logic, no sync guards.</p>
 </li>
 </ol>
 <h2>Things Worth Noticing</h2>
@@ -246,14 +232,82 @@ customElements.define('counter-store', CounterStore);
 <p>The simplest server-side option. A client sends state changes to the server via a standard <code>POST</code> request. The server fans those changes out to every other connected client through a persistent <abbr title="Server-Sent Events">SSE</abbr> stream — a one-way channel that the browser manages natively via the <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventSource"><code>EventSource</code></a> <abbr title="Application Programming Interface">API</abbr>.</p>
 <p><abbr title="Server-Sent Events">SSE</abbr> runs over plain <abbr title="HyperText Transfer Protocol">HTTP</abbr>, so it traverses corporate proxies, load balancers, and <abbr title="Content Delivery Network">CDN</abbr>s without special configuration. The browser handles reconnection automatically — if the connection drops, <code>EventSource</code> re-establishes it and picks up where it left off, with no application code required. For most state synchronization use cases — settings, preferences, dashboards, collaborative forms — <abbr title="Server-Sent Events">SSE</abbr> provides everything you need with the least operational complexity.</p>
 <p>The Chapeaux ecosystem already uses this pattern: <a href="https://github.com/chapeaux/oxigraph-cloud">oxigraph-cloud</a> delivers real-time change notifications via <abbr title="Server-Sent Events">SSE</abbr> using the <a href="https://solidproject.org/TR/notifications-protocol"><abbr title="World Wide Web Consortium">W3C</abbr> Solid Notifications Protocol</a>. The same infrastructure that pushes knowledge graph updates to a web <abbr title="User Interface">UI</abbr> could push store state to any connected device.</p>
+<p>A store that syncs over <abbr title="Server-Sent Events">SSE</abbr> looks like this:</p>
+<pre><code class="language-javascript">class SyncedStore extends CPXStore {
+  constructor() {
+    super({ count: 0, theme: 'light' });
+
+    // Subscribe to remote changes
+    const events = new EventSource('/api/store/stream');
+    events.onmessage = (e) =&gt; this.sync(JSON.parse(e.data));
+  }
+
+  onStorageChanged(newState, oldState) {
+    // Push local changes to the server
+    fetch('/api/store/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newState),
+    });
+  }
+}
+</code></pre>
+<p>The <code>sync()</code> call applies the remote state through the Proxy (so <abbr title="User Interface">UI</abbr> components update), guards against write-back loops, and calls <code>onStorageChanged</code> — which handles the outbound direction, posting local changes to the server. The server fans those changes out to every other connected <code>EventSource</code>.</p>
 <h3>WebSockets</h3>
 <p>Where <abbr title="Server-Sent Events">SSE</abbr> is one-way (server to client), WebSockets are full duplex — state changes flow in both directions over a single persistent connection. This eliminates the separate <code>POST</code> step: the client writes to the WebSocket, and the server broadcasts to all other clients on the same socket.</p>
 <p>The benefit is lower latency for high-frequency updates — think collaborative cursors, live drawing, or real-time gaming. The tradeoff is operational: WebSocket connections are stateful, so they require sticky sessions or a pub/sub layer (like <a href="https://redis.io/">Redis</a>) behind a load balancer. They also do not auto-reconnect by default — you need to handle that in application code or use a library like <a href="https://github.com/pladaria/reconnecting-websocket">reconnecting-websocket</a>.</p>
 <p>For applications where updates happen every few seconds rather than many times per second, <abbr title="Server-Sent Events">SSE</abbr> is usually the better choice. WebSockets earn their complexity when latency matters more than simplicity.</p>
+<pre><code class="language-javascript">class RealtimeStore extends CPXStore {
+  constructor() {
+    super({ count: 0, theme: 'light' });
+
+    this.ws = new WebSocket('wss://example.com/store');
+    this.ws.onmessage = (e) =&gt; this.sync(JSON.parse(e.data));
+  }
+
+  onStorageChanged(newState, oldState) {
+    // Send local changes to all other clients
+    if (this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(newState));
+    }
+  }
+}
+</code></pre>
+<p>The same <code>sync()</code> call, the same <code>onStorageChanged</code> hook — only the transport object changes. Both directions share a single connection, so state changes propagate with one network round-trip instead of two.</p>
 <h3>Solid Pods</h3>
 <p><a href="https://solidproject.org/">Solid</a> is a <abbr title="World Wide Web Consortium">W3C</abbr> specification for decentralized data storage. Each user owns a <strong>pod</strong> — a personal data store that applications read from and write to with the user's permission. State lives in the pod as a resource (a <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> document, a Turtle file, or any <abbr title="Resource Description Framework">RDF</abbr> format), and changes are broadcast to subscribers via the Solid Notifications Protocol.</p>
 <p>The benefit is architectural: the user controls their data, not the application. Two different applications can read and write the same pod resource — a settings panel on your laptop and a companion app on your phone — without either application needing to know about the other. Access control, authentication, and data portability are handled by the Solid specification rather than by each application independently.</p>
 <p>This is the most opinionated option and the most aligned with the Chapeaux project's direction. It also requires a Solid pod provider (self-hosted or third-party) and familiarity with <abbr title="Resource Description Framework">RDF</abbr> serialization. For teams already working with linked data, it is a natural fit. For teams that are not, <abbr title="Server-Sent Events">SSE</abbr> or WebSockets will get you cross-device sync with fewer moving parts.</p>
+<pre><code class="language-javascript">class PodStore extends CPXStore {
+  constructor(podUrl) {
+    super({ count: 0, theme: 'light' });
+    this.resourceUrl = `${podUrl}/app/state.json`;
+
+    // Subscribe to changes via Solid Notifications
+    const events = new EventSource(
+      `${podUrl}/.notifications?resource=${encodeURIComponent(this.resourceUrl)}`
+    );
+    events.onmessage = (e) =&gt; {
+      const notification = JSON.parse(e.data);
+      if (notification.type === 'Update') {
+        fetch(this.resourceUrl)
+          .then(r =&gt; r.json())
+          .then(data =&gt; this.sync(data));
+      }
+    };
+  }
+
+  onStorageChanged(newState, oldState) {
+    // Write state back to the pod resource
+    fetch(this.resourceUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newState),
+    });
+  }
+}
+</code></pre>
+<p>The Solid Notifications stream tells the store <em>that</em> the resource changed — the store then fetches the new state from the pod. Writes go directly to the pod via <code>PUT</code>. The pod handles access control, so multiple applications and devices can share the same resource without coordinating with each other.</p>
 <h3><abbr title="Conflict-free Replicated Data Type">CRDT</abbr>s</h3>
 <p>The three approaches above all assume a simple model: the most recent write wins. That works for settings, counters, and most application state. But for true multi-device collaboration — two people editing the same document at the same time, or a user making changes offline that need to merge cleanly when they reconnect — last-write-wins silently drops data.</p>
 <p><a href="https://crdt.tech/"><abbr title="Conflict-free Replicated Data Type">CRDT</abbr>s</a> (Conflict-free Replicated Data Types) are data structures designed to merge concurrent edits without conflicts. Libraries like <a href="https://yjs.dev/">Yjs</a> and <a href="https://automerge.org/">Automerge</a> provide <abbr title="Conflict-free Replicated Data Type">CRDT</abbr> implementations for maps, arrays, and text that can sync over any transport — WebSocket, WebRTC, or even sneakernet.</p>
@@ -264,12 +318,17 @@ customElements.define('counter-store', CounterStore);
 <p>Cross-tab sync in Redux requires middleware that serializes the store to <code>localStorage</code> and deserializes it on <code>storage</code> events — effectively reimplementing what CPX Store does in its base class, but layered on top of Redux's action/reducer/dispatch machinery. Cross-device sync adds another middleware layer for the network transport. Each layer must integrate with Redux's specific patterns: dispatching actions, handling thunks or sagas, managing serialization of the entire store shape. The same is true for Zustand's <code>persist</code> middleware, Jotai's atomWithStorage, and every other framework-specific solution.</p>
 <p>CPX Store sidesteps this because it operates at a lower level — the <abbr title="Document Object Model">DOM</abbr>. A <code>&lt;counter-store&gt;</code> element is a <abbr title="Document Object Model">DOM</abbr> node. Any JavaScript on the page can read its <code>.state</code>, listen to its <code>change</code> events, or set properties on it. React components, Vue components, Svelte components, jQuery plugins, and plain <code>&lt;script&gt;</code> tags all interact with it the same way — through the <abbr title="Document Object Model">DOM</abbr> <abbr title="Application Programming Interface">API</abbr> that every framework already knows how to use.</p>
 <p>This means the sync logic — whether <code>localStorage</code>, <abbr title="Server-Sent Events">SSE</abbr>, WebSocket, or <abbr title="Conflict-free Replicated Data Type">CRDT</abbr> — lives in the store itself, not in framework-specific middleware. It works the same regardless of what renders the <abbr title="User Interface">UI</abbr>. If you migrate from React to Vue, or from Vue to vanilla Web Components, the store and all its sync behavior come along unchanged. The state layer and the rendering layer are decoupled by design, because Web Components and the <abbr title="Document Object Model">DOM</abbr> are the decoupling layer.</p>
-<p>The 89-line base class is not a limitation — it is the point. There is nothing framework-specific to outgrow.</p>
+<p>The base class is not a limitation — it is the point. There is nothing framework-specific to outgrow.</p>
 <h2>Try It</h2>
 <p>Install CPX Store and build something that talks across tabs:</p>
-<pre><code class="language-bash">npm install @chapeaux/cpx-store
+<pre><code class="language-bash"># Using JSR (recommended)
+deno add jsr:@chapeaux/cpx-store
+
+# Using npm
+npm install @chapeaux/cpx-store
 </code></pre>
-<p>The full source is on <a href="https://github.com/chapeaux/cpx-store">GitHub</a>. The base class is 89 lines. The cross-tab sync is 6 more. That is less code than most framework tutorials spend on their <code>package.json</code>.</p>
+<p>CPX Store is published to <a href="https://jsr.io/@chapeaux/cpx-store">JSR</a> with full TypeScript source — no build step, no <code>.d.ts</code> files to maintain, just import and go. It is also available on <a href="https://www.npmjs.com/package/@chapeaux/cpx-store">npm</a> for projects that use Node-based tooling.</p>
+<p>The full source is on <a href="https://github.com/chapeaux/cpx-store">GitHub</a>. Cross-tab sync requires zero additional code — just add <code>persist="your-key"</code> to the <abbr title="HyperText Markup Language">HTML</abbr> element. Override <code>onStorageChanged</code> if you need side effects. Call <code>sync()</code> to apply remote state from any transport. That is less code than most framework tutorials spend on their <code>package.json</code>.</p>
 
     <p><a href="/blog/">&larr; All posts</a></p>
   </article>

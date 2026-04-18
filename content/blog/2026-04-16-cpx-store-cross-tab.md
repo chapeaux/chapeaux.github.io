@@ -36,7 +36,7 @@ CPX Store handles this coordination for you.
 
 [CPX Store](https://github.com/chapeaux/cpx-store) is a reactive state management Web Component. It wraps a JavaScript `Proxy` around a plain object so that every property assignment is intercepted — triggering change events, recording history for undo/redo, and optionally persisting to `localStorage`.
 
-The entire base class is [89 lines of TypeScript](https://github.com/chapeaux/cpx-store/blob/main/src/cpx-store.ts). No dependencies. No build step required. It works in Chrome, Firefox, Safari, and Edge.
+The entire base class is [about 125 lines of TypeScript](https://github.com/chapeaux/cpx-store/blob/main/src/cpx-store.ts). No dependencies. No build step required. It works in Chrome, Firefox, Safari, and Edge.
 
 A minimal store:
 
@@ -60,37 +60,41 @@ After the element connects to the <abbr title="Document Object Model">DOM</abbr>
 
 ## Adding Cross-Tab Sync
 
-To persist state, add a `persist` attribute with a storage key:
+To persist state and sync it across tabs, add a `persist` attribute with a storage key:
 
 ```html
 <counter-store persist="demo-counter"></counter-store>
 ```
 
-Now every state change is written to `localStorage` under the key `demo-counter`. To pick up changes from other tabs, add a `storage` event listener in the store constructor:
+That is it. CPX Store handles everything automatically:
+
+1. **Restore** — On connect, persisted state is restored from `localStorage` before any events fire
+2. **Persist** — Every state change is written to `localStorage` under the key `demo-counter`
+3. **Sync** — A `storage` event listener picks up changes from other tabs and applies them via the base class's `sync()` method, which guards against write-back loops automatically
+
+Under the hood, `sync()` sets an internal `_isSyncing` flag before applying state. This tells the Proxy's `set` trap not to write back to `localStorage` — preventing the infinite loop where Tab A writes, Tab B receives and writes back, Tab A receives again. The flag is transparent to consumers: middleware still runs, change events still fire, history still records. You never need to touch `_isSyncing` directly.
+
+The `sync()` method is also the public <abbr title="Application Programming Interface">API</abbr> for applying remote state from any transport — <abbr title="Server-Sent Events">SSE</abbr>, WebSockets, Solid, or anything else. More on that in the [cross-device section](#beyond-tabs-cross-device-state-sync) below.
+
+### Side Effects with `onStorageChanged`
+
+If you need to do something when remote state arrives — whether from another tab or from `sync()` — override `onStorageChanged`. It works like the native Web Components `attributeChangedCallback` pattern: the base class handles the plumbing, and you get a clean hook for domain logic.
 
 ```javascript
 class CounterStore extends CPXStore {
   constructor() {
     super({ count: 0, theme: 'light' });
+  }
 
-    window.addEventListener('storage', (e) => {
-      if (e.key === this.getAttribute('persist')) {
-        this._isSyncing = true;
-        Object.assign(this.state, JSON.parse(e.newValue));
-        this._isSyncing = false;
-      }
-    });
+  onStorageChanged(newState, oldState) {
+    if (newState.theme !== oldState.theme) {
+      document.body.className = newState.theme;
+    }
   }
 }
 ```
 
-That is the entire cross-tab sync implementation. Three lines of meaningful code inside the listener:
-
-1. **Guard** — only react to storage events for *this* store's key
-2. **Flag** — set `_isSyncing` to prevent the Proxy's `set` trap from writing back to `localStorage` (breaking the loop)
-3. **Apply** — `Object.assign` through the Proxy so all downstream listeners fire as usual
-
-The `_isSyncing` flag is the key insight. When a tab receives a sync, it needs to update its Proxy state (so <abbr title="User Interface">UI</abbr> components re-render), but it must *not* write back to `localStorage` (which would trigger another `storage` event in the originating tab). The flag short-circuits the persistence step while preserving everything else — middleware still runs, change events still fire, history still records.
+The callback receives the new state (already applied) and a snapshot of the old state, so you can compare and act on specific changes. If you don't need side effects, don't override it — cross-tab sync works without it.
 
 ## A Fun Demo: The Tab Party
 
@@ -141,14 +145,6 @@ Here is a complete example you can paste into a single <abbr title="HyperText Ma
           { count: 0, theme: '' },
           [(prop, val) => console.log(`[sync] ${prop} = ${val}`)]
         );
-
-        window.addEventListener('storage', (e) => {
-          if (e.key === this.getAttribute('persist')) {
-            this._isSyncing = true;
-            Object.assign(this.state, JSON.parse(e.newValue));
-            this._isSyncing = false;
-          }
-        });
       }
     }
 
@@ -157,13 +153,6 @@ Here is a complete example you can paste into a single <abbr title="HyperText Ma
     // Wait for the element to connect, then wire up the UI
     await customElements.whenDefined('party-store');
     const store = document.querySelector('party-store');
-
-    // Restore persisted state on load
-    const saved = localStorage.getItem('tab-party');
-    if (saved) {
-      const data = JSON.parse(saved);
-      Object.assign(store.state, data);
-    }
 
     // Render on every change
     store.addEventListener('change', (e) => {
@@ -198,9 +187,9 @@ Open this file in two (or ten) tabs. Click the increment button in one — the c
 
 1. Tab A clicks "+1". The Proxy `set` trap fires: middleware logs the change, history records a snapshot, `localStorage.setItem('tab-party', ...)` persists the new state, and a `change` event updates Tab A's <abbr title="User Interface">UI</abbr>.
 
-2. The browser delivers a `storage` event to Tabs B, C, D (every other tab on the same origin). Each tab's `PartyStore` receives it, sets `_isSyncing = true`, and applies the new state via `Object.assign`. The Proxy fires `change` events for each updated property, updating the <abbr title="User Interface">UI</abbr> — but the persistence step is skipped because `_isSyncing` is true.
+2. The browser delivers a `storage` event to Tabs B, C, D (every other tab on the same origin). The base class receives it, sets `_isSyncing = true`, applies the new state via `Object.assign` through the Proxy, then calls `onStorageChanged` (if overridden). The Proxy fires `change` events for each updated property, updating the <abbr title="User Interface">UI</abbr> — but the persistence step is skipped because `_isSyncing` is true.
 
-3. Result: all tabs are in sync, no loops, no server, no WebSockets.
+3. Result: all tabs are in sync, no loops, no server, no WebSockets. The `PartyStore` class is 8 lines — no manual event listeners, no restore logic, no sync guards.
 
 ## Things Worth Noticing
 
@@ -226,6 +215,31 @@ The simplest server-side option. A client sends state changes to the server via 
 
 The Chapeaux ecosystem already uses this pattern: [oxigraph-cloud](https://github.com/chapeaux/oxigraph-cloud) delivers real-time change notifications via <abbr title="Server-Sent Events">SSE</abbr> using the [<abbr title="World Wide Web Consortium">W3C</abbr> Solid Notifications Protocol](https://solidproject.org/TR/notifications-protocol). The same infrastructure that pushes knowledge graph updates to a web <abbr title="User Interface">UI</abbr> could push store state to any connected device.
 
+A store that syncs over <abbr title="Server-Sent Events">SSE</abbr> looks like this:
+
+```javascript
+class SyncedStore extends CPXStore {
+  constructor() {
+    super({ count: 0, theme: 'light' });
+
+    // Subscribe to remote changes
+    const events = new EventSource('/api/store/stream');
+    events.onmessage = (e) => this.sync(JSON.parse(e.data));
+  }
+
+  onStorageChanged(newState, oldState) {
+    // Push local changes to the server
+    fetch('/api/store/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newState),
+    });
+  }
+}
+```
+
+The `sync()` call applies the remote state through the Proxy (so <abbr title="User Interface">UI</abbr> components update), guards against write-back loops, and calls `onStorageChanged` — which handles the outbound direction, posting local changes to the server. The server fans those changes out to every other connected `EventSource`.
+
 ### WebSockets
 
 Where <abbr title="Server-Sent Events">SSE</abbr> is one-way (server to client), WebSockets are full duplex — state changes flow in both directions over a single persistent connection. This eliminates the separate `POST` step: the client writes to the WebSocket, and the server broadcasts to all other clients on the same socket.
@@ -234,6 +248,26 @@ The benefit is lower latency for high-frequency updates — think collaborative 
 
 For applications where updates happen every few seconds rather than many times per second, <abbr title="Server-Sent Events">SSE</abbr> is usually the better choice. WebSockets earn their complexity when latency matters more than simplicity.
 
+```javascript
+class RealtimeStore extends CPXStore {
+  constructor() {
+    super({ count: 0, theme: 'light' });
+
+    this.ws = new WebSocket('wss://example.com/store');
+    this.ws.onmessage = (e) => this.sync(JSON.parse(e.data));
+  }
+
+  onStorageChanged(newState, oldState) {
+    // Send local changes to all other clients
+    if (this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(newState));
+    }
+  }
+}
+```
+
+The same `sync()` call, the same `onStorageChanged` hook — only the transport object changes. Both directions share a single connection, so state changes propagate with one network round-trip instead of two.
+
 ### Solid Pods
 
 [Solid](https://solidproject.org/) is a <abbr title="World Wide Web Consortium">W3C</abbr> specification for decentralized data storage. Each user owns a **pod** — a personal data store that applications read from and write to with the user's permission. State lives in the pod as a resource (a <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> document, a Turtle file, or any <abbr title="Resource Description Framework">RDF</abbr> format), and changes are broadcast to subscribers via the Solid Notifications Protocol.
@@ -241,6 +275,39 @@ For applications where updates happen every few seconds rather than many times p
 The benefit is architectural: the user controls their data, not the application. Two different applications can read and write the same pod resource — a settings panel on your laptop and a companion app on your phone — without either application needing to know about the other. Access control, authentication, and data portability are handled by the Solid specification rather than by each application independently.
 
 This is the most opinionated option and the most aligned with the Chapeaux project's direction. It also requires a Solid pod provider (self-hosted or third-party) and familiarity with <abbr title="Resource Description Framework">RDF</abbr> serialization. For teams already working with linked data, it is a natural fit. For teams that are not, <abbr title="Server-Sent Events">SSE</abbr> or WebSockets will get you cross-device sync with fewer moving parts.
+
+```javascript
+class PodStore extends CPXStore {
+  constructor(podUrl) {
+    super({ count: 0, theme: 'light' });
+    this.resourceUrl = `${podUrl}/app/state.json`;
+
+    // Subscribe to changes via Solid Notifications
+    const events = new EventSource(
+      `${podUrl}/.notifications?resource=${encodeURIComponent(this.resourceUrl)}`
+    );
+    events.onmessage = (e) => {
+      const notification = JSON.parse(e.data);
+      if (notification.type === 'Update') {
+        fetch(this.resourceUrl)
+          .then(r => r.json())
+          .then(data => this.sync(data));
+      }
+    };
+  }
+
+  onStorageChanged(newState, oldState) {
+    // Write state back to the pod resource
+    fetch(this.resourceUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newState),
+    });
+  }
+}
+```
+
+The Solid Notifications stream tells the store *that* the resource changed — the store then fetches the new state from the pod. Writes go directly to the pod via `PUT`. The pod handles access control, so multiple applications and devices can share the same resource without coordinating with each other.
 
 ### <abbr title="Conflict-free Replicated Data Type">CRDT</abbr>s
 
@@ -262,14 +329,20 @@ CPX Store sidesteps this because it operates at a lower level — the <abbr titl
 
 This means the sync logic — whether `localStorage`, <abbr title="Server-Sent Events">SSE</abbr>, WebSocket, or <abbr title="Conflict-free Replicated Data Type">CRDT</abbr> — lives in the store itself, not in framework-specific middleware. It works the same regardless of what renders the <abbr title="User Interface">UI</abbr>. If you migrate from React to Vue, or from Vue to vanilla Web Components, the store and all its sync behavior come along unchanged. The state layer and the rendering layer are decoupled by design, because Web Components and the <abbr title="Document Object Model">DOM</abbr> are the decoupling layer.
 
-The 89-line base class is not a limitation — it is the point. There is nothing framework-specific to outgrow.
+The base class is not a limitation — it is the point. There is nothing framework-specific to outgrow.
 
 ## Try It
 
 Install CPX Store and build something that talks across tabs:
 
 ```bash
+# Using JSR (recommended)
+deno add jsr:@chapeaux/cpx-store
+
+# Using npm
 npm install @chapeaux/cpx-store
 ```
 
-The full source is on [GitHub](https://github.com/chapeaux/cpx-store). The base class is 89 lines. The cross-tab sync is 6 more. That is less code than most framework tutorials spend on their `package.json`.
+CPX Store is published to [JSR](https://jsr.io/@chapeaux/cpx-store) with full TypeScript source — no build step, no `.d.ts` files to maintain, just import and go. It is also available on [npm](https://www.npmjs.com/package/@chapeaux/cpx-store) for projects that use Node-based tooling.
+
+The full source is on [GitHub](https://github.com/chapeaux/cpx-store). Cross-tab sync requires zero additional code — just add `persist="your-key"` to the <abbr title="HyperText Markup Language">HTML</abbr> element. Override `onStorageChanged` if you need side effects. Call `sync()` to apply remote state from any transport. That is less code than most framework tutorials spend on their `package.json`.
