@@ -34,9 +34,9 @@ CPX Store handles this coordination for you.
 
 ## CPX Store in 30 Seconds
 
-[CPX Store](https://github.com/chapeaux/cpx-store) is a reactive state management Web Component. It wraps a JavaScript `Proxy` around a plain object so that every property assignment is intercepted — triggering change events, recording history for undo/redo, and optionally persisting to `localStorage`.
+[CPX Store](https://github.com/chapeaux/cpx-store) is a reactive state management Web Component. It wraps a JavaScript `Proxy` around a plain object so that every property assignment is intercepted — triggering change events, recording history for undo/redo, and optionally persisting to `localStorage`. It also supports [memoized computed properties](https://github.com/chapeaux/cpx-store/blob/main/src/cpx-store.ts) with explicit dependency lists and a lightweight `dispatch()` method for structured async actions.
 
-The entire base class is [about 125 lines of TypeScript](https://github.com/chapeaux/cpx-store/blob/main/src/cpx-store.ts). No dependencies. No build step required. It works in Chrome, Firefox, Safari, and Edge.
+The entire base class is [about 160 lines of TypeScript](https://github.com/chapeaux/cpx-store/blob/main/src/cpx-store.ts). No dependencies. No build step required. It works in Chrome, Firefox, Safari, and Edge.
 
 A minimal store:
 
@@ -185,7 +185,7 @@ Open this file in two (or ten) tabs. Click the increment button in one — the c
 
 ### What Is Happening
 
-1. Tab A clicks "+1". The Proxy `set` trap fires: middleware logs the change, history records a snapshot, `localStorage.setItem('tab-party', ...)` persists the new state, and a `change` event updates Tab A's <abbr title="User Interface">UI</abbr>.
+1. Tab A clicks "+1". The Proxy `set` trap fires: middleware logs the change, history records a delta (just the property name and old/new values — not a full state snapshot), `localStorage.setItem('tab-party', ...)` persists the new state, and a `change` event updates Tab A's <abbr title="User Interface">UI</abbr>.
 
 2. The browser delivers a `storage` event to Tabs B, C, D (every other tab on the same origin). The base class receives it, sets `_isSyncing = true`, applies the new state via `Object.assign` through the Proxy, then calls `onStorageChanged` (if overridden). The Proxy fires `change` events for each updated property, updating the <abbr title="User Interface">UI</abbr> — but the persistence step is skipped because `_isSyncing` is true.
 
@@ -195,7 +195,7 @@ Open this file in two (or ten) tabs. Click the increment button in one — the c
 
 **It works offline.** There is no network involved. `localStorage` is a browser-local <abbr title="Application Programming Interface">API</abbr>. You can disconnect from the internet, open tabs, and they still sync.
 
-**Undo/redo is per-tab.** Each tab maintains its own `_history` array. If Tab A makes three changes and Tab B makes one, hitting Undo in Tab A rolls back Tab A's last change — not Tab B's. This is usually what you want: undo is a local editing concept, not a global one.
+**Undo/redo is per-tab.** Each tab maintains its own `_history` array of property-level deltas. If Tab A makes three changes and Tab B makes one, hitting Undo in Tab A rolls back Tab A's last change — not Tab B's. This is usually what you want: undo is a local editing concept, not a global one. History is capped at 100 entries by default (configurable via the `maxHistory` constructor option) to prevent unbounded memory growth in long-running sessions.
 
 **The `storage` event is same-origin only.** Tabs must share the same protocol, host, and port. `http://localhost:3000` and `http://localhost:3001` are different origins — their stores will not sync.
 
