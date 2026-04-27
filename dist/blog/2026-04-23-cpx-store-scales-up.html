@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>From 162 Lines to IDE Scale: How CPX Store Grew Up — Chapeaux</title>
+  <meta name="description" content="CPX Store started as a 162-line reactive Web Component. A plugin architecture, signal-inspired reactivity, microtask batching, pluggable collaboration transport, and a headless core for server-side rendering turn it into a state management system that runs anywhere JavaScript runs — without adding a single framework dependency.">
+  <link rel="icon" type="image/png" href="/images/favicon_2026.png">
+  <link rel="stylesheet" href="/chapeaux.css">
+  
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org/",
+  "@id": "https://chapeaux.github.io/blog/2026-04-23-cpx-store-scales-up",
+  "@type": "BlogPosting",
+  "datePublished": "2026-04-23",
+  "name": "From 162 Lines to IDE Scale: How CPX Store Grew Up"
+}
+  </script>
+  
+  
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="site-logo">
+        <img src="/images/chapeaux_logo_wide_default_2026.svg" alt="Chapeaux">
+      </a>
+
+      <nav>
+        <ul class="site-nav">
+          <li><a href="/contribute/">Contribute</a></li>
+          <li><a href="/projects/">Projects</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/chapellerie/">Chapellerie</a></li>
+        </ul>
+      </nav>
+
+      <details class="mobile-menu">
+        <summary aria-label="Menu">&#9776;</summary>
+        <ul class="mobile-nav">
+          <li><a href="/contribute/">Contribute</a></li>
+          <li><a href="/projects/">Projects</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/chapellerie/">Chapellerie</a></li>
+        </ul>
+      </details>
+    </div>
+  </header>
+
+  <main>
+    
+<div class="page-header">
+  <div class="container">
+    <h1>From 162 Lines to IDE Scale: How CPX Store Grew Up</h1>
+  </div>
+</div>
+
+<div class="container">
+  <article class="blog-post">
+    
+    <div class="post-meta">
+      2026-04-23
+    </div>
+    
+    <p>A week ago, <a href="/blog/2026-04-16-cpx-store-cross-tab/">I wrote about CPX Store's cross-tab sync</a> — how adding <code>persist="key"</code> to an <abbr title="HyperText Markup Language">HTML</abbr> element turns <code>localStorage</code> into a real-time communication channel between browser tabs. The entire base class was 162 lines of TypeScript. No dependencies. Property assignment through a <code>Proxy</code>, synchronous event dispatch, and a tidy undo/redo stack. It was elegant. It was small. And it was not going to survive contact with a real <abbr title="Integrated Development Environment">IDE</abbr>.</p>
+<p>The problem was not a bug. It was arithmetic. Every <code>state.prop = value</code> ran the full pipeline synchronously: middleware, history push, a scan of every computed property, a <code>JSON.stringify</code> to <code>localStorage</code>, and two <code>CustomEvent</code> dispatches. For a theme toggle or a click counter, that pipeline is invisible. For a code editor with hundreds of state dimensions — selections, diagnostics, decorations, folding state, breakpoints per file — it means a language server sending 100 diagnostics produces 100 full pipeline runs, 200 <abbr title="Document Object Model">DOM</abbr> events, and 100 <code>localStorage</code> writes. In the same synchronous block.</p>
+<p>This article is about what changed, why, and how the new architecture compares to what the React ecosystem requires to solve the same problems.</p>
+<h2>What Broke</h2>
+<p>Four things, specifically.</p>
+<p><strong>History ate memory.</strong> The undo stack stored raw <code>{ prop, old, val }</code> deltas. For small values — a counter, a theme string — this is fine. For a 1<abbr title="Megabyte">MB</abbr> editor buffer, 100 undos means 100 copies of a megabyte-scale string. The heap grows linearly with undo depth, with no way to opt out per property.</p>
+<p><strong>Computed properties scaled badly.</strong> After every mutation, the store scanned <em>all</em> computed properties to check whether their dependency arrays included the changed property. With 10 computed values, nobody notices. With 500 — think diagnostics counts per file, visible line ranges, dirty flags across open editors — the scan dominates the mutation cost. The complexity was O(all computed × average dependency count) on every single property assignment.</p>
+<p><strong>No batching existed.</strong> Every assignment was its own transaction. Middleware ran, history recorded, events fired, <code>localStorage</code> wrote. There was no way to say "I am about to set 20 properties; please wait until I am done." A debugger stepping through code might update the call stack, locals, watches, and breakpoint states in rapid succession — each triggering the full pipeline independently.</p>
+<p><strong>Collaboration was <code>localStorage</code> or nothing.</strong> The cross-tab sync mechanism was hardwired to <code>localStorage</code> and the <code>storage</code> event. The <code>sync()</code> method and <code>_isSyncing</code> guard worked, but there was no transport abstraction, no operation log, and no path toward conflict resolution. Multi-user editing over WebSockets required reimplementing the sync layer from scratch.</p>
+<h2>The New Architecture</h2>
+<p>The rewrite keeps the Proxy. Everything else is different — including the assumption that a browser is required. The state management logic now lives in a headless core that runs in any JavaScript runtime. The Web Component is a thin wrapper that bridges that core to the <abbr title="Document Object Model">DOM</abbr>.</p>
+<h3>Plugin System</h3>
+<p>The monolithic <code>set</code> trap is gone. In its place: a thin core that dispatches to composable plugins through lifecycle hooks.</p>
+<pre><code class="language-javascript">class EditorStore extends CPXStore {
+  constructor() {
+    super(
+      { content: '', cursor: 0, theme: 'light' },
+      middlewarePlugin([
+        { filter: /^content/, fn: (prop, val) =&gt; validate(val) }
+      ]),
+      historyPlugin({
+        strategies: { content: 'patch', cursor: 'none' },
+        maxHistory: 200
+      }),
+      persistencePlugin()
+    );
+  }
+}
+</code></pre>
+<p>Each plugin declares which hooks it uses — <code>onBeforeSet</code>, <code>onAfterSet</code>, <code>onFlush</code>, <code>onGet</code>, <code>onDestroy</code> — and the core only calls hooks that at least one plugin has registered. Plugin ordering defines execution order: middleware runs first (it can throw to cancel a mutation), then history, then persistence, then event dispatch. A store with no plugins has no overhead from features it does not use.</p>
+<h3>Signal-Inspired Reactivity</h3>
+<p>The <abbr title="Technical Committee 39 — the committee that standardizes JavaScript">TC39</abbr> <a href="https://github.com/tc39/proposal-signals">Signals proposal</a> defines a model for fine-grained reactive state: <code>Signal.State</code> for mutable values, <code>Signal.Computed</code> for derived values with automatic dependency tracking, and <code>Signal.subtle.Watcher</code> for observing changes. Native browser support is still years away, and the polyfill is not production-ready. But the programming model is sound, and there is no reason to wait for the spec to ship before using it.</p>
+<p>CPX Store now includes a lightweight reactivity system — <code>ReactiveState</code> and <code>ReactiveComputed</code> — that implements the same push-pull model. Each state property is backed by a <code>ReactiveState</code>. Computed values are <code>ReactiveComputed</code> instances that auto-track their dependencies during evaluation, with no explicit dependency array.</p>
+<p>The old <abbr title="Application Programming Interface">API</abbr>:</p>
+<pre><code class="language-javascript">// v0.6 — manual dependency list
+this.computed('total', ['price', 'qty'], () =&gt; {
+  return this.state.price * this.state.qty;
+});
+</code></pre>
+<p>The new <abbr title="Application Programming Interface">API</abbr>:</p>
+<pre><code class="language-javascript">// v0.7 — automatic tracking, no dependency array
+this.computed('total', () =&gt; {
+  return this.state.price * this.state.qty;
+});
+</code></pre>
+<p>When the compute function runs, every <code>state.price</code> read calls <code>priceSignal.get()</code>, which registers the signal as a dependency. When <code>price</code> changes, <code>ReactiveState.set()</code> marks all subscribing <code>ReactiveComputed</code> instances as dirty. The next read of <code>state.total</code> triggers re-evaluation. If <code>qty</code> changes but <code>price</code> does not, only computed values that depend on <code>qty</code> are invalidated — not everything.</p>
+<p>The invalidation cost is O(affected), not O(all). For an <abbr title="Integrated Development Environment">IDE</abbr> with hundreds of computed values, this is the difference between a mutation taking microseconds and taking milliseconds.</p>
+<p>Transitive dependencies work automatically. A computed value that reads another computed value subscribes to it through the same mechanism:</p>
+<pre><code class="language-javascript">this.computed('doubled', () =&gt; this.state.base * 2);
+this.computed('quadrupled', () =&gt; this.state.doubled * 2);
+
+// Changing state.base invalidates 'doubled', which invalidates 'quadrupled'.
+// Reading state.quadrupled re-evaluates both, in order.
+</code></pre>
+<p>The Proxy remains the <abbr title="Application Programming Interface">API</abbr> surface — <code>state.price = 5</code> is still a plain property assignment. The reactivity system runs underneath, invisible to consumers. If <abbr title="Technical Committee 39">TC39</abbr> Signals ship natively, the internal <code>ReactiveState</code> and <code>ReactiveComputed</code> can be swapped for <code>Signal.State</code> and <code>Signal.Computed</code> without changing the store's public <abbr title="Application Programming Interface">API</abbr>.</p>
+<h3>Microtask-Coalesced Events</h3>
+<p>The old store dispatched two <abbr title="Document Object Model">DOM</abbr> events synchronously on every mutation. The new store defers event dispatch to a <code>queueMicrotask</code> callback. Multiple mutations in the same synchronous block produce a single <code>change</code> event containing all changed properties.</p>
+<pre><code class="language-javascript">store.state.a = 1;
+store.state.b = 2;
+store.state.c = 3;
+// One 'change' event fires after the microtask, with all three changes.
+</code></pre>
+<p>For explicit control, <code>batch()</code> flushes synchronously at the end of the block:</p>
+<pre><code class="language-javascript">store.batch(() =&gt; {
+  state.a = 1;
+  state.b = 2;
+  state.c = 3;
+}); // One event fires here, synchronously.
+</code></pre>
+<p><code>transaction()</code> adds rollback semantics — if the function throws, the state reverts and no events fire:</p>
+<pre><code class="language-javascript">store.transaction(() =&gt; {
+  state.balance -= 100;
+  if (state.balance &lt; 0) throw new Error('insufficient');
+}); // State unchanged, no events, error propagates.
+</code></pre>
+<p><code>dispatch()</code> — the async action method from v0.6 — now auto-batches:</p>
+<pre><code class="language-javascript">await store.dispatch(async (state) =&gt; {
+  const data = await fetch('/api/items');
+  state.items = await data.json();
+  state.loading = false;
+}); // One batched event after the promise resolves.
+</code></pre>
+<h3>Nested State</h3>
+<p>Flat state does not scale. An <abbr title="Integrated Development Environment">IDE</abbr> has state per file, per editor pane, per debug session. The new store supports nested objects through recursive Proxies:</p>
+<pre><code class="language-javascript">const store = new EditorStore({
+  editor: {
+    file1: { content: 'hello', dirty: false },
+    file2: { content: 'world', dirty: true }
+  }
+});
+
+store.state.editor.file1.content = 'updated';
+// Triggers change event with prop: "editor.file1.content"
+</code></pre>
+<p>Each nested path gets its own <code>ReactiveState</code> signal, so computed values that read <code>state.editor.file1.content</code> auto-track at the leaf level. Changing <code>file2</code> does not invalidate computed values that only depend on <code>file1</code>. Nested Proxies are cached via <code>WeakMap</code> — accessing <code>state.editor.file1</code> repeatedly returns the same Proxy instance, not a new one each time.</p>
+<h3>History Strategies</h3>
+<p>The history plugin now supports per-property strategies instead of storing raw values for everything:</p>
+<table><thead><tr><th>Strategy</th><th>What It Stores</th><th>Use Case</th></tr></thead><tbody>
+<tr><td><code>snapshot</code></td><td>Full old and new values</td><td>Small values (default)</td></tr>
+<tr><td><code>patch</code></td><td>Text diffs or <abbr title="JavaScript Object Notation">JSON</abbr> Patch operations</td><td>Editor buffers, large objects</td></tr>
+<tr><td><code>none</code></td><td>Nothing</td><td>Cursor position, scroll offset</td></tr>
+</tbody></table>
+<pre><code class="language-javascript">historyPlugin({
+  strategies: {
+    content: 'patch',   // Store diffs, not full copies
+    cursor: 'none',     // No undo for cursor movement
+    theme: 'snapshot',  // Full snapshots for small values
+  },
+  checkpointInterval: 20  // Full snapshot every 20 patch ops
+})
+</code></pre>
+<p>For string values with the <code>patch</code> strategy, the history plugin computes a minimal text diff — the offset, delete count, and inserted text — instead of storing the entire string. For object values, it computes <abbr title="JavaScript Object Notation">JSON</abbr> Patch (<a href="https://datatracker.ietf.org/doc/html/rfc6902"><abbr title="Request for Comments">RFC</abbr> 6902</a>) operations. Every <code>checkpointInterval</code> operations, a full snapshot is stored so that undo can replay patches backward from a known state rather than from the beginning of time.</p>
+<p>The memory bound becomes <code>(stateSize × numberOfCheckpoints) + (maxHistory × averagePatchSize)</code> instead of <code>stateSize × maxHistory</code>. For a 1<abbr title="Megabyte">MB</abbr> editor buffer with 100 undo steps and an average patch size of 100 bytes, this is roughly 1.05<abbr title="Megabyte">MB</abbr> instead of 100<abbr title="Megabyte">MB</abbr>.</p>
+<h3>Pluggable Collaboration</h3>
+<p>The <a href="/blog/2026-04-16-cpx-store-cross-tab/">previous article</a> described four approaches to cross-device sync: <abbr title="Server-Sent Events">SSE</abbr>, WebSockets, Solid pods, and <abbr title="Conflict-free Replicated Data Type">CRDT</abbr>s. All of them required manual integration — wiring up <code>sync()</code> calls and <code>onStorageChanged</code> overrides by hand. The new architecture formalizes this with a <code>SyncTransport</code> interface and a collaboration plugin.</p>
+<pre><code class="language-javascript">import { collabPlugin } from '@chapeaux/cpx-store/plugins/collab';
+import { BroadcastChannelTransport } from '@chapeaux/cpx-store/transports/broadcast-channel';
+
+class SharedStore extends CPXStore {
+  constructor() {
+    super(
+      { count: 0 },
+      collabPlugin({
+        transport: new BroadcastChannelTransport('my-channel')
+      })
+    );
+  }
+}
+</code></pre>
+<p>The collab plugin intercepts every local mutation, wraps it as a <code>StateOperation</code> (with a unique <abbr title="Identifier">ID</abbr>, origin client <abbr title="Identifier">ID</abbr>, timestamp, property, and value), and sends it through the transport. Incoming operations are applied via <code>store.sync()</code>, with the existing <code>_isSyncing</code> guard preventing echo loops.</p>
+<p>Two transports ship built-in:</p>
+<ul>
+<li>
+<p><strong><code>BroadcastChannelTransport</code></strong> — Same-origin tab-to-tab communication using the <a href="https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel"><code>BroadcastChannel</code></a> <abbr title="Application Programming Interface">API</abbr>. Uses structured clone instead of <abbr title="JavaScript Object Notation">JSON</abbr> serialization. Replaces the <code>localStorage</code> + <code>storage</code> event approach from v0.6 with something faster and more capable.</p>
+</li>
+<li>
+<p><strong><code>WebSocketTransport</code></strong> — Server-mediated multi-user sync. Handles reconnection with exponential backoff (1s, 2s, 4s, up to 30s). Queues outbound operations during disconnect and flushes on reconnect.</p>
+</li>
+</ul>
+<p>Conflict resolution is pluggable. The default is last-writer-wins by timestamp. For <abbr title="Conflict-free Replicated Data Type">CRDT</abbr> integration, implement the <code>ConflictResolver</code> interface:</p>
+<pre><code class="language-javascript">collabPlugin({
+  transport: new WebSocketTransport('wss://example.com/sync'),
+  resolver: {
+    resolve(local, remote) {
+      return remote.timestamp &gt;= local.timestamp ? remote : local;
+    }
+  }
+})
+</code></pre>
+<p>The operation log maintained by the collab plugin uses the same <code>StateOperation</code> structure as the history plugin's entries. This is by design — the local undo history and the outbound collaboration stream share a data model, so a single mutation feeds both systems without duplication.</p>
+<h3>Headless Mode and Server-Side Rendering</h3>
+<p>The original CPX Store extended <code>HTMLElement</code>. Every feature — state, computed, undo, persistence — was locked inside a Web Component that required a browser <abbr title="Document Object Model">DOM</abbr> to instantiate. You could not create a store in a Node.js <abbr title="Server-Side Rendering">SSR</abbr> handler, a Deno <abbr title="Command-Line Interface">CLI</abbr> tool, or a test runner without a <abbr title="Document Object Model">DOM</abbr> polyfill.</p>
+<p>The new architecture splits the store into two layers. A <code>CPXStoreCoreMixin</code> function injects all state management logic — reactivity, plugins, batching, transactions, sync, computed, undo/redo — into any base class. Applied to a bare class, it produces <code>CPXStoreCore</code>: a headless store with no <abbr title="Document Object Model">DOM</abbr> dependency at all. Applied to <code>HTMLElement</code>, it produces <code>CPXStore</code>: the Web Component that bridges state changes to <code>CustomEvent</code> dispatch.</p>
+<pre><code class="language-javascript">import { CPXStoreCore } from '@chapeaux/cpx-store/cpx-store-core';
+import { historyPlugin } from '@chapeaux/cpx-store/plugins/history';
+
+// Runs in Node, Deno, Bun, Cloudflare Workers — anywhere
+const store = new CPXStoreCore(
+  { count: 0, items: [] },
+  historyPlugin()
+);
+
+store.computed('itemCount', () =&gt; (store.state.items as any[]).length);
+store.state.items = ['a', 'b', 'c'];
+console.log(store.state.itemCount); // 3
+</code></pre>
+<p><code>CPXStoreCore</code> initializes immediately in the constructor — no <code>connectedCallback</code>, no <abbr title="Document Object Model">DOM</abbr> attachment. The Proxy, plugins, and computed values are all ready to use on the next line. For change notification, <code>CPXStoreCore</code> provides <code>onChange(handler)</code> instead of <abbr title="Document Object Model">DOM</abbr> events:</p>
+<pre><code class="language-javascript">const unsub = store.onChange((changes) =&gt; {
+  for (const [prop, { old, val }] of changes) {
+    console.log(`${prop}: ${old} → ${val}`);
+  }
+});
+// Later: unsub() to stop listening
+</code></pre>
+<p>The <code>onChange</code> handler receives the same batched <code>Map&lt;string, {old, val}&gt;</code> that the <code>change</code> event's <code>e.detail.changes</code> carries in the browser. Same data, same batching semantics, no <code>CustomEvent</code> or <code>dispatchEvent</code> required.</p>
+<h4><abbr title="Server-Side Rendering">SSR</abbr> Hydration Pattern</h4>
+<p>A server creates a <code>CPXStoreCore</code>, populates it from an <abbr title="Application Programming Interface">API</abbr> or database, serializes the state, and embeds it in the <abbr title="HyperText Markup Language">HTML</abbr> response. The client hydrates a <code>CPXStore</code> from that serialized state.</p>
+<pre><code class="language-javascript">// Server — no DOM, no polyfill
+import { CPXStoreCore } from '@chapeaux/cpx-store/cpx-store-core';
+
+const store = new CPXStoreCore({ user: null, items: [] });
+store.state.user = await db.getUser(sessionId);
+store.state.items = await db.getItems(store.state.user.id);
+
+const html = `
+  &lt;script&gt;window.__STATE__ = ${JSON.stringify(store.toJSON())}&lt;/script&gt;
+  &lt;my-store&gt;&lt;/my-store&gt;
+`;
+</code></pre>
+<pre><code class="language-javascript">// Client — hydrate into the Web Component
+import { CPXStore } from '@chapeaux/cpx-store';
+import { historyPlugin } from '@chapeaux/cpx-store/plugins/history';
+import { persistencePlugin } from '@chapeaux/cpx-store/plugins/persistence';
+
+class MyStore extends CPXStore {
+  constructor() {
+    super(window.__STATE__, historyPlugin(), persistencePlugin());
+  }
+}
+customElements.define('my-store', MyStore);
+</code></pre>
+<p>The client store picks up exactly where the server left off. Undo history starts from the hydrated state. Persistence kicks in on the first user-driven mutation. The server never needed to know about undo, persistence, or <abbr title="Document Object Model">DOM</abbr> events — it used the headless core to prepare the data and moved on.</p>
+<h4>What Works Without a Browser</h4>
+<p>The headless core supports everything except <abbr title="Document Object Model">DOM</abbr>-specific features:</p>
+<table><thead><tr><th>Feature</th><th><code>CPXStoreCore</code></th><th><code>CPXStore</code></th></tr></thead><tbody>
+<tr><td>Reactive state (Proxy)</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Computed with auto-tracking</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Plugins (middleware, history, collab)</td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>batch()</code> / <code>transaction()</code> / <code>dispatch()</code></td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>sync()</code> / <code>onSyncReceived</code></td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>onChange(handler)</code></td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>toJSON()</code></td><td>Yes</td><td>Yes</td></tr>
+<tr><td><code>change</code> / <code>app-state-update</code> <abbr title="Document Object Model">DOM</abbr> events</td><td>—</td><td>Yes</td></tr>
+<tr><td><code>persist</code> <abbr title="HyperText Markup Language">HTML</abbr> attribute</td><td>—</td><td>Yes</td></tr>
+<tr><td><code>localStorage</code> persistence</td><td>—</td><td>Yes</td></tr>
+<tr><td><code>customElements.define()</code></td><td>—</td><td>Yes</td></tr>
+</tbody></table>
+<p>The persistence plugin itself is environment-aware: it checks for <code>localStorage</code> and <code>window</code> before using them, and accepts an explicit <code>{ key }</code> option as an alternative to the <code>persist</code> <abbr title="HyperText Markup Language">HTML</abbr> attribute. In a server environment, it silently skips storage operations.</p>
+<h2>The Previous Post, Revisited</h2>
+<p>The <a href="/blog/2026-04-16-cpx-store-cross-tab/">cross-tab sync article</a> included several code samples against the v0.6 <abbr title="Application Programming Interface">API</abbr>. Every one of them still works conceptually, but the constructor signature, event shape, and sync hooks have changed. Here is each example from that article, followed by its current equivalent.</p>
+<h3>The Minimal Store</h3>
+<p>The v0.6 constructor took <code>(initialState, middleware[], options)</code>. Undo/redo and persistence were built into the base class — always present, always running, whether you used them or not.</p>
+<div class="before-after">
+<p><strong>v0.6:</strong></p>
+<pre><code class="language-javascript">import { CPXStore } from '@chapeaux/cpx-store';
+
+class CounterStore extends CPXStore {
+  constructor() {
+    super({ count: 0 });
+  }
+}
+customElements.define('counter-store', CounterStore);
+</code></pre>
+<p><strong>Now:</strong></p>
+<pre><code class="language-javascript">import { CPXStore } from '@chapeaux/cpx-store';
+import { historyPlugin } from '@chapeaux/cpx-store/plugins/history';
+
+class CounterStore extends CPXStore {
+  constructor() {
+    super({ count: 0 }, historyPlugin());
+  }
+}
+customElements.define('counter-store', CounterStore);
+</code></pre>
+</div>
+<p>The constructor now takes <code>(initialState, ...plugins)</code>. If you want undo/redo, register <code>historyPlugin()</code>. If you do not need it, leave it out — zero overhead. A store with no plugins is just a reactive Proxy with microtask-coalesced events.</p>
+<p>If you do not need a Web Component at all — server-side code, a <abbr title="Command-Line Interface">CLI</abbr> tool, a test harness — use <code>CPXStoreCore</code> directly:</p>
+<pre><code class="language-javascript">import { CPXStoreCore } from '@chapeaux/cpx-store/cpx-store-core';
+
+const store = new CPXStoreCore({ count: 0 }, historyPlugin());
+store.state.count++;
+store.undo();
+</code></pre>
+<p>No <code>customElements.define</code>, no <abbr title="Document Object Model">DOM</abbr>, no browser required.</p>
+<h3>The <code>persist</code> Attribute</h3>
+<p>In v0.6, the <code>persist</code> attribute was handled by code baked into the base class. Now it is handled by the persistence plugin. The <abbr title="HyperText Markup Language">HTML</abbr> stays the same:</p>
+<pre><code class="language-html">&lt;counter-store persist="demo-counter"&gt;&lt;/counter-store&gt;
+</code></pre>
+<p>But the store class must register the plugin:</p>
+<pre><code class="language-javascript">import { historyPlugin } from '@chapeaux/cpx-store/plugins/history';
+import { persistencePlugin } from '@chapeaux/cpx-store/plugins/persistence';
+
+class CounterStore extends CPXStore {
+  constructor() {
+    super({ count: 0 }, historyPlugin(), persistencePlugin());
+  }
+}
+</code></pre>
+<p>The persistence plugin reads the <code>persist</code> attribute during <code>connectedCallback</code>, restores state from <code>localStorage</code>, and writes back on every flush. It also sets up the <code>storage</code> event listener for cross-tab sync — the same behavior as before, moved from hardcoded internals to an opt-in plugin.</p>
+<h3>The <code>onStorageChanged</code> Hook</h3>
+<p>The previous article showed overriding <code>onStorageChanged</code> for side effects when remote state arrives. The method has been renamed to <code>onSyncReceived</code> — a clearer name, since the hook fires on any <code>sync()</code> call, not just <code>storage</code> events.</p>
+<div class="before-after">
+<p><strong>v0.6:</strong></p>
+<pre><code class="language-javascript">class CounterStore extends CPXStore {
+  constructor() {
+    super({ count: 0, theme: 'light' });
+  }
+
+  onStorageChanged(newState, oldState) {
+    if (newState.theme !== oldState.theme) {
+      document.body.className = newState.theme;
+    }
+  }
+}
+</code></pre>
+<p><strong>Now:</strong></p>
+<pre><code class="language-javascript">class CounterStore extends CPXStore {
+  constructor() {
+    super({ count: 0, theme: 'light' }, persistencePlugin());
+  }
+
+  onSyncReceived(newState, oldState) {
+    if (newState.theme !== oldState.theme) {
+      document.body.className = newState.theme;
+    }
+  }
+}
+</code></pre>
+</div>
+<p>The signature is identical — <code>(newState, oldState)</code> — so the body of the method does not change.</p>
+<h3>The Change Event</h3>
+<p>This is the most visible breaking change. The <code>change</code> event now carries all mutations that occurred since the last flush, not a single property.</p>
+<div class="before-after">
+<p><strong>v0.6 — one event per mutation, synchronous:</strong></p>
+<pre><code class="language-javascript">store.addEventListener('change', (e) =&gt; {
+  const { prop, value } = e.detail;
+  if (prop === 'count')
+    document.getElementById('count-display').textContent = value;
+  if (prop === 'theme')
+    document.body.className = value;
+});
+</code></pre>
+<p><strong>Now — one event per flush, microtask-deferred:</strong></p>
+<pre><code class="language-javascript">store.addEventListener('change', (e) =&gt; {
+  const { changes } = e.detail;
+  if (changes.count)
+    document.getElementById('count-display').textContent = changes.count.val;
+  if (changes.theme)
+    document.body.className = changes.theme.val;
+});
+</code></pre>
+</div>
+<p><code>e.detail.changes</code> is an object keyed by property name. Each entry has <code>{ old, val }</code>. If three properties change in the same synchronous block — or inside a <code>batch()</code> — they all appear in one event. The <code>old</code> value is the state before the first mutation in the batch, and <code>val</code> is the state after the last.</p>
+<p>The global <code>app-state-update</code> event on <code>window</code> follows the same shape: <code>e.detail.store</code> is the element's tag name, and <code>e.detail.changes</code> contains the batch.</p>
+<h3>Middleware</h3>
+<p>In v0.6, middleware was an array of bare functions passed as the second constructor argument. Now it is a plugin, and each middleware entry can optionally include a filter.</p>
+<div class="before-after">
+<p><strong>v0.6:</strong></p>
+<pre><code class="language-javascript">class PartyStore extends CPXStore {
+  constructor() {
+    super(
+      { count: 0, theme: '' },
+      [(prop, val) =&gt; console.log(`[sync] ${prop} = ${val}`)]
+    );
+  }
+}
+</code></pre>
+<p><strong>Now:</strong></p>
+<pre><code class="language-javascript">import { middlewarePlugin } from '@chapeaux/cpx-store/plugins/middleware';
+
+class PartyStore extends CPXStore {
+  constructor() {
+    super(
+      { count: 0, theme: '' },
+      middlewarePlugin([
+        (prop, val) =&gt; console.log(`[sync] ${prop} = ${val}`)
+      ])
+    );
+  }
+}
+</code></pre>
+</div>
+<p>Bare functions still work — <code>middlewarePlugin</code> wraps them automatically. The new capability is filtered middleware: <code>{ filter: /^editor\./, fn: myLogger }</code> runs the function only for properties matching the pattern, so a logging middleware does not fire on every cursor-position update.</p>
+<h3>The Tab Party Demo</h3>
+<p>The <a href="/blog/2026-04-16-cpx-store-cross-tab/">previous article</a> built a complete multi-tab demo: a synchronized counter and theme switcher. Here is that demo updated for the current <abbr title="Application Programming Interface">API</abbr>. The <abbr title="HyperText Markup Language">HTML</abbr> and <abbr title="Cascading Style Sheets">CSS</abbr> are identical — only the <code>&lt;script&gt;</code> block changes.</p>
+<pre><code class="language-html">&lt;script type="module"&gt;
+  import { CPXStore } from 'https://esm.sh/@chapeaux/cpx-store';
+  import { middlewarePlugin } from 'https://esm.sh/@chapeaux/cpx-store/plugins/middleware';
+  import { historyPlugin } from 'https://esm.sh/@chapeaux/cpx-store/plugins/history';
+  import { persistencePlugin } from 'https://esm.sh/@chapeaux/cpx-store/plugins/persistence';
+
+  class PartyStore extends CPXStore {
+    constructor() {
+      super(
+        { count: 0, theme: '' },
+        middlewarePlugin([
+          (prop, val) =&gt; console.log(`[sync] ${prop} = ${val}`)
+        ]),
+        historyPlugin(),
+        persistencePlugin()
+      );
+    }
+  }
+
+  customElements.define('party-store', PartyStore);
+
+  await customElements.whenDefined('party-store');
+  const store = document.querySelector('party-store');
+
+  // Render on every change — note the new event shape
+  store.addEventListener('change', (e) =&gt; {
+    const { changes } = e.detail;
+    if (changes.count)
+      document.getElementById('count-display').textContent = changes.count.val;
+    if (changes.theme)
+      document.body.className = changes.theme.val;
+  });
+
+  // Initial render
+  document.getElementById('count-display').textContent = store.state.count;
+  document.body.className = store.state.theme;
+
+  // Button handlers — unchanged
+  document.getElementById('btn-inc').onclick = () =&gt; store.state.count++;
+  document.getElementById('btn-dec').onclick = () =&gt; store.state.count--;
+  document.getElementById('btn-undo').onclick = () =&gt; store.undo();
+  document.getElementById('btn-redo').onclick = () =&gt; store.redo();
+
+  document.querySelectorAll('[data-theme]').forEach(btn =&gt; {
+    btn.onclick = () =&gt; store.state.theme = btn.dataset.theme;
+  });
+&lt;/script&gt;
+</code></pre>
+<p>Three things changed: the imports (plugins are explicit), the constructor (plugins as rest arguments), and the event handler (reads from <code>e.detail.changes.count.val</code> instead of checking <code>e.detail.prop</code>). The button handlers — <code>store.state.count++</code>, <code>store.undo()</code>, theme assignment — are character-for-character identical.</p>
+<h3>The <abbr title="Server-Sent Events">SSE</abbr> Sync Store</h3>
+<p>The previous article showed a store that receives remote state over <abbr title="Server-Sent Events">SSE</abbr> and pushes local changes via <code>POST</code>. The pattern still works — <code>sync()</code> and <code>onSyncReceived</code> handle the plumbing. The only change is the callback name.</p>
+<div class="before-after">
+<p><strong>v0.6:</strong></p>
+<pre><code class="language-javascript">class SyncedStore extends CPXStore {
+  constructor() {
+    super({ count: 0, theme: 'light' });
+
+    const events = new EventSource('/api/store/stream');
+    events.onmessage = (e) =&gt; this.sync(JSON.parse(e.data));
+  }
+
+  onStorageChanged(newState, oldState) {
+    fetch('/api/store/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newState),
+    });
+  }
+}
+</code></pre>
+<p><strong>Now:</strong></p>
+<pre><code class="language-javascript">class SyncedStore extends CPXStore {
+  constructor() {
+    super({ count: 0, theme: 'light' });
+
+    const events = new EventSource('/api/store/stream');
+    events.onmessage = (e) =&gt; this.sync(JSON.parse(e.data));
+  }
+
+  onSyncReceived(newState, oldState) {
+    fetch('/api/store/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newState),
+    });
+  }
+}
+</code></pre>
+</div>
+<p>One line changed: <code>onStorageChanged</code> → <code>onSyncReceived</code>. The <code>sync()</code> call, the <code>_isSyncing</code> guard, and the <code>EventSource</code> wiring are all the same. This store deliberately omits plugins — no undo/redo, no <code>localStorage</code> persistence — because a server-synced store may not need them.</p>
+<h3>The WebSocket Sync Store</h3>
+<p>The v0.6 article showed manual WebSocket integration. The new architecture offers two paths: the manual approach with <code>onSyncReceived</code> (same as <abbr title="Server-Sent Events">SSE</abbr> above, just swap <code>EventSource</code> for <code>WebSocket</code>), or the collab plugin with the built-in <code>WebSocketTransport</code>.</p>
+<div class="before-after">
+<p><strong>v0.6 — manual WebSocket wiring:</strong></p>
+<pre><code class="language-javascript">class RealtimeStore extends CPXStore {
+  constructor() {
+    super({ count: 0, theme: 'light' });
+
+    this.ws = new WebSocket('wss://example.com/store');
+    this.ws.onmessage = (e) =&gt; this.sync(JSON.parse(e.data));
+  }
+
+  onStorageChanged(newState, oldState) {
+    if (this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(newState));
+    }
+  }
+}
+</code></pre>
+<p><strong>Now — using the collab plugin:</strong></p>
+<pre><code class="language-javascript">import { collabPlugin } from '@chapeaux/cpx-store/plugins/collab';
+import { WebSocketTransport } from '@chapeaux/cpx-store/transports/websocket';
+
+class RealtimeStore extends CPXStore {
+  constructor() {
+    super(
+      { count: 0, theme: 'light' },
+      collabPlugin({
+        transport: new WebSocketTransport('wss://example.com/store')
+      })
+    );
+  }
+}
+</code></pre>
+</div>
+<p>The collab plugin version is shorter because reconnection logic, operation logging, echo prevention, and conflict resolution are handled by the plugin and transport — not hand-coded in the store subclass. The <code>WebSocketTransport</code> reconnects automatically with exponential backoff and queues outbound operations during disconnection. The manual approach from v0.6 had none of that — a dropped connection meant silent data loss until the page reloaded.</p>
+<p>The manual <code>sync()</code> + <code>onSyncReceived</code> approach still works for cases where the collab plugin is too opinionated — for instance, if the server sends full state snapshots rather than per-property operations, or if the protocol does not map cleanly to <code>StateOperation</code>.</p>
+<h3>The Solid Pod Store</h3>
+<p>The Solid pod example from the previous article used <code>EventSource</code> for notifications and <code>fetch</code> for reads and writes. It works the same way with the renamed callback.</p>
+<div class="before-after">
+<p><strong>v0.6:</strong></p>
+<pre><code class="language-javascript">class PodStore extends CPXStore {
+  constructor(podUrl) {
+    super({ count: 0, theme: 'light' });
+    this.resourceUrl = `${podUrl}/app/state.json`;
+
+    const events = new EventSource(
+      `${podUrl}/.notifications?resource=${encodeURIComponent(this.resourceUrl)}`
+    );
+    events.onmessage = (e) =&gt; {
+      const notification = JSON.parse(e.data);
+      if (notification.type === 'Update') {
+        fetch(this.resourceUrl)
+          .then(r =&gt; r.json())
+          .then(data =&gt; this.sync(data));
+      }
+    };
+  }
+
+  onStorageChanged(newState, oldState) {
+    fetch(this.resourceUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newState),
+    });
+  }
+}
+</code></pre>
+<p><strong>Now:</strong></p>
+<pre><code class="language-javascript">class PodStore extends CPXStore {
+  constructor(podUrl) {
+    super({ count: 0, theme: 'light' });
+    this.resourceUrl = `${podUrl}/app/state.json`;
+
+    const events = new EventSource(
+      `${podUrl}/.notifications?resource=${encodeURIComponent(this.resourceUrl)}`
+    );
+    events.onmessage = (e) =&gt; {
+      const notification = JSON.parse(e.data);
+      if (notification.type === 'Update') {
+        fetch(this.resourceUrl)
+          .then(r =&gt; r.json())
+          .then(data =&gt; this.sync(data));
+      }
+    };
+  }
+
+  onSyncReceived(newState, oldState) {
+    fetch(this.resourceUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newState),
+    });
+  }
+}
+</code></pre>
+</div>
+<p>Again, one line. The Solid Notifications flow — subscribe to changes, fetch on update, write on local mutation — is transport-level logic that does not benefit from the collab plugin's per-property operation model. The <code>sync()</code> / <code>onSyncReceived</code> pair remains the right tool for full-state transports like Solid pods.</p>
+<h3>Summary of Changes</h3>
+<p>For readers migrating from code written against the previous article:</p>
+<table><thead><tr><th>v0.6</th><th>Current</th><th>Notes</th></tr></thead><tbody>
+<tr><td><code>super(state, middleware, options)</code></td><td><code>super(state, ...plugins)</code></td><td>Plugins replace positional args</td></tr>
+<tr><td>Built-in undo/redo</td><td><code>historyPlugin()</code></td><td>Opt-in, with strategy config</td></tr>
+<tr><td>Built-in persistence</td><td><code>persistencePlugin()</code></td><td>Opt-in</td></tr>
+<tr><td><code>onStorageChanged</code></td><td><code>onSyncReceived</code></td><td>Same signature</td></tr>
+<tr><td><code>e.detail.prop</code> / <code>e.detail.value</code></td><td><code>e.detail.changes.prop.val</code></td><td>Batched event shape</td></tr>
+<tr><td><code>store._history</code></td><td>Internal to plugin</td><td>Test via undo/redo behavior</td></tr>
+<tr><td><code>store._storageHandler</code></td><td>Internal to plugin</td><td>Test via behavior</td></tr>
+<tr><td>Manual WebSocket wiring</td><td><code>collabPlugin()</code> + <code>WebSocketTransport</code></td><td>Optional — manual still works</td></tr>
+<tr><td>Browser-only</td><td><code>CPXStoreCore</code> for headless, <code>CPXStore</code> for browser</td><td>Same <abbr title="Application Programming Interface">API</abbr>, same plugins</td></tr>
+</tbody></table>
+<h2>How This Compares to the React Ecosystem</h2>
+<p>React's state management landscape is a marketplace of specialized tools. Each solves a real problem. Each requires its own learning curve, its own integration patterns, and its own upgrade path. Here is how CPX Store's features map to that ecosystem.</p>
+<h3>Reactive State: Jotai / Zustand / Redux</h3>
+<p><a href="https://redux.js.org/">Redux</a> requires actions, reducers, a store configuration, and middleware for async operations. <a href="https://zustand-demo.pmnd.rs/">Zustand</a> simplifies this with a <code>create()</code> function but still requires selectors for granular subscriptions. <a href="https://jotai.org/">Jotai</a> introduces atoms — individual units of state — with automatic dependency tracking between derived atoms.</p>
+<p>CPX Store's <code>ReactiveState</code> and <code>ReactiveComputed</code> are closest in spirit to Jotai's atoms. Both provide fine-grained reactivity with automatic dependency tracking. The difference is coupling: Jotai atoms exist inside React's rendering model. They trigger re-renders through <code>useAtom</code> hooks. They cannot be read or written from outside a React component tree without additional plumbing.</p>
+<p>A CPX Store element is a <abbr title="Document Object Model">DOM</abbr> node. Any JavaScript on the page — React, Vue, Svelte, a plain <code>&lt;script&gt;</code> tag — interacts with it the same way: read <code>.state</code>, listen for <code>change</code> events, assign properties. The reactive dependency graph runs inside the store, not inside a framework's rendering cycle. This means the same store works with React 19, Lit 4, or vanilla JavaScript without adapter code.</p>
+<h3>Batching: React Transitions vs. <code>batch()</code> / <code>transaction()</code></h3>
+<p>React 18 introduced automatic batching — multiple <code>setState</code> calls within the same event handler or <code>useEffect</code> are coalesced into a single re-render. React 19 extended this with <code>useTransition</code> and <code>useOptimistic</code> for deferred and speculative updates.</p>
+<p>CPX Store's microtask coalescing serves the same purpose but operates at the state layer rather than the rendering layer. Multiple property assignments in the same synchronous block produce one <code>change</code> event. <code>batch()</code> provides explicit control. <code>transaction()</code> adds rollback — something React does not offer natively and would require manual state snapshot management.</p>
+<p>The important distinction: React batches <em>renders</em>. CPX Store batches <em>state changes and their side effects</em> (events, persistence, history). A React application using Zustand or Redux still needs those libraries to handle their own batching for non-render side effects like <code>localStorage</code> writes or analytics events. CPX Store handles this in one place because the store owns the entire pipeline from mutation to persistence to broadcast.</p>
+<h3>Persistence: Zustand <code>persist</code> / Redux Persist</h3>
+<p><a href="https://docs.pmnd.rs/zustand/integrations/persisting-store-data">Zustand's <code>persist</code> middleware</a> and <a href="https://github.com/rt2zz/redux-persist">Redux Persist</a> both serialize store state to <code>localStorage</code> and restore it on load. Both require configuration — storage adapters, serialization functions, migration strategies — and both run as middleware within their respective frameworks.</p>
+<p>CPX Store's persistence plugin does the same thing, but because it operates at the <code>onFlush</code> hook rather than per-mutation, it writes to <code>localStorage</code> once per batch rather than once per state change. For a <code>dispatch()</code> that sets five properties, Redux Persist potentially writes five times (depending on middleware configuration). CPX Store writes once, after the batch completes.</p>
+<p>Cross-tab sync is also built in: the persistence plugin listens for <code>storage</code> events and applies remote state through <code>sync()</code>, with the <code>_isSyncing</code> guard preventing write-back loops. In Redux, you would need a separate middleware or library to handle this — and that library would need to integrate with Redux Persist to avoid conflicts.</p>
+<h3>Undo/Redo: No Standard Solution</h3>
+<p>React has no built-in undo mechanism. Libraries like <a href="https://github.com/homerchen19/use-undo">use-undo</a> exist for individual state values, but undo across an entire application state — the kind you need for a text editor or a design tool — typically requires custom implementation. Redux offers <a href="https://github.com/omnidan/redux-undo">redux-undo</a>, which wraps a reducer to maintain a history of past states. Each history entry is a full state snapshot, creating the same memory problem CPX Store v0.6 had.</p>
+<p>CPX Store's history plugin solves this with per-property strategies. A property storing a 1<abbr title="Megabyte">MB</abbr> editor buffer uses the <code>patch</code> strategy and stores 100-byte diffs. A property storing a boolean flag uses the default <code>snapshot</code> strategy and stores two booleans. A property storing a cursor position uses <code>none</code> and is excluded from history entirely. This granularity is not available in any React state management library I am aware of.</p>
+<h3>Collaboration: Roll Your Own</h3>
+<p>React's ecosystem has no standard answer for real-time collaboration at the state management level. Libraries like <a href="https://yjs.dev/">Yjs</a> and <a href="https://liveblocks.io/">Liveblocks</a> provide <abbr title="Conflict-free Replicated Data Type">CRDT</abbr>-based collaboration, but they operate as separate systems that must be integrated with whatever state management library you are using. The integration is non-trivial — you need to synchronize the <abbr title="Conflict-free Replicated Data Type">CRDT</abbr> document with your Redux store or Zustand atoms, handle conflict resolution, and ensure that local optimistic updates do not diverge from the <abbr title="Conflict-free Replicated Data Type">CRDT</abbr> state.</p>
+<p>CPX Store's collab plugin and <code>SyncTransport</code> interface provide the plumbing that these integrations typically require. The <code>ConflictResolver</code> interface is the hook for <abbr title="Conflict-free Replicated Data Type">CRDT</abbr> libraries — implement <code>resolve(local, remote)</code> and the store handles the rest. The operation log, echo prevention, and transport abstraction are the parts that every collaboration implementation needs and every team ends up building from scratch.</p>
+<h3>Server-Side Rendering: Next.js vs. <code>CPXStoreCore</code></h3>
+<p>React's <abbr title="Server-Side Rendering">SSR</abbr> story has become increasingly complex. <a href="https://nextjs.org/">Next.js</a> introduced React Server Components, which split components into server and client layers. State management libraries must navigate this split carefully — Zustand requires a <a href="https://docs.pmnd.rs/zustand/guides/nextjs"><code>createStore</code> pattern</a> with React context to avoid shared state between requests, and Redux needs a <a href="https://redux.js.org/usage/nextjs">per-request store instance</a> to prevent cross-request data leaks on the server.</p>
+<p>CPX Store's <code>CPXStoreCore</code> avoids this complexity because it is a plain class with no global singletons and no framework coupling. Each request creates a new <code>CPXStoreCore</code> instance, populates it, serializes with <code>toJSON()</code>, and discards it. There is no shared state to leak, no context provider to configure, and no framework-specific <abbr title="Server-Side Rendering">SSR</abbr> adapter to maintain. The same plugins — middleware, history, collab — work identically on the server and in the browser because they operate on the store instance, not on framework hooks.</p>
+<h3>Computed State: <code>useMemo</code> vs. <code>ReactiveComputed</code></h3>
+<p>React's <code>useMemo</code> caches a computed value and recomputes it when dependencies change. The dependency array is explicit — you list the values that the memo depends on — and incorrect dependency arrays are a <a href="https://react.dev/reference/react/useMemo#troubleshooting">well-documented source of bugs</a>.</p>
+<p>CPX Store's <code>ReactiveComputed</code> tracks dependencies automatically during evaluation. There is no dependency array to get wrong. Conditional dependencies work correctly: if a compute function reads <code>state.a</code> only when <code>state.useA</code> is true, the dependency on <code>state.a</code> is only tracked when <code>state.useA</code> is true. When <code>state.useA</code> changes to false, the next evaluation drops <code>state.a</code> from the dependency set. <code>useMemo</code> cannot express this — it always tracks the same dependencies regardless of runtime control flow.</p>
+<h2>What This Does Not Do</h2>
+<p>CPX Store is not a <abbr title="User Interface">UI</abbr> framework. It does not render components, manage a virtual <abbr title="Document Object Model">DOM</abbr>, or handle routing. It is a state management layer that happens to have a Web Component interface (<code>CPXStore</code>) for browser use and a plain class interface (<code>CPXStoreCore</code>) for everywhere else. It pairs with whatever renders your <abbr title="User Interface">UI</abbr> — React, Lit, Svelte, <code>document.getElementById</code>, or no <abbr title="User Interface">UI</abbr> at all.</p>
+<p>It is also not a <abbr title="Conflict-free Replicated Data Type">CRDT</abbr> engine. The collaboration plugin provides transport abstraction, operation logging, and a conflict resolution interface. It does not implement operational transform or <abbr title="Conflict-free Replicated Data Type">CRDT</abbr> merge semantics. For true multi-user document editing, you still need Yjs or Automerge — but CPX Store gives you the integration hooks rather than leaving you to build them.</p>
+<h2>The Numbers</h2>
+<p>The new architecture across all source files:</p>
+<table><thead><tr><th>Component</th><th>Size</th><th>Purpose</th></tr></thead><tbody>
+<tr><td>Headless core (<code>CPXStoreCore</code>)</td><td>~280 lines</td><td>Plugin system, Proxy, nested state, batch/transaction</td></tr>
+<tr><td>Web Component wrapper (<code>CPXStore</code>)</td><td>~45 lines</td><td><abbr title="Document Object Model">DOM</abbr> events, <code>HTMLElement</code> lifecycle</td></tr>
+<tr><td>Reactivity</td><td>~80 lines</td><td>ReactiveState, ReactiveComputed, auto-tracking</td></tr>
+<tr><td>Middleware plugin</td><td>~30 lines</td><td>Filterable middleware</td></tr>
+<tr><td>History plugin</td><td>~160 lines</td><td>Undo/redo with strategies</td></tr>
+<tr><td>Persistence plugin</td><td>~55 lines</td><td>localStorage + cross-tab sync (environment-aware)</td></tr>
+<tr><td>Collab plugin</td><td>~105 lines</td><td>Transport abstraction + operation log</td></tr>
+<tr><td>BroadcastChannel transport</td><td>~40 lines</td><td>Same-origin tab sync</td></tr>
+<tr><td>WebSocket transport</td><td>~120 lines</td><td>Multi-user sync with reconnection</td></tr>
+<tr><td>Nested proxy utility</td><td>~70 lines</td><td>Recursive Proxy with WeakMap cache</td></tr>
+<tr><td><abbr title="JavaScript Object Notation">JSON</abbr> Patch utility</td><td>~55 lines</td><td>Object diff/apply for history</td></tr>
+<tr><td><strong>Total</strong></td><td><strong>~1,040 lines</strong></td><td>Zero dependencies</td></tr>
+</tbody></table>
+<p>The entire system — reactivity, plugins, undo/redo with patch compression, nested state, collaboration with two transports, a <abbr title="JavaScript Object Notation">JSON</abbr> Patch implementation, and a headless core for <abbr title="Server-Side Rendering">SSR</abbr> — is about a thousand lines of TypeScript with no external dependencies. Of those, roughly 280 lines are the headless core that runs anywhere, and 45 lines are the Web Component wrapper. A React application achieving the same capability would typically combine Redux or Zustand (~15<abbr title="Kilobyte">KB</abbr> minified), Redux Persist (~8<abbr title="Kilobyte">KB</abbr>), a custom undo library, a collaboration layer, and a framework-specific <abbr title="Server-Side Rendering">SSR</abbr> adapter — each with its own dependency tree, its own versioning cadence, and its own integration surface.</p>
+<h2>Try It</h2>
+<p>The full source is on <a href="https://github.com/chapeaux/cpx-store">GitHub</a>. Install it and start building:</p>
+<pre><code class="language-bash"># Using JSR (recommended)
+deno add jsr:@chapeaux/cpx-store
+
+# Using npm
+npm install @chapeaux/cpx-store
+</code></pre>
+<p>Two entry points, one <abbr title="Application Programming Interface">API</abbr>:</p>
+<pre><code class="language-javascript">// Browser — Web Component with DOM events
+import { CPXStore } from '@chapeaux/cpx-store';
+
+// Server / CLI / tests — plain class, no DOM
+import { CPXStoreCore } from '@chapeaux/cpx-store/cpx-store-core';
+</code></pre>
+<p>The <a href="/blog/2026-04-16-cpx-store-cross-tab/">previous article's Tab Party demo</a> still works — the <code>persist</code> attribute, <code>sync()</code> method, and <code>change</code> events are all preserved. The difference is that behind those same entry points, the store can now handle workloads that would have brought the original 162-line version to its knees — and it can do it on the server, too.</p>
+
+    <p><a href="/blog/">&larr; All posts</a></p>
+  </article>
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <img src="/images/chapeaux_logo_aiux_reverse_2026.svg" alt="Chapeaux">
+          <p>A Digital Supply Chain for Web Assets</p>
+        </div>
+        <ul class="footer-links">
+          <li><a href="/contribute/">Contribute</a></li>
+          <li><a href="/projects/">Projects</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/chapellerie/">Chapellerie</a></li>
+          <li><a href="https://github.com/chapeaux">GitHub</a></li>
+        </ul>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Chapeaux Project. Open source under the MIT License.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
