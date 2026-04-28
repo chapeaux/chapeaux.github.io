@@ -7,6 +7,12 @@
  * Usage:
  *   <geoff-search index="/search.nt"></geoff-search>
  *
+ * Supports:
+ *   - Plain text: searches titles and descriptions
+ *   - Structured: key=value filters on RDF properties
+ *     e.g. "geoff:stage=develop" or "type=BlogPosting"
+ *   - Combined: "cpx geoff:stage=develop"
+ *
  * Attributes:
  *   index  — URL of the N-Triples search index (default: "/search.nt")
  *   limit  — Maximum results to show (default: "20")
@@ -23,7 +29,7 @@ class GeoffSearch extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
       <form role="search" class="geoff-search-form">
-        <input type="search" placeholder="Search…" aria-label="Search" />
+        <input type="search" placeholder="Search… (e.g. geoff:stage=develop)" aria-label="Search" />
         <div class="geoff-search-status" aria-live="polite"></div>
       </form>
       <div class="geoff-search-results" role="list"></div>
@@ -65,6 +71,39 @@ class GeoffSearch extends HTMLElement {
     }
   }
 
+  _expandPredicate(key) {
+    const prefixes = {
+      'geoff:': 'urn:geoff:ontology:',
+      'schema:': 'http://schema.org/',
+      'rdf:': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+    };
+    for (const [prefix, iri] of Object.entries(prefixes)) {
+      if (key.startsWith(prefix)) return iri + key.slice(prefix.length);
+    }
+    if (key === 'type') return 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
+    if (key === 'stage') return 'urn:geoff:ontology:stage';
+    if (key === 'status') return 'urn:geoff:ontology:status';
+    if (key === 'language') return 'urn:geoff:ontology:language';
+    return key;
+  }
+
+  _parseQuery(input) {
+    const tokens = input.trim().split(/\s+/);
+    const filters = [];
+    const textParts = [];
+
+    for (const token of tokens) {
+      const eqMatch = token.match(/^([^=]+)=(.+)$/);
+      if (eqMatch) {
+        filters.push({ predicate: this._expandPredicate(eqMatch[1]), value: eqMatch[2] });
+      } else {
+        textParts.push(token);
+      }
+    }
+
+    return { text: textParts.join(' '), filters };
+  }
+
   async _search(query) {
     const results = this.querySelector('.geoff-search-results');
     if (!query.trim()) {
@@ -76,8 +115,28 @@ class GeoffSearch extends HTMLElement {
     await this._ensureLoaded();
     if (!this._loaded) return;
 
-    const escaped = query.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    const { text, filters } = this._parseQuery(query);
     const limit = parseInt(this.getAttribute('limit') || '20', 10);
+
+    let filterPatterns = '';
+    let filterConditions = '';
+
+    filters.forEach((f, i) => {
+      const escaped = f.value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      if (f.predicate === 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type') {
+        filterPatterns += `  ?s <${f.predicate}> ?_ftype${i} .\n`;
+        filterConditions += ` && CONTAINS(LCASE(STR(?_ftype${i})), LCASE("${escaped}"))`;
+      } else {
+        filterPatterns += `  ?s <${f.predicate}> ?_fval${i} .\n`;
+        filterConditions += ` && CONTAINS(LCASE(STR(?_fval${i})), LCASE("${escaped}"))`;
+      }
+    });
+
+    let textCondition = '';
+    if (text) {
+      const escaped = text.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      textCondition = ` && (CONTAINS(LCASE(?title), LCASE("${escaped}")) || CONTAINS(LCASE(COALESCE(?desc, "")), LCASE("${escaped}")))`;
+    }
 
     const sparql = `
       SELECT ?title ?url ?desc ?date ?type WHERE {
@@ -86,10 +145,7 @@ class GeoffSearch extends HTMLElement {
         OPTIONAL { ?s <http://schema.org/description> ?desc }
         OPTIONAL { ?s <http://schema.org/datePublished> ?date }
         OPTIONAL { ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?type }
-        FILTER(
-          CONTAINS(LCASE(?title), LCASE("${escaped}"))
-          || CONTAINS(LCASE(COALESCE(?desc, "")), LCASE("${escaped}"))
-        )
+${filterPatterns}        FILTER(true${textCondition}${filterConditions})
       }
       ORDER BY DESC(?date)
       LIMIT ${limit}
