@@ -144,7 +144,7 @@
 <urn:geoff:content:blog/index.md> <http://schema.org/name> "Blog" .
 <urn:geoff:content:blog/2026-04-27-introducing-geoff.md> <http://schema.org/url> "/blog/2026-04-27-introducing-geoff.html" .
 <urn:geoff:content:blog/2026-04-27-introducing-geoff.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/BlogPosting> .
-<urn:geoff:content:blog/2026-04-27-introducing-geoff.md> <http://schema.org/description> "Geoff is a Rust-based static site generator that turns Markdown files into a queryable RDF knowledge graph. Write plain frontmatter, get SPARQL queries in templates, JSON-LD in every page, and SHACL validation for free." .
+<urn:geoff:content:blog/2026-04-27-introducing-geoff.md> <http://schema.org/description> "Geoff is a Rust-based static site generator that turns Markdown files into a queryable RDF knowledge graph. Write plain frontmatter, get SPARQL queries in templates, JSON-LD in every page, SHACL validation, and client-side search powered by the same Oxigraph engine via WASM." .
 <urn:geoff:content:blog/2026-04-27-introducing-geoff.md> <http://schema.org/datePublished> "2026-04-27"^^<http://www.w3.org/2001/XMLSchema#date> .
 <urn:geoff:content:blog/2026-04-27-introducing-geoff.md> <http://schema.org/name> "Introducing Geoff: A Static Site Generator with a Knowledge Graph Inside" .
 <urn:geoff:content:blog/2026-04-23-cpx-store-scales-up.md> <http://schema.org/url> "/blog/2026-04-23-cpx-store-scales-up.html" .

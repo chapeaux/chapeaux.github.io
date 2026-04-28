@@ -414,6 +414,123 @@ main {
   }
 }
 
+/* === Search === */
+
+geoff-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.geoff-search-form {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.geoff-search-form input[type="search"] {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--gray-light);
+  border-radius: 4px;
+  background: var(--gray-lightest);
+  color: var(--black);
+  width: 180px;
+  transition: width 0.2s, border-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: var(--cpx-blue);
+    width: 240px;
+    background: var(--white);
+  }
+
+  &::placeholder {
+    color: var(--gray);
+  }
+}
+
+.geoff-search-status {
+  font-size: 0.75rem;
+  color: var(--gray);
+  position: absolute;
+  right: 0;
+  top: 100%;
+  white-space: nowrap;
+  padding-top: 0.25rem;
+}
+
+.geoff-search-results {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  width: 360px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: var(--white);
+  border: 1px solid var(--gray-light);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+  z-index: 200;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.geoff-search-result {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: var(--black);
+  text-decoration: none;
+  border-bottom: 1px solid var(--gray-lightest);
+
+  & strong {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--cpx-blue);
+  }
+
+  & time {
+    font-size: 0.8rem;
+    color: var(--gray);
+  }
+
+  & small {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--gray-dark);
+    margin-top: 0.25rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: var(--gray-lightest);
+    text-decoration: none;
+
+    & strong { color: var(--cpx-purple); }
+  }
+}
+
+@media (max-width: 767px) {
+  .geoff-search-form input[type="search"] {
+    width: 140px;
+    &:focus { width: 180px; }
+  }
+
+  .geoff-search-results {
+    width: calc(100vw - 2rem);
+    right: -1rem;
+  }
+}
+
 /* === Footer === */
 
 .site-footer {
