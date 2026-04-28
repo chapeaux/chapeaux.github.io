@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introducing Geoff: A Static Site Generator with a Knowledge Graph Inside — Chapeaux</title>
+  <meta name="description" content="Geoff is a Rust-based static site generator that turns Markdown files into a queryable RDF knowledge graph. Write plain frontmatter, get SPARQL queries in templates, JSON-LD in every page, SHACL validation, and client-side search powered by the same Oxigraph engine via WASM.">
+  <link rel="icon" type="image/png" href="/images/favicon_2026.png">
+  <link rel="stylesheet" href="/chapeaux.css">
+  
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org/",
+  "@id": "https://chapeaux.github.io/blog/2026-04-27-introducing-geoff",
+  "@type": "BlogPosting",
+  "datePublished": "2026-04-27",
+  "name": "Introducing Geoff: A Static Site Generator with a Knowledge Graph Inside"
+}
+  </script>
+  
+  
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="site-logo">
+        <img src="/images/chapeaux_logo_wide_default_2026.svg" alt="Chapeaux">
+      </a>
+
+      <nav>
+        <ul class="site-nav">
+          <li><a href="/contribute/">Contribute</a></li>
+          <li><a href="/projects/">Projects</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/chapellerie/">Chapellerie</a></li>
+        </ul>
+      </nav>
+
+      <details class="mobile-menu">
+        <summary aria-label="Menu">&#9776;</summary>
+        <ul class="mobile-nav">
+          <li><a href="/contribute/">Contribute</a></li>
+          <li><a href="/projects/">Projects</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/chapellerie/">Chapellerie</a></li>
+        </ul>
+      </details>
+    </div>
+  </header>
+
+  <main>
+    
+<div class="page-header">
+  <div class="container">
+    <h1>Introducing Geoff: A Static Site Generator with a Knowledge Graph Inside</h1>
+  </div>
+</div>
+
+<div class="container">
+  <article class="blog-post">
+    
+    <div class="post-meta">
+      2026-04-27
+    </div>
+    
+    <p>Static site generators have a content model problem. You write a blog post in Markdown, add some metadata in frontmatter, and the generator turns it into <abbr title="HyperText Markup Language">HTML</abbr>. But the metadata is trapped. It lives in individual files, accessible only through the generator's proprietary template functions — <code>range .Site.Pages</code> in <a href="https://gohugo.io/">Hugo</a>, <code>section.pages</code> in <a href="https://www.getzola.org/">Zola</a>. Every generator invents its own query language for slicing and filtering content. None of them produce structured data unless you hand-write <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> templates. And none of them can tell you, before you build, whether your content is valid.</p>
+<p><a href="https://github.com/chapeaux/geoff">Geoff</a> takes a different approach. Every content file becomes a node in an <abbr title="Resource Description Framework">RDF</abbr> knowledge graph, queryable with <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> from inside your templates. Structured data (<abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr>) is generated automatically. Content validation rules are expressed as <a href="https://www.w3.org/TR/shacl/"><abbr title="Shapes Constraint Language">SHACL</abbr></a> shapes. And you never need to type an <abbr title="Internationalized Resource Identifier">IRI</abbr> — you write <code>type = "Blog Post"</code> and Geoff maps it to <code>schema:BlogPosting</code> behind the scenes.</p>
+<p>This article introduces what Geoff is, how it compares to Hugo and Zola, and where it is headed.</p>
+<h2>What Geoff Is</h2>
+<p>Geoff is a static site generator written in Rust. Single binary, zero runtime dependencies. You write Markdown with <abbr title="Tom's Obvious, Minimal Language">TOML</abbr> frontmatter, and Geoff builds static <abbr title="HyperText Markup Language">HTML</abbr>. In that sense, it is the same species as Hugo and Zola.</p>
+<p>The difference is what happens between parsing and rendering. Geoff takes every piece of frontmatter — title, date, author, type, tags, custom fields — and inserts it as <abbr title="Resource Description Framework">RDF</abbr> triples into an in-memory graph backed by <a href="https://oxigraph.org/">Oxigraph</a>. By the time templates execute, the entire site is a queryable knowledge graph. Templates can ask questions like "give me all blog posts sorted by date" or "find every page tagged <code>rust</code> that was published this year" using standard <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> — not a generator-specific <abbr title="Application Programming Interface">API</abbr>.</p>
+<p>A minimal Geoff site:</p>
+<pre><code>my-site/
+├── geoff.toml
+├── content/
+│   ├── blog/
+│   │   └── hello.md
+│   └── about.md
+├── templates/
+│   ├── base.html
+│   ├── page.html
+│   └── blog.html
+└── ontology/
+    └── mappings.toml
+</code></pre>
+<p>The config is two lines:</p>
+<pre><code class="language-toml">base_url = "https://example.com"
+title = "My Site"
+</code></pre>
+<p>A content file looks like any other static site generator:</p>
+<pre><code class="language-markdown">+++
+title = "Hello World"
+date = 2026-04-27
+template = "blog-page.html"
+type = "Blog Post"
+description = "My first post."
++++
+
+# Hello World
+
+This is a blog post.
+</code></pre>
+<p>No <abbr title="Resource Description Framework">RDF</abbr> syntax. No <abbr title="Internationalized Resource Identifier">IRI</abbr>s. Just frontmatter fields that Geoff maps to ontology terms automatically.</p>
+<h2>How the Graph Works</h2>
+<p>When Geoff processes <code>hello.md</code>, it creates triples like:</p>
+<pre><code>&lt;urn:geoff:content:blog/hello.md&gt;  schema:name         "Hello World" .
+&lt;urn:geoff:content:blog/hello.md&gt;  schema:datePublished "2026-04-27" .
+&lt;urn:geoff:content:blog/hello.md&gt;  rdf:type             schema:BlogPosting .
+&lt;urn:geoff:content:blog/hello.md&gt;  schema:description   "My first post." .
+</code></pre>
+<p>Each page gets its own named graph, so you can query specific pages or the entire site. The mapping from <code>type = "Blog Post"</code> to <code>schema:BlogPosting</code> happens through a resolution pipeline:</p>
+<ol>
+<li>Check <code>ontology/mappings.toml</code> for a persisted mapping</li>
+<li>Try an exact label match against bundled vocabularies (Schema.org, Dublin Core, <abbr title="Friend of a Friend">FOAF</abbr>, <abbr title="Semantically-Interlinked Online Communities">SIOC</abbr>)</li>
+<li>Fall back to fuzzy matching (Jaro-Winkler similarity, threshold 0.7)</li>
+</ol>
+<p>If Geoff finds a high-confidence match (≥ 0.95), it maps automatically and saves the mapping. Otherwise, it prompts you. Either way, the mapping is persisted in <code>ontology/mappings.toml</code> so the next build is instant:</p>
+<pre><code class="language-toml">[types]
+"Blog Post" = "http://schema.org/BlogPosting"
+
+[properties]
+title = "http://schema.org/name"
+date = "http://schema.org/datePublished"
+</code></pre>
+<p>Once mapped, the same vocabulary terms are used for <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> output, <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> queries, and <abbr title="Shapes Constraint Language">SHACL</abbr> validation. One mapping drives everything.</p>
+<h2>SPARQL in Templates</h2>
+<p>This is the feature that makes the graph practical for site building. Geoff registers a <code>sparql()</code> function in <a href="https://keats.github.io/tera/">Tera</a> (the same template engine Zola uses), so templates can query the site graph directly:</p>
+<pre><code class="language-html">{% set posts = sparql(query="
+  SELECT ?title ?date ?url WHERE {
+    GRAPH ?g {
+      ?s &lt;http://schema.org/name&gt; ?title .
+      ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt;
+         &lt;http://schema.org/BlogPosting&gt; .
+      OPTIONAL { ?s &lt;http://schema.org/datePublished&gt; ?date }
+      OPTIONAL { ?s &lt;http://schema.org/url&gt; ?url }
+    }
+  }
+  ORDER BY DESC(?date)
+") %}
+
+{% for post in posts %}
+  &lt;article&gt;
+    &lt;h2&gt;&lt;a href="{{ post.url }}"&gt;{{ post.title }}&lt;/a&gt;&lt;/h2&gt;
+    {% if post.date %}&lt;time&gt;{{ post.date }}&lt;/time&gt;{% endif %}
+  &lt;/article&gt;
+{% endfor %}
+</code></pre>
+<p>This replaces the bespoke content-query <abbr title="Application Programming Interface">API</abbr>s that every other generator invents. In Hugo, the same listing requires <code>{{ range .Site.RegularPages }}</code> with <code>.Type</code> filters and <code>.ByDate</code> sorting — a Go template <abbr title="Application Programming Interface">API</abbr> that only works in Hugo. In Zola, it is <code>section.pages | sort(attribute="date") | reverse</code> — a Tera filter chain that only works in Zola. Both are proprietary. <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> is a <abbr title="World Wide Web Consortium">W3C</abbr> standard with a <a href="https://www.w3.org/TR/sparql12-query/">specification</a>, a formal grammar, and implementations in every major programming language.</p>
+<p>The query language is more expressive, too. Want blog posts that share a tag with the current page? Hugo requires a multi-step <code>intersect</code> pipeline. Zola cannot do it without taxonomy pages. In Geoff, it is a <code>JOIN</code>:</p>
+<pre><code class="language-html">{% set related = sparql(query="
+  SELECT DISTINCT ?title ?url WHERE {
+    GRAPH ?g1 { &lt;" ~ page_uri ~ "&gt; &lt;http://schema.org/keywords&gt; ?tag }
+    GRAPH ?g2 {
+      ?other &lt;http://schema.org/keywords&gt; ?tag .
+      ?other &lt;http://schema.org/name&gt; ?title .
+      ?other &lt;http://schema.org/url&gt; ?url .
+      FILTER(?other != &lt;" ~ page_uri ~ "&gt;)
+    }
+  }
+  LIMIT 5
+") %}
+</code></pre>
+<p>Cross-cutting queries like this are where the graph model earns its keep. The content model is relational, not hierarchical — any page can relate to any other page through shared properties, without filesystem conventions or taxonomy configuration.</p>
+<h2>JSON-LD for Free</h2>
+<p>Every page Geoff builds includes a <code>&lt;script type="application/ld+json"&gt;</code> block generated from the same triples that feed <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr>:</p>
+<pre><code class="language-html">&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org/",
+  "@type": "BlogPosting",
+  "name": "Hello World",
+  "datePublished": "2026-04-27",
+  "author": "Jane Smith"
+}
+&lt;/script&gt;
+</code></pre>
+<p>In Hugo and Zola, <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> requires a hand-written template partial that reads frontmatter fields and assembles the <abbr title="JavaScript Object Notation">JSON</abbr> manually. Every field must be mapped twice — once in the template logic, once in the <abbr title="JavaScript Object Notation">JSON</abbr> structure. Geoff generates it from the graph, so the <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> is always consistent with the content and always uses the correct Schema.org types.</p>
+<h2>SHACL Validation</h2>
+<p>Geoff can validate your content against <a href="https://www.w3.org/TR/shacl/"><abbr title="Shapes Constraint Language">SHACL</abbr></a> shapes before building. A shape is a set of constraints expressed in <abbr title="Resource Description Framework">RDF</abbr> — "every BlogPosting must have a title and a date" — that Geoff checks against the graph:</p>
+<pre><code class="language-bash">geoff validate
+# ✓ 0 violations, 2 warnings (3 shapes checked)
+</code></pre>
+<pre><code class="language-bash">geoff shapes
+# Generates starter shapes from your existing content
+</code></pre>
+<p>Hugo and Zola have no validation mechanism. If a blog post is missing a date, you discover it when the template renders an empty <code>&lt;time&gt;</code> element — or when a reader notices. <abbr title="Shapes Constraint Language">SHACL</abbr> catches it at build time with an actionable error.</p>
+<h2>How It Compares to Hugo and Zola</h2>
+<p>All three are fast, single-binary static site generators that take Markdown in and produce <abbr title="HyperText Markup Language">HTML</abbr> out. The differences are in what sits between input and output.</p>
+<table><thead><tr><th></th><th>Hugo</th><th>Zola</th><th>Geoff</th></tr></thead><tbody>
+<tr><td><strong>Language</strong></td><td>Go</td><td>Rust</td><td>Rust</td></tr>
+<tr><td><strong>Templates</strong></td><td>Go templates</td><td>Tera (Jinja2)</td><td>Tera (Jinja2)</td></tr>
+<tr><td><strong>Content queries</strong></td><td>Go template functions</td><td>Tera filters</td><td><abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> (<abbr title="World Wide Web Consortium">W3C</abbr> standard)</td></tr>
+<tr><td><strong>Structured data</strong></td><td>Manual templates</td><td>Manual templates</td><td>Automatic <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr></td></tr>
+<tr><td><strong>Content validation</strong></td><td>None</td><td>None</td><td><abbr title="Shapes Constraint Language">SHACL</abbr> shapes</td></tr>
+<tr><td><strong>Data model</strong></td><td>Filesystem hierarchy</td><td>Filesystem hierarchy</td><td><abbr title="Resource Description Framework">RDF</abbr> knowledge graph</td></tr>
+<tr><td><strong>Plugin system</strong></td><td>None (Go modules)</td><td>None</td><td>Rust (cdylib) + Deno (TypeScript)</td></tr>
+<tr><td><strong>Dev server</strong></td><td>Built-in</td><td>Built-in</td><td>Built-in (hot reload via WebSocket)</td></tr>
+<tr><td><strong>Client-side search</strong></td><td>None (bring your own)</td><td>Elasticlunr.js (text index)</td><td>Oxigraph <abbr title="WebAssembly">WASM</abbr> (<abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> queries)</td></tr>
+<tr><td><strong>Incremental builds</strong></td><td>Yes</td><td>No</td><td>Yes (cache-aware)</td></tr>
+<tr><td><strong>Ecosystem</strong></td><td>Massive (themes, docs)</td><td>Growing</td><td>Early</td></tr>
+</tbody></table>
+<h3>Where Hugo and Zola Are Better</h3>
+<p><strong>Ecosystem.</strong> Hugo has thousands of themes, extensive documentation, and a decade of community knowledge. Zola has a smaller but mature ecosystem. Geoff has three starter templates and this blog post.</p>
+<p><strong>Build speed for large sites.</strong> Hugo is famously fast — thousands of pages in milliseconds. Geoff uses Rayon for parallel rendering and incremental caching, but it has not been benchmarked against Hugo at scale. For sites under a few hundred pages, the difference is not perceptible.</p>
+<p><strong>Learning curve for templates.</strong> Hugo's Go templates and Zola's Tera filters are well-documented and widely understood. Geoff's <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> queries are more powerful but have a steeper learning curve for developers who have not encountered query languages before. That said, if you have used <abbr title="Structured Query Language">SQL</abbr>, <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> will feel familiar.</p>
+<h3>Where Geoff Is Better</h3>
+<p><strong>Cross-cutting content queries.</strong> Any question you can express in <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> — related posts by shared tags, pages grouped by author and date range, content filtered by custom <abbr title="Resource Description Framework">RDF</abbr> properties — is one template call. Hugo and Zola require chained template functions, taxonomy configuration, or workarounds.</p>
+<p><strong>Structured data output.</strong> <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> is generated from the graph, not hand-coded in templates. It uses the correct Schema.org types because the same vocabulary mapping that drives the graph also drives the <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr>.</p>
+<p><strong>Content validation.</strong> <abbr title="Shapes Constraint Language">SHACL</abbr> shapes catch missing fields, wrong types, and constraint violations at build time. This is especially valuable for multi-author sites or content managed by non-developers.</p>
+<p><strong>Plugin system.</strong> Geoff supports both native Rust plugins (loaded dynamically via <code>libloading</code>) and TypeScript plugins (run as Deno subprocesses via <abbr title="JavaScript Object Notation">JSON</abbr>-<abbr title="Remote Procedure Call">RPC</abbr>). Eight lifecycle hooks — from <code>on_init</code> through <code>on_build_complete</code> — let plugins modify content, inject template variables, add output files, or react to file changes during dev.</p>
+<p><strong>Client-side search.</strong> Hugo has no built-in search. Zola ships Elasticlunr.js with a <abbr title="JavaScript Object Notation">JSON</abbr> text index — keyword matching, no structure. Geoff's <code>&lt;geoff-search&gt;</code> component runs the same Oxigraph <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> engine in the browser via <abbr title="WebAssembly">WASM</abbr>, querying an <abbr title="Resource Description Framework">RDF</abbr> index that preserves content types, tags, dates, and relationships. Faceted search is a <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> <code>FILTER</code> clause, not a feature you configure separately.</p>
+<p><strong>Custom <abbr title="Resource Description Framework">RDF</abbr> properties.</strong> Power users can add arbitrary <abbr title="Resource Description Framework">RDF</abbr> triples via a <code>[rdf.custom]</code> frontmatter table, queryable in templates like any other property. Hugo and Zola support custom frontmatter fields, but they are not part of a larger queryable data model — they are just key-value pairs scoped to a single page.</p>
+<h2>The Plugin System</h2>
+<p>Geoff plugins implement up to eight async lifecycle hooks:</p>
+<pre><code class="language-rust">#[async_trait]
+pub trait Plugin: Send + Sync {
+    fn name(&amp;self) -&gt; &amp;str;
+    async fn on_init(&amp;self, ctx: &amp;mut InitContext) -&gt; Result&lt;()&gt;;
+    async fn on_build_start(&amp;self, ctx: &amp;mut BuildContext) -&gt; Result&lt;()&gt;;
+    async fn on_content_parsed(&amp;self, ctx: &amp;mut ContentContext) -&gt; Result&lt;()&gt;;
+    async fn on_graph_updated(&amp;self, ctx: &amp;mut GraphContext) -&gt; Result&lt;()&gt;;
+    async fn on_validation_complete(&amp;self, ctx: &amp;mut ValidationContext) -&gt; Result&lt;()&gt;;
+    async fn on_page_render(&amp;self, ctx: &amp;mut RenderContext) -&gt; Result&lt;()&gt;;
+    async fn on_build_complete(&amp;self, ctx: &amp;mut OutputContext) -&gt; Result&lt;()&gt;;
+    async fn on_file_changed(&amp;self, ctx: &amp;mut WatchContext) -&gt; Result&lt;()&gt;;
+}
+</code></pre>
+<p>A reading-time plugin that calculates estimated minutes from word count:</p>
+<pre><code class="language-rust">async fn on_content_parsed(&amp;self, ctx: &amp;mut ContentContext) -&gt; Result&lt;()&gt; {
+    let words = ctx.page.raw_body.split_whitespace().count();
+    let minutes = (words as f64 / 200.0).ceil() as u64;
+    ctx.page.frontmatter.insert(
+        "reading_time_minutes".into(), minutes.into()
+    );
+    Ok(())
+}
+</code></pre>
+<p>The same plugin in TypeScript, running as a Deno subprocess:</p>
+<pre><code class="language-typescript">import { definePlugin } from "./sdk/mod.ts";
+
+definePlugin({
+  name: "reading-time",
+  on_content_parsed(ctx) {
+    const words = ctx.page.raw_body.split(/\s+/).length;
+    const minutes = Math.ceil(words / 200);
+    ctx.page.frontmatter.reading_time_minutes = minutes;
+  },
+});
+</code></pre>
+<p>Rust plugins are compiled to <code>cdylib</code> and loaded dynamically — native speed, no subprocess overhead. Deno plugins communicate over <abbr title="JavaScript Object Notation">JSON</abbr>-<abbr title="Remote Procedure Call">RPC</abbr> 2.0 on stdin/stdout — easier to write, easier to distribute, no compilation step.</p>
+<h2>Dev Experience</h2>
+<pre><code class="language-bash">geoff init my-site --template blog    # Scaffold a new site
+geoff serve --open                    # Dev server with hot reload
+geoff build                           # Build to dist/
+geoff validate                        # Check SHACL shapes
+geoff new blog/my-post.md --type "Blog Post" --title "My Post"
+</code></pre>
+<p>The dev server (<code>geoff serve</code>) runs on <a href="https://github.com/tokio-rs/axum">Axum</a>, watches <code>content/</code>, <code>templates/</code>, and <code>ontology/</code> for changes, and pushes reload events over WebSocket. Pages are rendered in memory — no disk writes during development. A <code>/api/sparql</code> endpoint lets you test queries against the live graph from your browser or from <code>curl</code>.</p>
+<p>Incremental builds skip unchanged content files. Templates that use <code>sparql()</code> are always re-rendered because their output depends on graph state, not just their own source file.</p>
+<h2>Client-Side Search with the Same Engine</h2>
+<p>Most static site generators bolt on search as an afterthought. Hugo has no built-in search — you bring <a href="https://lunrjs.com/">Lunr.js</a>, <a href="https://pagefind.app/">Pagefind</a>, or Algolia. Zola generates a search index as a <abbr title="JavaScript Object Notation">JSON</abbr> blob and ships <a href="http://elasticlunr.com/">Elasticlunr.js</a> to query it. Both approaches use a text search engine that knows nothing about the content's structure — you search titles and bodies, maybe filter by section, and get back a list of keyword matches.</p>
+<p>Geoff does something different. At build time, it serializes the search-relevant slice of the <abbr title="Resource Description Framework">RDF</abbr> graph — titles, descriptions, dates, <abbr title="Uniform Resource Locator">URL</abbr>s, tags, content types — to an N-Triples file. On the client, a <code>&lt;geoff-search&gt;</code> web component lazy-loads <a href="https://www.npmjs.com/package/oxigraph">Oxigraph's <abbr title="WebAssembly">WASM</abbr> build</a> and runs real <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> queries against the index in the browser. The same query engine that built the site now searches it.</p>
+<p>Enable it in <code>geoff.toml</code>:</p>
+<pre><code class="language-toml">[search]
+enabled = true
+</code></pre>
+<p>Add the component to a template:</p>
+<pre><code class="language-html">&lt;script type="module" src="/geoff-search.js"&gt;&lt;/script&gt;
+&lt;geoff-search&gt;&lt;/geoff-search&gt;
+</code></pre>
+<p>That is it. The build writes a <code>search.nt</code> file (20<abbr title="Kilobyte">KB</abbr> for a 42-page site), and the component loads it on first interaction. Oxigraph <abbr title="WebAssembly">WASM</abbr> is ~300<abbr title="Kilobyte">KB</abbr> gzipped, lazy-loaded — it does not affect initial page load.</p>
+<p>Because the index is <abbr title="Resource Description Framework">RDF</abbr>, not a flat text index, the search is inherently faceted. The component's <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> query can filter by content type, tag, date range, or any combination — the same kinds of queries you write in templates:</p>
+<pre><code class="language-sparql">SELECT ?title ?url ?desc WHERE {
+  ?s &lt;http://schema.org/name&gt; ?title .
+  ?s &lt;http://schema.org/url&gt; ?url .
+  OPTIONAL { ?s &lt;http://schema.org/description&gt; ?desc }
+  FILTER(CONTAINS(LCASE(?title), LCASE("sparql")))
+}
+ORDER BY DESC(?date)
+</code></pre>
+<p>The search index uses the same predicates, the same <abbr title="Internationalized Resource Identifier">IRI</abbr>s, and the same Oxigraph engine as the build-time graph. There is no translation layer between what the server knows and what the client can query. No other static site generator can make that claim.</p>
+<h2>What Is Planned</h2>
+<p>Geoff is functional but early. Here is what is coming:</p>
+<p><strong>Authoring <abbr title="User Interface">UI</abbr>.</strong> A set of web components — built with Chapeaux tools, naturally — for editing content in the browser: a frontmatter editor that shows available vocabulary terms, a graph visualizer for content relationships, a <abbr title="Shapes Constraint Language">SHACL</abbr> validation panel that shows constraint violations as you type.</p>
+<p><strong>Federation.</strong> Linking to external <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> endpoints or other Geoff sites via federated queries. A documentation site could query an <abbr title="Application Programming Interface">API</abbr> reference site's graph at build time to pull in type signatures or changelogs without duplicating content.</p>
+<p><strong><abbr title="Internationalization — adapting software for different languages and regions">i18n</abbr> driven by <abbr title="Resource Description Framework">RDF</abbr> labels.</strong> The bundled vocabularies already include multilingual labels (<code>rdfs:label "Product"@en, "Producto"@es</code>). A future version could generate localized pages by resolving labels to the target language.</p>
+<p><strong>Image optimization pipeline.</strong> Automatic resizing, format conversion (WebP/AVIF), and responsive <code>&lt;picture&gt;</code> elements — driven by the build pipeline and cacheable across incremental builds.</p>
+<p><strong>Theme ecosystem.</strong> Starter templates exist for blogs, documentation, and portfolios. A theme registry with installable templates is the next step toward making Geoff practical for people who want to publish, not configure.</p>
+<p><strong>Richer <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> integration.</strong> Prefix support in template queries (so you can write <code>schema:BlogPosting</code> instead of the full <abbr title="Internationalized Resource Identifier">IRI</abbr>), parameterized queries (pass template variables into <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> bindings), and query result caching for repeated queries across pages.</p>
+<h2>Try It</h2>
+<pre><code class="language-bash"># Install
+cargo install chapeaux-geoff
+
+# Create a blog
+geoff init my-blog --template blog
+cd my-blog
+
+# Start writing
+geoff serve --open
+</code></pre>
+<p>The source is on <a href="https://github.com/chapeaux/geoff">GitHub</a>. It is part of the <a href="/">Chapeaux</a> ecosystem — a collection of standards-based web development tools.</p>
+<p>Geoff is not trying to replace Hugo or Zola for every use case. If you need a theme ecosystem and a decade of community answers on Stack Overflow, Hugo is the right choice. If you want a fast Rust <abbr title="Static Site Generator">SSG</abbr> with good defaults and minimal configuration, Zola is excellent. But if your content has structure — if pages relate to each other through shared properties, if you want your metadata to be queryable and validatable, if you want structured data output without maintaining parallel template logic — Geoff gives you a foundation that filesystem-based generators cannot.</p>
+
+    <p><a href="/blog/">&larr; All posts</a></p>
+  </article>
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <img src="/images/chapeaux_logo_aiux_reverse_2026.svg" alt="Chapeaux">
+          <p>A Digital Supply Chain for Web Assets</p>
+        </div>
+        <ul class="footer-links">
+          <li><a href="/contribute/">Contribute</a></li>
+          <li><a href="/projects/">Projects</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/chapellerie/">Chapellerie</a></li>
+          <li><a href="https://github.com/chapeaux">GitHub</a></li>
+        </ul>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Chapeaux Project. Open source under the MIT License.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

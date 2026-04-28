@@ -3,3 +3,6 @@ title = "Chapeaux"
 content_dir = "content"
 template_dir = "templates"
 output_dir = "dist"
+
+[search]
+enabled = true

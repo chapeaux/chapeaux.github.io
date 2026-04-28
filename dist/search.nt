@@ -1,0 +1,173 @@
+<urn:geoff:content:projects/s20e.md> <http://schema.org/url> "/projects/s20e.html" .
+<urn:geoff:content:projects/s20e.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/s20e.md> <http://schema.org/description> "Serverless triplestore for distributed RDF data management" .
+<urn:geoff:content:projects/s20e.md> <http://schema.org/name> "s20e" .
+<urn:geoff:content:projects/poire.md> <http://schema.org/url> "/projects/poire.html" .
+<urn:geoff:content:projects/poire.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/poire.md> <http://schema.org/description> "Pair programming devfile and repository example" .
+<urn:geoff:content:projects/poire.md> <http://schema.org/name> "poire" .
+<urn:geoff:content:projects/oxigraph-cloud.md> <http://schema.org/url> "/projects/oxigraph-cloud.html" .
+<urn:geoff:content:projects/oxigraph-cloud.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/oxigraph-cloud.md> <http://schema.org/description> "Distributed Oxigraph deployment with SHACL validation" .
+<urn:geoff:content:projects/oxigraph-cloud.md> <http://schema.org/name> "oxigraph-cloud" .
+<urn:geoff:content:projects/index.md> <http://schema.org/url> "/projects/" .
+<urn:geoff:content:projects/index.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/index.md> <http://schema.org/description> "Explore the Chapeaux ecosystem of web development tools" .
+<urn:geoff:content:projects/index.md> <http://schema.org/name> "Projects" .
+<urn:geoff:content:projects/geoff.md> <http://schema.org/url> "/projects/geoff.html" .
+<urn:geoff:content:projects/geoff.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/geoff.md> <http://schema.org/description> "Semantic static site generator with RDF knowledge graph" .
+<urn:geoff:content:projects/geoff.md> <http://schema.org/name> "geoff" .
+<urn:geoff:content:projects/cpx-websocket.md> <http://schema.org/url> "/projects/cpx-websocket.html" .
+<urn:geoff:content:projects/cpx-websocket.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-websocket.md> <http://schema.org/description> "WebSocket communication web component" .
+<urn:geoff:content:projects/cpx-websocket.md> <http://schema.org/name> "cpx-websocket" .
+<urn:geoff:content:projects/cpx-user.md> <http://schema.org/url> "/projects/cpx-user.html" .
+<urn:geoff:content:projects/cpx-user.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-user.md> <http://schema.org/description> "User authentication and management components" .
+<urn:geoff:content:projects/cpx-user.md> <http://schema.org/name> "cpx-user" .
+<urn:geoff:content:projects/cpx-url.md> <http://schema.org/url> "/projects/cpx-url.html" .
+<urn:geoff:content:projects/cpx-url.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-url.md> <http://schema.org/description> "URL state management web component" .
+<urn:geoff:content:projects/cpx-url.md> <http://schema.org/name> "cpx-url" .
+<urn:geoff:content:projects/cpx-target.md> <http://schema.org/url> "/projects/cpx-target.html" .
+<urn:geoff:content:projects/cpx-target.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-target.md> <http://schema.org/description> "JWT targeting web component" .
+<urn:geoff:content:projects/cpx-target.md> <http://schema.org/name> "cpx-target" .
+<urn:geoff:content:projects/cpx-tab-stream.md> <http://schema.org/url> "/projects/cpx-tab-stream.html" .
+<urn:geoff:content:projects/cpx-tab-stream.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-tab-stream.md> <http://schema.org/description> "Media streaming web component" .
+<urn:geoff:content:projects/cpx-tab-stream.md> <http://schema.org/name> "cpx-tab-stream" .
+<urn:geoff:content:projects/cpx-store.md> <http://schema.org/url> "/projects/cpx-store.html" .
+<urn:geoff:content:projects/cpx-store.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-store.md> <http://schema.org/description> "Reactive state management web component" .
+<urn:geoff:content:projects/cpx-store.md> <http://schema.org/name> "cpx-store" .
+<urn:geoff:content:projects/cpx-shaper.md> <http://schema.org/url> "/projects/cpx-shaper.html" .
+<urn:geoff:content:projects/cpx-shaper.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-shaper.md> <http://schema.org/description> "Data shaping web component" .
+<urn:geoff:content:projects/cpx-shaper.md> <http://schema.org/name> "cpx-shaper" .
+<urn:geoff:content:projects/cpx-search.md> <http://schema.org/url> "/projects/cpx-search.html" .
+<urn:geoff:content:projects/cpx-search.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-search.md> <http://schema.org/description> "Search querying and filtering components" .
+<urn:geoff:content:projects/cpx-search.md> <http://schema.org/name> "cpx-search" .
+<urn:geoff:content:projects/cpx-scaffold.md> <http://schema.org/url> "/projects/cpx-scaffold.html" .
+<urn:geoff:content:projects/cpx-scaffold.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-scaffold.md> <http://schema.org/description> "Shared build, serve, and test tooling for Chapeaux web components" .
+<urn:geoff:content:projects/cpx-scaffold.md> <http://schema.org/name> "cpx-scaffold" .
+<urn:geoff:content:projects/cpx-result.md> <http://schema.org/url> "/projects/cpx-result.html" .
+<urn:geoff:content:projects/cpx-result.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-result.md> <http://schema.org/description> "Search result display web component" .
+<urn:geoff:content:projects/cpx-result.md> <http://schema.org/name> "cpx-result" .
+<urn:geoff:content:projects/cpx-reporter.md> <http://schema.org/url> "/projects/cpx-reporter.html" .
+<urn:geoff:content:projects/cpx-reporter.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-reporter.md> <http://schema.org/description> "Analytics and reporting web component" .
+<urn:geoff:content:projects/cpx-reporter.md> <http://schema.org/name> "cpx-reporter" .
+<urn:geoff:content:projects/cpx-query.md> <http://schema.org/url> "/projects/cpx-query.html" .
+<urn:geoff:content:projects/cpx-query.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-query.md> <http://schema.org/description> "Search query web component" .
+<urn:geoff:content:projects/cpx-query.md> <http://schema.org/name> "cpx-query" .
+<urn:geoff:content:projects/cpx-operator-graph.md> <http://schema.org/url> "/projects/cpx-operator-graph.html" .
+<urn:geoff:content:projects/cpx-operator-graph.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-operator-graph.md> <http://schema.org/description> "Operator graph visualization web component" .
+<urn:geoff:content:projects/cpx-operator-graph.md> <http://schema.org/name> "cpx-operator-graph" .
+<urn:geoff:content:projects/cpx-newsdesk.md> <http://schema.org/url> "/projects/cpx-newsdesk.html" .
+<urn:geoff:content:projects/cpx-newsdesk.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-newsdesk.md> <http://schema.org/description> "News and content display web component" .
+<urn:geoff:content:projects/cpx-newsdesk.md> <http://schema.org/name> "cpx-newsdesk" .
+<urn:geoff:content:projects/cpx-keycloak.md> <http://schema.org/url> "/projects/cpx-keycloak.html" .
+<urn:geoff:content:projects/cpx-keycloak.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-keycloak.md> <http://schema.org/description> "Keycloak authentication web component" .
+<urn:geoff:content:projects/cpx-keycloak.md> <http://schema.org/name> "cpx-keycloak" .
+<urn:geoff:content:projects/cpx-filter.md> <http://schema.org/url> "/projects/cpx-filter.html" .
+<urn:geoff:content:projects/cpx-filter.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-filter.md> <http://schema.org/description> "Filter UI web component" .
+<urn:geoff:content:projects/cpx-filter.md> <http://schema.org/name> "cpx-filter" .
+<urn:geoff:content:projects/cpx-eddl.md> <http://schema.org/url> "/projects/cpx-eddl.html" .
+<urn:geoff:content:projects/cpx-eddl.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-eddl.md> <http://schema.org/description> "Event-Driven Data Layer components for analytics and tracking" .
+<urn:geoff:content:projects/cpx-eddl.md> <http://schema.org/name> "cpx-eddl" .
+<urn:geoff:content:projects/cpx-cookie.md> <http://schema.org/url> "/projects/cpx-cookie.html" .
+<urn:geoff:content:projects/cpx-cookie.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-cookie.md> <http://schema.org/description> "Browser cookie management web component" .
+<urn:geoff:content:projects/cpx-cookie.md> <http://schema.org/name> "cpx-cookie" .
+<urn:geoff:content:projects/cpx-content.md> <http://schema.org/url> "/projects/cpx-content.html" .
+<urn:geoff:content:projects/cpx-content.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-content.md> <http://schema.org/description> "Content injection with dynamic templates" .
+<urn:geoff:content:projects/cpx-content.md> <http://schema.org/name> "cpx-content" .
+<urn:geoff:content:projects/cpx-blank.md> <http://schema.org/url> "/projects/cpx-blank.html" .
+<urn:geoff:content:projects/cpx-blank.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-blank.md> <http://schema.org/description> "Scaffold and template for creating new Chapeaux web components" .
+<urn:geoff:content:projects/cpx-blank.md> <http://schema.org/name> "cpx-blank" .
+<urn:geoff:content:projects/cpx-auth.md> <http://schema.org/url> "/projects/cpx-auth.html" .
+<urn:geoff:content:projects/cpx-auth.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-auth.md> <http://schema.org/description> "Authentication web component" .
+<urn:geoff:content:projects/cpx-auth.md> <http://schema.org/name> "cpx-auth" .
+<urn:geoff:content:projects/cncpx.md> <http://schema.org/url> "/projects/cncpx.html" .
+<urn:geoff:content:projects/cncpx.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/cncpx.md> <http://schema.org/description> "Cloud Native Developer Ephemera — containerized development tools" .
+<urn:geoff:content:projects/cncpx.md> <http://schema.org/name> "cncpx" .
+<urn:geoff:content:projects/chapka.md> <http://schema.org/url> "/projects/chapka.html" .
+<urn:geoff:content:projects/chapka.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/chapka.md> <http://schema.org/description> "Starter kit for open source participation in Chapeaux" .
+<urn:geoff:content:projects/chapka.md> <http://schema.org/name> "chapka" .
+<urn:geoff:content:projects/chapellerie.md> <http://schema.org/url> "/projects/chapellerie.html" .
+<urn:geoff:content:projects/chapellerie.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/chapellerie.md> <http://schema.org/description> "Playground for demos, testing, and experimentation" .
+<urn:geoff:content:projects/chapellerie.md> <http://schema.org/name> "chapellerie" .
+<urn:geoff:content:projects/chapeaux-delivery.md> <http://schema.org/url> "/projects/chapeaux-delivery.html" .
+<urn:geoff:content:projects/chapeaux-delivery.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/chapeaux-delivery.md> <http://schema.org/description> "Asset delivery server for multi-channel web asset distribution" .
+<urn:geoff:content:projects/chapeaux-delivery.md> <http://schema.org/name> "chapeaux-delivery" .
+<urn:geoff:content:projects/chapeaux-catalog.md> <http://schema.org/url> "/projects/chapeaux-catalog.html" .
+<urn:geoff:content:projects/chapeaux-catalog.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/chapeaux-catalog.md> <http://schema.org/description> "Central catalog server for web asset discovery and metadata" .
+<urn:geoff:content:projects/chapeaux-catalog.md> <http://schema.org/name> "chapeaux-catalog" .
+<urn:geoff:content:projects/beret.md> <http://schema.org/url> "/projects/beret.html" .
+<urn:geoff:content:projects/beret.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:projects/beret.md> <http://schema.org/description> "MCP server that builds an in-memory RDF knowledge graph of codebases" .
+<urn:geoff:content:projects/beret.md> <http://schema.org/name> "beret" .
+<urn:geoff:content:index.md> <http://schema.org/url> "/" .
+<urn:geoff:content:index.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:index.md> <http://schema.org/description> "A Digital Supply Chain for Web Assets" .
+<urn:geoff:content:index.md> <http://schema.org/name> "Chapeaux" .
+<urn:geoff:content:contribute/index.md> <http://schema.org/url> "/contribute/" .
+<urn:geoff:content:contribute/index.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:contribute/index.md> <http://schema.org/description> "Join the club!" .
+<urn:geoff:content:contribute/index.md> <http://schema.org/name> "Contribute" .
+<urn:geoff:content:chapellerie/index.md> <http://schema.org/url> "/chapellerie/" .
+<urn:geoff:content:chapellerie/index.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:chapellerie/index.md> <http://schema.org/description> "Playground for Chapeaux component demos and experiments" .
+<urn:geoff:content:chapellerie/index.md> <http://schema.org/name> "Chapellerie" .
+<urn:geoff:content:blog/index.md> <http://schema.org/url> "/blog/" .
+<urn:geoff:content:blog/index.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:blog/index.md> <http://schema.org/description> "News and updates from the Chapeaux Project" .
+<urn:geoff:content:blog/index.md> <http://schema.org/name> "Blog" .
+<urn:geoff:content:blog/2026-04-27-introducing-geoff.md> <http://schema.org/url> "/blog/2026-04-27-introducing-geoff.html" .
+<urn:geoff:content:blog/2026-04-27-introducing-geoff.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/BlogPosting> .
+<urn:geoff:content:blog/2026-04-27-introducing-geoff.md> <http://schema.org/description> "Geoff is a Rust-based static site generator that turns Markdown files into a queryable RDF knowledge graph. Write plain frontmatter, get SPARQL queries in templates, JSON-LD in every page, and SHACL validation for free." .
+<urn:geoff:content:blog/2026-04-27-introducing-geoff.md> <http://schema.org/datePublished> "2026-04-27"^^<http://www.w3.org/2001/XMLSchema#date> .
+<urn:geoff:content:blog/2026-04-27-introducing-geoff.md> <http://schema.org/name> "Introducing Geoff: A Static Site Generator with a Knowledge Graph Inside" .
+<urn:geoff:content:blog/2026-04-23-cpx-store-scales-up.md> <http://schema.org/url> "/blog/2026-04-23-cpx-store-scales-up.html" .
+<urn:geoff:content:blog/2026-04-23-cpx-store-scales-up.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/BlogPosting> .
+<urn:geoff:content:blog/2026-04-23-cpx-store-scales-up.md> <http://schema.org/description> "CPX Store started as a 162-line reactive Web Component. A plugin architecture, signal-inspired reactivity, microtask batching, pluggable collaboration transport, and a headless core for server-side rendering turn it into a state management system that runs anywhere JavaScript runs — without adding a single framework dependency." .
+<urn:geoff:content:blog/2026-04-23-cpx-store-scales-up.md> <http://schema.org/datePublished> "2026-04-23"^^<http://www.w3.org/2001/XMLSchema#date> .
+<urn:geoff:content:blog/2026-04-23-cpx-store-scales-up.md> <http://schema.org/name> "From 162 Lines to IDE Scale: How CPX Store Grew Up" .
+<urn:geoff:content:blog/2026-04-16-cpx-store-cross-tab.md> <http://schema.org/url> "/blog/2026-04-16-cpx-store-cross-tab.html" .
+<urn:geoff:content:blog/2026-04-16-cpx-store-cross-tab.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/BlogPosting> .
+<urn:geoff:content:blog/2026-04-16-cpx-store-cross-tab.md> <http://schema.org/description> "A practical walkthrough of cross-tab state synchronization using cpx-store — a reactive Web Component that turns localStorage into a real-time communication channel between browser tabs." .
+<urn:geoff:content:blog/2026-04-16-cpx-store-cross-tab.md> <http://schema.org/datePublished> "2026-04-16"^^<http://www.w3.org/2001/XMLSchema#date> .
+<urn:geoff:content:blog/2026-04-16-cpx-store-cross-tab.md> <http://schema.org/name> "Syncing State Across Browser Tabs with CPX Store" .
+<urn:geoff:content:blog/2026-04-05-sparql.md> <http://schema.org/url> "/blog/2026-04-05-sparql.html" .
+<urn:geoff:content:blog/2026-04-05-sparql.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/BlogPosting> .
+<urn:geoff:content:blog/2026-04-05-sparql.md> <http://schema.org/description> "An exploration of using semantic web technologies as the backbone of a modern web application — lessons learned from an experimental application project." .
+<urn:geoff:content:blog/2026-04-05-sparql.md> <http://schema.org/datePublished> "2026-04-05"^^<http://www.w3.org/2001/XMLSchema#date> .
+<urn:geoff:content:blog/2026-04-05-sparql.md> <http://schema.org/name> "RDF, SPARQL, and SHACL as a Foundation for Web Applications" .
+<urn:geoff:content:blog/2026-03-30-welcome.md> <http://schema.org/url> "/blog/2026-03-30-welcome.html" .
+<urn:geoff:content:blog/2026-03-30-welcome.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/BlogPosting> .
+<urn:geoff:content:blog/2026-03-30-welcome.md> <http://schema.org/description> "Introducing the redesigned Chapeaux website — a central hub for the project's three stages: Develop, Discover, and Deliver." .
+<urn:geoff:content:blog/2026-03-30-welcome.md> <http://schema.org/datePublished> "2026-03-30"^^<http://www.w3.org/2001/XMLSchema#date> .
+<urn:geoff:content:blog/2026-03-30-welcome.md> <http://schema.org/name> "Welcome to the New Chapeaux Project Site" .
+<urn:geoff:content:about/index.md> <http://schema.org/url> "/about/" .
+<urn:geoff:content:about/index.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/WebPage> .
+<urn:geoff:content:about/index.md> <http://schema.org/description> "The philosophy and history behind the Chapeaux Project" .
+<urn:geoff:content:about/index.md> <http://schema.org/name> "About Chapeaux" .
