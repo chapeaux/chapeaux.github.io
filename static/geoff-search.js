@@ -44,8 +44,9 @@ class GeoffSearch extends HTMLElement {
     this._setStatus('Loading search…');
 
     try {
-      const ox = await import('https://esm.sh/oxigraph@0.5');
-      this._ox = ox.default || ox;
+      const ox = await import('/oxigraph.js');
+      await ox.default();
+      this._ox = ox;
       this._store = new this._ox.Store();
 
       const indexUrl = this.getAttribute('index') || '/search.nt';
