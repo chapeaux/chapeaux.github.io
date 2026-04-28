@@ -452,13 +452,22 @@ geoff-search {
 }
 
 .geoff-search-status {
-  font-size: 0.75rem;
-  color: var(--gray);
+  font-size: 0.8rem;
+  color: var(--gray-dark);
   position: absolute;
   right: 0;
-  top: 100%;
+  top: calc(100% + 0.5rem);
   white-space: nowrap;
-  padding-top: 0.25rem;
+  background: var(--white);
+  border: 1px solid var(--gray-light);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+  padding: 0.5rem 1rem;
+  z-index: 200;
+
+  &:empty {
+    display: none;
+  }
 }
 
 .geoff-search-results {
