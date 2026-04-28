@@ -45,7 +45,7 @@ class GeoffSearch extends HTMLElement {
 
     try {
       const ox = await import('/oxigraph.js');
-      await ox.default('/oxigraph_bg.wasm');
+      await ox.default({ module_or_path: '/oxigraph_bg.wasm' });
       this._ox = ox;
       this._store = new this._ox.Store();
 
