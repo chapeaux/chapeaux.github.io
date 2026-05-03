@@ -71,7 +71,7 @@
   </div>
 </section>
 
-{% set posts = sparql(query="SELECT ?title ?date ?desc ?url WHERE { GRAPH ?g { ?s <http://schema.org/name> ?title . ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/BlogPosting> . OPTIONAL { ?s <http://schema.org/datePublished> ?date } OPTIONAL { ?s <http://schema.org/description> ?desc } OPTIONAL { ?s <http://schema.org/url> ?url } } } ORDER BY DESC(?date) LIMIT 3") %}
+{% set posts = sparql(query="SELECT ?title ?date ?desc ?url WHERE { GRAPH ?g { ?s <https://schema.org/name> ?title . ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/BlogPosting> . OPTIONAL { ?s <https://schema.org/datePublished> ?date } OPTIONAL { ?s <https://schema.org/description> ?desc } OPTIONAL { ?s <https://schema.org/url> ?url } } } ORDER BY DESC(?date) LIMIT 3") %}
 {% if posts | length > 0 %}
 <section class="section">
   <div class="container">

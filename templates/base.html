@@ -6,7 +6,15 @@
   <title>{% block title %}{{ title }} — {{ config.title }}{% endblock title %}</title>
   {% if description %}<meta name="description" content="{{ description }}">{% endif %}
   <link rel="icon" type="image/png" href="/images/favicon_2026.png">
+  <style>
+    :root {
+      color-scheme: light dark;
+      {{ theme_css(critical=true) | safe }}
+    }
+  </style>
   <link rel="stylesheet" href="/chapeaux.css">
+  <link rel="preload" href="/theme/tokens.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/theme/tokens.css"></noscript>
   {% if json_ld %}
   <script type="application/ld+json">
   {{ json_ld | safe }}
@@ -32,7 +40,7 @@
         </ul>
       </nav>
 
-      <geoff-search index="/search.nt"></geoff-search>
+      {{ component(name="geoff-search", index="/search.nt") | safe }}
 
       <details class="mobile-menu">
         <summary aria-label="Menu">&#9776;</summary>

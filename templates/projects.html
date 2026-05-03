@@ -13,7 +13,7 @@
 <div class="container">
   <div class="section">
 
-    {% set develop = sparql(query="SELECT ?title ?desc ?status ?language ?url WHERE { GRAPH ?g { ?s <urn:geoff:ontology:stage> 'develop' ; <http://schema.org/name> ?title . OPTIONAL { ?s <http://schema.org/description> ?desc } OPTIONAL { ?s <urn:geoff:ontology:status> ?status } OPTIONAL { ?s <urn:geoff:ontology:language> ?language } OPTIONAL { ?s <urn:geoff:ontology:githubUrl> ?url } } } ORDER BY ?title") %}
+    {% set develop = sparql(query="SELECT ?title ?desc ?status ?language ?url WHERE { GRAPH ?g { ?s <urn:geoff:ontology:stage> 'develop' ; <https://schema.org/name> ?title . OPTIONAL { ?s <https://schema.org/description> ?desc } OPTIONAL { ?s <urn:geoff:ontology:status> ?status } OPTIONAL { ?s <urn:geoff:ontology:language> ?language } OPTIONAL { ?s <urn:geoff:ontology:githubUrl> ?url } } } ORDER BY ?title") %}
     <section class="stage-section stage-section--develop">
       <h2>Develop <span class="badge badge--active">Active</span></h2>
       <p>Create enterprise-grade, functional web assets and development tools — secure, scalable, and stable.</p>
@@ -34,7 +34,7 @@
       </div>
     </section>
 
-    {% set discover = sparql(query="SELECT ?title ?desc ?status ?language ?url WHERE { GRAPH ?g { ?s <urn:geoff:ontology:stage> 'discover' ; <http://schema.org/name> ?title . OPTIONAL { ?s <http://schema.org/description> ?desc } OPTIONAL { ?s <urn:geoff:ontology:status> ?status } OPTIONAL { ?s <urn:geoff:ontology:language> ?language } OPTIONAL { ?s <urn:geoff:ontology:githubUrl> ?url } } } ORDER BY ?title") %}
+    {% set discover = sparql(query="SELECT ?title ?desc ?status ?language ?url WHERE { GRAPH ?g { ?s <urn:geoff:ontology:stage> 'discover' ; <https://schema.org/name> ?title . OPTIONAL { ?s <https://schema.org/description> ?desc } OPTIONAL { ?s <urn:geoff:ontology:status> ?status } OPTIONAL { ?s <urn:geoff:ontology:language> ?language } OPTIONAL { ?s <urn:geoff:ontology:githubUrl> ?url } } } ORDER BY ?title") %}
     <section class="stage-section stage-section--discover">
       <h2>Discover <span class="badge badge--in-progress">In Progress</span></h2>
       <p>A central catalog to find, explore, and understand available web assets and development tools across the enterprise.</p>
@@ -55,7 +55,7 @@
       </div>
     </section>
 
-    {% set deliver = sparql(query="SELECT ?title ?desc ?status ?language ?url WHERE { GRAPH ?g { ?s <urn:geoff:ontology:stage> 'deliver' ; <http://schema.org/name> ?title . OPTIONAL { ?s <http://schema.org/description> ?desc } OPTIONAL { ?s <urn:geoff:ontology:status> ?status } OPTIONAL { ?s <urn:geoff:ontology:language> ?language } OPTIONAL { ?s <urn:geoff:ontology:githubUrl> ?url } } } ORDER BY ?title") %}
+    {% set deliver = sparql(query="SELECT ?title ?desc ?status ?language ?url WHERE { GRAPH ?g { ?s <urn:geoff:ontology:stage> 'deliver' ; <https://schema.org/name> ?title . OPTIONAL { ?s <https://schema.org/description> ?desc } OPTIONAL { ?s <urn:geoff:ontology:status> ?status } OPTIONAL { ?s <urn:geoff:ontology:language> ?language } OPTIONAL { ?s <urn:geoff:ontology:githubUrl> ?url } } } ORDER BY ?title") %}
     <section class="stage-section stage-section--deliver">
       <h2>Deliver <span class="badge badge--coming-soon">Coming Soon</span></h2>
       <p>Standardized delivery of web assets beyond the NodeJS/NPM ecosystem — allowing packaging, bundling, and a la carte consumption of assets.</p>
@@ -76,7 +76,7 @@
       </div>
     </section>
 
-    {% set tools = sparql(query="SELECT ?title ?desc ?status ?language ?url WHERE { GRAPH ?g { ?s <urn:geoff:ontology:stage> 'tools' ; <http://schema.org/name> ?title . OPTIONAL { ?s <http://schema.org/description> ?desc } OPTIONAL { ?s <urn:geoff:ontology:status> ?status } OPTIONAL { ?s <urn:geoff:ontology:language> ?language } OPTIONAL { ?s <urn:geoff:ontology:githubUrl> ?url } } } ORDER BY ?title") %}
+    {% set tools = sparql(query="SELECT ?title ?desc ?status ?language ?url WHERE { GRAPH ?g { ?s <urn:geoff:ontology:stage> 'tools' ; <https://schema.org/name> ?title . OPTIONAL { ?s <https://schema.org/description> ?desc } OPTIONAL { ?s <urn:geoff:ontology:status> ?status } OPTIONAL { ?s <urn:geoff:ontology:language> ?language } OPTIONAL { ?s <urn:geoff:ontology:githubUrl> ?url } } } ORDER BY ?title") %}
     <section class="stage-section">
       <h2>Tools &amp; Infrastructure</h2>
       <p>Supporting tools, starter kits, and infrastructure for the Chapeaux ecosystem.</p>
