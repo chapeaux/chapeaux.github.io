@@ -81,11 +81,11 @@ If Geoff finds a high-confidence match (≥ 0.95), it maps automatically and sav
 
 ```toml
 [types]
-"Blog Post" = "http://schema.org/BlogPosting"
+"Blog Post" = "https://schema.org/BlogPosting"
 
 [properties]
-title = "http://schema.org/name"
-date = "http://schema.org/datePublished"
+title = "https://schema.org/name"
+date = "https://schema.org/datePublished"
 ```
 
 Once mapped, the same vocabulary terms are used for <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> output, <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> queries, and <abbr title="Shapes Constraint Language">SHACL</abbr> validation. One mapping drives everything.
@@ -98,11 +98,11 @@ This is the feature that makes the graph practical for site building. Geoff regi
 {% set posts = sparql(query="
   SELECT ?title ?date ?url WHERE {
     GRAPH ?g {
-      ?s <http://schema.org/name> ?title .
+      ?s <https://schema.org/name> ?title .
       ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>
-         <http://schema.org/BlogPosting> .
-      OPTIONAL { ?s <http://schema.org/datePublished> ?date }
-      OPTIONAL { ?s <http://schema.org/url> ?url }
+         <https://schema.org/BlogPosting> .
+      OPTIONAL { ?s <https://schema.org/datePublished> ?date }
+      OPTIONAL { ?s <https://schema.org/url> ?url }
     }
   }
   ORDER BY DESC(?date)
@@ -123,11 +123,11 @@ The query language is more expressive, too. Want blog posts that share a tag wit
 ```html
 {% set related = sparql(query="
   SELECT DISTINCT ?title ?url WHERE {
-    GRAPH ?g1 { <" ~ page_uri ~ "> <http://schema.org/keywords> ?tag }
+    GRAPH ?g1 { <" ~ page_uri ~ "> <https://schema.org/keywords> ?tag }
     GRAPH ?g2 {
-      ?other <http://schema.org/keywords> ?tag .
-      ?other <http://schema.org/name> ?title .
-      ?other <http://schema.org/url> ?url .
+      ?other <https://schema.org/keywords> ?tag .
+      ?other <https://schema.org/name> ?title .
+      ?other <https://schema.org/url> ?url .
       FILTER(?other != <" ~ page_uri ~ ">)
     }
   }
@@ -148,7 +148,7 @@ Every page Geoff builds includes a `<script type="application/ld+json">` block g
   "@type": "BlogPosting",
   "name": "Hello World",
   "datePublished": "2026-04-27",
-  "author": "Jane Smith"
+  "author": { "@type": "Person", "name": "Jane Smith" }
 }
 </script>
 ```
@@ -181,10 +181,13 @@ All three are fast, single-binary static site generators that take Markdown in a
 | **Templates** | Go templates | Tera (Jinja2) | Tera (Jinja2) |
 | **Content queries** | Go template functions | Tera filters | <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> (<abbr title="World Wide Web Consortium">W3C</abbr> standard) |
 | **Structured data** | Manual templates | Manual templates | Automatic <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> |
+| **RDFa output** | None | None | Native (template helpers + Markdown syntax) |
 | **Content validation** | None | None | <abbr title="Shapes Constraint Language">SHACL</abbr> shapes |
 | **Data model** | Filesystem hierarchy | Filesystem hierarchy | <abbr title="Resource Description Framework">RDF</abbr> knowledge graph |
 | **Plugin system** | None (Go modules) | None | Rust (cdylib) + Deno (TypeScript) |
 | **Dev server** | Built-in | Built-in | Built-in (hot reload via WebSocket) |
+| **Theming** | Go template partials | Sass variables | <abbr title="World Wide Web Consortium">W3C</abbr> Design Tokens → <abbr title="Cascading Style Sheets">CSS</abbr> custom properties |
+| **Asset optimization** | Hugo Pipes (built-in) | None | lightningcss + WebP + cache hashes |
 | **Client-side search** | None (bring your own) | Elasticlunr.js (text index) | Oxigraph <abbr title="WebAssembly">WASM</abbr> (<abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> queries) |
 | **Incremental builds** | Yes | No | Yes (cache-aware) |
 | **Ecosystem** | Massive (themes, docs) | Growing | Early |
@@ -300,9 +303,9 @@ Because the index is <abbr title="Resource Description Framework">RDF</abbr>, no
 
 ```sparql
 SELECT ?title ?url ?desc WHERE {
-  ?s <http://schema.org/name> ?title .
-  ?s <http://schema.org/url> ?url .
-  OPTIONAL { ?s <http://schema.org/description> ?desc }
+  ?s <https://schema.org/name> ?title .
+  ?s <https://schema.org/url> ?url .
+  OPTIONAL { ?s <https://schema.org/description> ?desc }
   FILTER(CONTAINS(LCASE(?title), LCASE("sparql")))
 }
 ORDER BY DESC(?date)
@@ -310,21 +313,85 @@ ORDER BY DESC(?date)
 
 The search index uses the same predicates, the same <abbr title="Internationalized Resource Identifier">IRI</abbr>s, and the same Oxigraph engine as the build-time graph. There is no translation layer between what the server knows and what the client can query. No other static site generator can make that claim.
 
+## Design Token Theming
+
+Geoff now includes a standards-based theming system built on the [<abbr title="World Wide Web Consortium">W3C</abbr> Design Tokens](https://www.designtokens.org/) format (DTCG 2025.10). Themes are <abbr title="JavaScript Object Notation">JSON</abbr> token files that produce <abbr title="Cascading Style Sheets">CSS</abbr> custom properties, with inheritance for derivative themes and <abbr title="Resource Description Framework">RDF</abbr> integration for querying tokens in templates.
+
+A theme file:
+
+```json
+{
+  "color-critical": {
+    "$type": "color",
+    "primary": { "$value": "#0066cc" },
+    "text": { "$value": "#1a1a1a" }
+  }
+}
+```
+
+Becomes <abbr title="Cascading Style Sheets">CSS</abbr> custom properties:
+
+```css
+:root {
+  --color-critical-primary: #0066cc;
+  --color-critical-text: #1a1a1a;
+}
+```
+
+Token groups with `-critical` in the name are inlined in `<head>` for the critical rendering path. Everything else loads as a deferred external stylesheet via `<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'">` with a `<noscript>` fallback.
+
+Light and dark modes use the <abbr title="Cascading Style Sheets">CSS</abbr> `light-dark()` function with `-on-light` and `-on-dark` primitive variables — no `@media` query duplication, works natively in Shadow <abbr title="Document Object Model">DOM</abbr>.
+
+Themes inherit from parent themes — a derivative theme overrides only what changes, inheriting everything else through deep merge. The `share = true` config publishes the resolved tokens as both DTCG <abbr title="JavaScript Object Notation">JSON</abbr> and N-Triples, so other Geoff sites can reference them as a remote base theme.
+
+Two <abbr title="Command-Line Interface">CLI</abbr> commands support theme development:
+
+- `geoff theme preview` generates a specimen site with color swatches, typography samples, spacing scales, and every template variation
+- `geoff theme edit` serves a visual editor with web component <abbr title="User Interface">UI</abbr>, type-adaptive inputs, <abbr title="Shapes Constraint Language">SHACL</abbr> validation, and live <abbr title="Cascading Style Sheets">CSS</abbr> injection into preview iframes
+
+### Asset Optimization
+
+The build pipeline now includes configurable post-processing:
+
+```toml
+[theme.optimize]
+minify_css = true
+minify_js = true
+hash_assets = true
+
+[theme.optimize.images]
+webp = true
+quality = 80
+max_width = 1920
+```
+
+<abbr title="Cascading Style Sheets">CSS</abbr> is minified via [lightningcss](https://lightningcss.dev/). <abbr title="JavaScript">JS</abbr> gets basic comment and whitespace stripping. Images are converted to WebP and optionally resized. Cache-busting content hashes are appended to <abbr title="Cascading Style Sheets">CSS</abbr>/<abbr title="JavaScript">JS</abbr> filenames with <abbr title="HyperText Markup Language">HTML</abbr> references updated automatically.
+
+## What's New Since Launch
+
+Since the initial release, Geoff has added several major capabilities:
+
+**RDFa output.** Templates can emit RDFa Lite 1.1 attributes using `{{ rdfa_attrs | safe }}`, `{{ rdfa_prop(name="title") | safe }}`, and the `rdfa` filter. Markdown supports inline annotations with `[text](rdfa:property)` syntax. All property names are resolved through the mapping registry — no <abbr title="Internationalized Resource Identifier">IRI</abbr>s needed.
+
+**`[data]` frontmatter.** A new frontmatter section for structured data with friendly names: `[data]\nwordCount = 1500`. Keys are resolved through the mapping registry, and values appear automatically in <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> output.
+
+**Navigation helpers.** `pages()` filters and sorts pages by any frontmatter field. `tree()` builds hierarchical navigation from the <abbr title="Uniform Resource Locator">URL</abbr> structure. Both replace the need for <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> in common navigation patterns.
+
+**Custom vocabulary prefixes.** Declare additional namespaces in `[linked_data.prefixes]` — <abbr title="Simple Knowledge Organization System">SKOS</abbr>, W3C ORG, <abbr title="Data Catalog Vocabulary">DCAT</abbr>, or any custom ontology. They flow to <abbr title="Internationalized Resource Identifier">IRI</abbr> expansion, <abbr title="Resource Description Framework in Attributes">RDFa</abbr> output, and <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> contexts.
+
+**Richer JSON-LD.** The `<script type="application/ld+json">` block now includes all page triples from the graph, not just the five standard fields. Custom fields from `[data]` and `[rdf.custom]` appear automatically. Multi-vocabulary `@context` is generated with only the prefixes actually used.
+
+**URL style.** `[build] url_style = "directory"` produces `/about/` instead of `/about.html`.
+
 ## What Is Planned
 
-Geoff is functional but early. Here is what is coming:
-
-**Authoring <abbr title="User Interface">UI</abbr>.** A set of web components — built with Chapeaux tools, naturally — for editing content in the browser: a frontmatter editor that shows available vocabulary terms, a graph visualizer for content relationships, a <abbr title="Shapes Constraint Language">SHACL</abbr> validation panel that shows constraint violations as you type.
+Geoff is functional and growing. Here is what is coming:
 
 **Federation.** Linking to external <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> endpoints or other Geoff sites via federated queries. A documentation site could query an <abbr title="Application Programming Interface">API</abbr> reference site's graph at build time to pull in type signatures or changelogs without duplicating content.
 
 **<abbr title="Internationalization — adapting software for different languages and regions">i18n</abbr> driven by <abbr title="Resource Description Framework">RDF</abbr> labels.** The bundled vocabularies already include multilingual labels (`rdfs:label "Product"@en, "Producto"@es`). A future version could generate localized pages by resolving labels to the target language.
 
-**Image optimization pipeline.** Automatic resizing, format conversion (WebP/AVIF), and responsive `<picture>` elements — driven by the build pipeline and cacheable across incremental builds.
-
 **Theme ecosystem.** Starter templates exist for blogs, documentation, and portfolios. A theme registry with installable templates is the next step toward making Geoff practical for people who want to publish, not configure.
-
-**Richer <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> integration.** Prefix support in template queries (so you can write `schema:BlogPosting` instead of the full <abbr title="Internationalized Resource Identifier">IRI</abbr>), parameterized queries (pass template variables into <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> bindings), and query result caching for repeated queries across pages.
 
 ## Try It
 
