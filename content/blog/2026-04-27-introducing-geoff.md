@@ -188,7 +188,7 @@ All three are fast, single-binary static site generators that take Markdown in a
 | **Dev server** | Built-in | Built-in | Built-in (hot reload via WebSocket) |
 | **Theming** | Go template partials | Sass variables | <abbr title="World Wide Web Consortium">W3C</abbr> Design Tokens → <abbr title="Cascading Style Sheets">CSS</abbr> custom properties |
 | **Asset optimization** | Hugo Pipes (built-in) | None | lightningcss + WebP + cache hashes |
-| **Client-side search** | None (bring your own) | Elasticlunr.js (text index) | Oxigraph <abbr title="WebAssembly">WASM</abbr> (<abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> queries) |
+| **Client-side search** | None (bring your own) | Elasticlunr.js (text index) | Oxigraph <abbr title="WebAssembly">WASM</abbr> (<abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr>, structured queries, <abbr title="Accessible Rich Internet Applications">ARIA</abbr> combobox) |
 | **Incremental builds** | Yes | No | Yes (cache-aware) |
 | **Ecosystem** | Massive (themes, docs) | Growing | Early |
 
@@ -297,21 +297,20 @@ Add the component to a template:
 <geoff-search></geoff-search>
 ```
 
-That is it. The build writes a `search.nt` file (20<abbr title="Kilobyte">KB</abbr> for a 42-page site), and the component loads it on first interaction. Oxigraph <abbr title="WebAssembly">WASM</abbr> is ~300<abbr title="Kilobyte">KB</abbr> gzipped, lazy-loaded — it does not affect initial page load.
+That is it. The build writes a `search.nt` file (20<abbr title="Kilobyte">KB</abbr> for a 42-page site), and the component loads it on first interaction. Oxigraph <abbr title="WebAssembly">WASM</abbr> is ~300<abbr title="Kilobyte">KB</abbr> gzipped, lazy-loaded — it does not affect initial page load. The search index is also available during `geoff serve` — no build required to test search during development.
 
-Because the index is <abbr title="Resource Description Framework">RDF</abbr>, not a flat text index, the search is inherently faceted. The component's <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> query can filter by content type, tag, date range, or any combination — the same kinds of queries you write in templates:
+The search component supports structured query syntax:
 
-```sparql
-SELECT ?title ?url ?desc WHERE {
-  ?s <https://schema.org/name> ?title .
-  ?s <https://schema.org/url> ?url .
-  OPTIONAL { ?s <https://schema.org/description> ?desc }
-  FILTER(CONTAINS(LCASE(?title), LCASE("sparql")))
-}
-ORDER BY DESC(?date)
-```
+- **Multiple terms:** `rust sparql` matches pages containing both words (implicit AND)
+- **Quoted phrases:** `"knowledge graph"` matches the exact phrase
+- **OR:** `rust OR python` matches pages containing either term
+- **AND:** `rust AND sparql` is explicit AND (same as a space)
 
-The search index uses the same predicates, the same <abbr title="Internationalized Resource Identifier">IRI</abbr>s, and the same Oxigraph engine as the build-time graph. There is no translation layer between what the server knows and what the client can query. No other static site generator can make that claim.
+Queries search both titles and descriptions. `OR` binds looser than AND, so `rust sparql OR python` means "(rust AND sparql) OR python."
+
+The component follows the <abbr title="Accessible Rich Internet Applications">ARIA</abbr> combobox pattern — keyboard navigation with Arrow keys, Enter to select, Escape to close — and positions its results dropdown using <abbr title="Cascading Style Sheets">CSS</abbr> anchor positioning with a fallback for browsers that do not support it yet. Styling is customizable via <abbr title="Cascading Style Sheets">CSS</abbr> custom properties (`--geoff-search-bg`, `--geoff-search-highlight`, etc.) and adapts to dark mode automatically.
+
+Because the index is <abbr title="Resource Description Framework">RDF</abbr>, not a flat text index, the search is inherently faceted. The component's <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> query can filter by content type, tag, date range, or any combination — the same kinds of queries you write in templates. The search index uses the same predicates, the same <abbr title="Internationalized Resource Identifier">IRI</abbr>s, and the same Oxigraph engine as the build-time graph. There is no translation layer between what the server knows and what the client can query. No other static site generator can make that claim.
 
 ## Design Token Theming
 
@@ -382,6 +381,10 @@ Since the initial release, Geoff has added several major capabilities:
 **Richer JSON-LD.** The `<script type="application/ld+json">` block now includes all page triples from the graph, not just the five standard fields. Custom fields from `[data]` and `[rdf.custom]` appear automatically. Multi-vocabulary `@context` is generated with only the prefixes actually used.
 
 **URL style.** `[build] url_style = "directory"` produces `/about/` instead of `/about.html`.
+
+**Search improvements.** The `<geoff-search>` component now supports structured query syntax (quotes, AND, OR, multi-term), full keyboard navigation with the <abbr title="Accessible Rich Internet Applications">ARIA</abbr> combobox pattern, <abbr title="Cascading Style Sheets">CSS</abbr> anchor positioning for the results overlay, and dark mode. The search index is also served live during `geoff serve`.
+
+**Default property mappings.** Common frontmatter fields (title, author, date, description, tags, and others) are mapped to Schema.org <abbr title="Internationalized Resource Identifier">IRI</abbr>s by default — no `ontology/mappings.toml` required for standard use cases. User-defined mappings override the defaults.
 
 ## What Is Planned
 
