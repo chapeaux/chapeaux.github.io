@@ -386,6 +386,8 @@ Since the initial release, Geoff has added several major capabilities:
 
 **Default property mappings.** Common frontmatter fields (title, author, date, description, tags, and others) are mapped to Schema.org <abbr title="Internationalized Resource Identifier">IRI</abbr>s by default — no `ontology/mappings.toml` required for standard use cases. User-defined mappings override the defaults.
 
+**Design system / theme separation.** A new `[design]` config section references external design system token files (e.g. from `node_modules`). `geoff theme generate my-brand` reads the design system, detects `-on-light`/`-on-dark` pairs, and generates a `theme.json` with `light-dark()` aggregates and <abbr title="Cascading Style Sheets">CSS</abbr> `var()` fallbacks. The design system is the palette; the theme is the paint scheme. Multiple themes can reference the same design system.
+
 ## What Is Planned
 
 Geoff is functional and growing. Here is what is coming:
