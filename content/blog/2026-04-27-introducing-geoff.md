@@ -388,6 +388,8 @@ Since the initial release, Geoff has added several major capabilities:
 
 **Design system / theme separation.** A new `[design]` config section references external design system token files (e.g. from `node_modules`). `geoff theme generate my-brand` reads the design system, detects `-on-light`/`-on-dark` pairs, and generates a `theme.json` with `light-dark()` aggregates and <abbr title="Cascading Style Sheets">CSS</abbr> `var()` fallbacks. The design system is the palette; the theme is the paint scheme. Multiple themes can reference the same design system.
 
+**Critical <abbr title="Cascading Style Sheets">CSS</abbr> from files.** Place `critical.css` in `static/` and it is inlined on every page via `{{ critical_css | safe }}`. Template-specific critical <abbr title="Cascading Style Sheets">CSS</abbr> uses the naming convention `critical-{template}.css` — e.g. `critical-blog-page.css` is inlined only on pages using the `blog-page.html` template. Combines with `theme_css(critical=true)` for a single above-the-fold `<style>` block.
+
 ## What Is Planned
 
 Geoff is functional and growing. Here is what is coming:
