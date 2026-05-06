@@ -1,18 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" {{ rdfa_prefix() | safe }}>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}{{ title }} — {{ config.title }}{% endblock title %}</title>
   {% if description %}<meta name="description" content="{{ description }}">{% endif %}
   <link rel="icon" type="image/png" href="/images/favicon_2026.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Red+Hat+Text:wght@400;500;700&display=swap">
   <style>
     :root {
       color-scheme: light dark;
       {{ theme_css(critical=true) | safe }}
     }
+    {{ critical_css | safe }}
   </style>
-  <link rel="stylesheet" href="/chapeaux.css">
+  <link rel="preload" href="/chapeaux.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/chapeaux.css"></noscript>
   <link rel="preload" href="/theme/tokens.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="/theme/tokens.css"></noscript>
   {% if json_ld %}
@@ -21,38 +26,44 @@
   </script>
   {% endif %}
   <script type="module" src="/geoff-search.js"></script>
+  <script type="module" src="/scheme-switcher.js"></script>
+  <script>
+    (function() {
+      var s = localStorage.getItem('scheme-preference');
+      if (s === 'light' || s === 'dark') document.documentElement.style.colorScheme = s;
+    })();
+  </script>
   {% block extra_head %}{% endblock %}
 </head>
 <body>
   <header class="site-header">
-    <div class="container">
-      <a href="/" class="site-logo">
-        <img src="/images/chapeaux_logo_wide_default_2026.svg" alt="Chapeaux">
-      </a>
+    <a href="/" class="site-logo">
+      <img src="/images/chapeaux_logo_wide_default_2026.svg" alt="Chapeaux">
+    </a>
 
-      <nav>
-        <ul class="site-nav">
-          <li><a href="/contribute/">Contribute</a></li>
-          <li><a href="/projects/">Projects</a></li>
-          <li><a href="/about/">About</a></li>
-          <li><a href="/blog/">Blog</a></li>
-          <li><a href="/chapellerie/">Chapellerie</a></li>
-        </ul>
-      </nav>
+    <nav>
+      <ul class="site-nav">
+        <li><a href="/contribute/">Contribute</a></li>
+        <li><a href="/projects/">Projects</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/chapellerie/">Chapellerie</a></li>
+      </ul>
+    </nav>
 
-      {{ component(name="geoff-search", index="/search.nt") | safe }}
+    {{ component(name="geoff-search", index="/search.nt") | safe }}
+    <scheme-switcher></scheme-switcher>
 
-      <details class="mobile-menu">
-        <summary aria-label="Menu">&#9776;</summary>
-        <ul class="mobile-nav">
-          <li><a href="/contribute/">Contribute</a></li>
-          <li><a href="/projects/">Projects</a></li>
-          <li><a href="/about/">About</a></li>
-          <li><a href="/blog/">Blog</a></li>
-          <li><a href="/chapellerie/">Chapellerie</a></li>
-        </ul>
-      </details>
-    </div>
+    <details class="mobile-menu">
+      <summary aria-label="Menu">&#9776;</summary>
+      <ul class="mobile-nav">
+        <li><a href="/contribute/">Contribute</a></li>
+        <li><a href="/projects/">Projects</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/chapellerie/">Chapellerie</a></li>
+      </ul>
+    </details>
   </header>
 
   <main>

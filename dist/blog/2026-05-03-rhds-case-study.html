@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en" prefix="schema: https://schema.org/ dc: http://purl.org/dc/terms/ foaf: http://xmlns.com/foaf/0.1/">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geoff Case Study: Red Hat Design System — Chapeaux</title>
+  <meta name="description" content="How we migrated the Red Hat Design System documentation site — 711 pages, 46 web components, and 500+ design tokens — from Eleventy to Geoff. SPARQL-driven navigation, Lit SSR, RDFa output, and client-side search powered by the same Oxigraph engine.">
+  <link rel="icon" type="image/png" href="/images/favicon_2026.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Red+Hat+Text:wght@400;500;700&display=swap">
+  <style>
+    :root {
+      color-scheme: light dark;
+        --surface-critical-accent: light-dark(#5e40be, #b6a6e9);
+  --surface-critical-background: light-dark(#ffffff, #1f1f1f);
+  --surface-critical-badge-bg: light-dark(#f5f5f5, #383838);
+  --surface-critical-border: light-dark(#e7e7e7, #383838);
+  --surface-critical-card-bg: light-dark(#e7e7e7, #292929);
+  --surface-critical-card-border: light-dark(#6a6e73, #4d4d4d);
+  --surface-critical-code-bg: light-dark(#f5f5f5, #1f1f1f);
+  --surface-critical-code-inline-bg: light-dark(#f2f2f2, #292929);
+  --surface-critical-code-text: light-dark(#a60000, #92c5f9);
+  --surface-critical-header-bg: light-dark(#ffffff, #151515);
+  --surface-critical-hover-bg: light-dark(#f5f5f5, #292929);
+  --surface-critical-input-bg: light-dark(#f5f5f5, #292929);
+  --surface-critical-input-border: light-dark(#e7e7e7, #383838);
+  --surface-critical-link: light-dark(#0066cc, #f5921b);
+  --surface-critical-nav-text: #5e40be;
+  --surface-critical-surface: light-dark(#f5f5f5, #292929);
+  --surface-critical-text: light-dark(#151515, #e0e0e0);
+  --surface-critical-text-card: light-dark(#4d4d4d, #c7c7c7);
+  --surface-critical-text-muted: light-dark(#6a6e73, #a3a3a3);
+  --surface-critical-text-primary: light-dark(#151515, #e0e0e0);
+  --surface-critical-text-secondary: light-dark(#3c3f42, #c7c7c7);
+
+    }
+    :root {
+  /* Brand colors */
+  --cpx-red-50: #ee0000;
+  --cpx-white: #ffffff;
+  --cpx-black: #151515;
+  --cpx-red: #ee0000;
+  --cpx-blue: #0066cc;
+  --cpx-dark-blue: #003366;
+  --cpx-orange: #f5921b;
+  --cpx-yellow: #ffcc17;
+  --cpx-teal: #37a3a3;
+  --cpx-purple: #5e40be;
+
+  /* Extended palette */
+  --cpx-red-05: #fef0f0;
+  --cpx-red-10: #fce3e3;
+  --cpx-red-20: #fbc5c5;
+  --cpx-red-30: #f9a8a8;
+  --cpx-red-40: #f56e6e;
+  --cpx-red-60: #a60000;
+  --cpx-red-70: #5f0000;
+  --cpx-red-80: #3f0000;
+  --cpx-gray-10: #f2f2f2;
+  --cpx-gray-20: #e0e0e0;
+  --cpx-gray-30: #c7c7c7;
+  --cpx-gray-40: #a3a3a3;
+  --cpx-gray-45: #8c8c8c;
+  --cpx-gray-50: #707070;
+  --cpx-gray-60: #4d4d4d;
+  --cpx-gray-70: #383838;
+  --cpx-gray-80: #292929;
+  --cpx-gray-90: #1f1f1f;
+  --cpx-gray-95: #151515;
+  --cpx-orange-10: #ffe8cc;
+  --cpx-orange-20: #fccb8f;
+  --cpx-orange-30: #f8ae54;
+  --cpx-orange-40: #f5921b;
+  --cpx-orange-50: #ca6c0f;
+  --cpx-orange-60: #9e4a06;
+  --cpx-orange-70: #732e00;
+  --cpx-orange-80: #4d1f00;
+  --cpx-yellow-10: #fff4cc;
+  --cpx-yellow-20: #ffe072;
+  --cpx-yellow-30: #ffcc17;
+  --cpx-yellow-40: #dca614;
+  --cpx-yellow-50: #b98412;
+  --cpx-yellow-60: #96640f;
+  --cpx-yellow-70: #73480b;
+  --cpx-yellow-80: #54330b;
+  --cpx-teal-10: #daf2f2;
+  --cpx-teal-20: #b9e5e5;
+  --cpx-teal-30: #9ad8d8;
+  --cpx-teal-40: #63bdbd;
+  --cpx-teal-50: #37a3a3;
+  --cpx-teal-60: #147878;
+  --cpx-teal-70: #004d4d;
+  --cpx-teal-80: #003333;
+  --cpx-purple-10: #ece6ff;
+  --cpx-purple-20: #d0c5f4;
+  --cpx-purple-30: #b6a6e9;
+  --cpx-purple-40: #876fd4;
+  --cpx-purple-50: #5e40be;
+  --cpx-purple-60: #3d2785;
+  --cpx-purple-70: #21134d;
+  --cpx-purple-80: #1b0d33;
+  --cpx-interaction-blue-50: #0066cc;
+  --cpx-interaction-blue-70: #003366;
+  --cpx-interaction-blue-10: #e0f0ff;
+  --cpx-interaction-blue-20: #b9dafc;
+  --cpx-interaction-blue-30: #92c5f9;
+  --cpx-interaction-blue-40: #4394e5;
+  --cpx-interaction-blue-60: #004d99;
+  --cpx-interaction-blue-80: #032142;
+
+  /* Stage colors */
+  --stage-develop: var(--cpx-teal);
+  --stage-discover: var(--cpx-blue);
+  --stage-deliver: var(--cpx-purple);
+
+  /* Semantic surface tokens — theme pipeline provides light-dark() values */
+  --bg: var(--surface-critical-background, #ffffff);
+  --text: var(--surface-critical-text, #151515);
+  --code-bg: var(--surface-critical-code-bg, #003366);
+  --header-bg: var(--surface-critical-header-bg, #ffffff);
+  --text-primary: var(--surface-critical-text-primary, #151515);
+  --text-secondary: var(--surface-critical-text-secondary, #3c3f42);
+  --text-muted: var(--surface-critical-text-muted, #6a6e73);
+  --text-card: var(--surface-critical-text-card, #4d4d4d);
+  --accent: var(--surface-critical-accent, #5e40be);
+  --link: var(--surface-critical-link, #0066cc);
+  --code-text: var(--surface-critical-code-text, #a60000);
+  --code-inline-bg: var(--surface-critical-code-inline-bg, #f2f2f2);
+  --card-bg: var(--surface-critical-card-bg, #e7e7e7);
+  --card-border: var(--surface-critical-card-border, #6a6e73);
+  --input-bg: var(--surface-critical-input-bg, #f5f5f5);
+  --input-border: var(--surface-critical-input-border, #e7e7e7);
+  --badge-bg: var(--surface-critical-badge-bg, #f5f5f5);
+  --hover-bg: var(--surface-critical-hover-bg, #f5f5f5);
+  --nav-text: var(--surface-critical-nav-text, #5e40be);
+
+  /* Neutral palette */
+  --white: #ffffff;
+  --gray-lightest: #f5f5f5;
+  --gray-light: #e7e7e7;
+  --gray: #6a6e73;
+  --gray-dark: #3c3f42;
+  --black: #151515;
+
+  /* Typography */
+  --font-heading: 'Oswald', sans-serif;
+  --font-body: 'Red Hat Text', sans-serif;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 2rem;
+  --space-xl: 4rem;
+
+  /* Layout */
+  --max-width: 1200px;
+  --nav-height: 64px;
+
+  /* Backgrounds */
+  --cpx-gradient: radial-gradient(ellipse at 20% 80%, rgb(67 173 175 / 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgb(4 153 197 / 0.2) 0%, transparent 50%),
+    linear-gradient(135deg, var(--cpx-gray-70) 0%, var(--cpx-purple-70) 100%);
+  --cpx-conical: conic-gradient(from 110deg, var(--cpx-orange), var(--cpx-teal) 5%, var(--cpx-teal) 18%, var(--cpx-purple) 30%, var(--cpx-purple) 40%, var(--cpx-blue) 85%, var(--cpx-orange) 100%);
+  --cpx-horizontal-rule: linear-gradient(to right, var(--cpx-blue), var(--cpx-teal), var(--cpx-yellow), var(--cpx-orange));
+}
+
+:not(:defined) > template[shadowrootmode] ~ * { display: none; }
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  line-height: 1.2;
+  margin-top: 0;
+  text-transform: uppercase;
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+
+a {
+  color: var(--link);
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+}
+
+img { max-width: 100%; height: auto; }
+
+main { min-height: calc(100vh - var(--nav-height) - 200px); }
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+
+  @media (min-width: 768px) { padding: 0 var(--space-lg); }
+}
+
+.site-header {
+  background: var(--white);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 3px solid var(--cpx-orange);
+  display: grid;
+  align-items: center;
+  gap: var(--space-sm);
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-sm) var(--space-md);
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    "logo    .      menu"
+    "search  search switcher";
+
+  @media (min-width: 768px) {
+    padding: var(--space-sm) var(--space-lg);
+    grid-template-columns: auto 1fr auto auto;
+    grid-template-areas:
+      "logo . search switcher"
+      "nav   nav nav  nav";
+  }
+
+  @media (min-width: 1200px) {
+    grid-template-columns: auto 1fr auto auto;
+    grid-template-areas: "logo nav search switcher";
+  }
+
+  & > .site-logo     { grid-area: logo; }
+  & > nav            { grid-area: nav; }
+  & > geoff-search   { grid-area: search; }
+  & > scheme-switcher { grid-area: switcher; }
+  & > .mobile-menu   { grid-area: menu; }
+}
+
+.site-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--accent);
+  text-decoration: none;
+
+  & img { height: 40px; width: auto; }
+  &:hover { text-decoration: none; }
+}
+
+.site-nav {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm) var(--space-md);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  & a {
+    color: var(--nav-text);
+    font-size: 1.2rem;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: var(--space-sm) 0;
+    border-bottom: 2px solid transparent;
+
+    &:hover {
+      color: var(--nav-text);
+      border-bottom-color: var(--cpx-orange);
+      text-decoration: none;
+    }
+  }
+}
+
+.mobile-menu {
+  @media (min-width: 768px) { display: none; }
+
+  & summary {
+    list-style: none;
+    cursor: pointer;
+    color: var(--accent);
+    font-size: 1.5rem;
+    padding: var(--space-sm);
+    &::-webkit-details-marker { display: none; }
+  }
+}
+
+geoff-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+scheme-switcher {
+  display: flex;
+  align-items: center;
+}
+
+
+  </style>
+  <link rel="preload" href="/chapeaux.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/chapeaux.css"></noscript>
+  <link rel="preload" href="/theme/tokens.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/theme/tokens.css"></noscript>
+  
+  <script type="application/ld+json">
+  {
+  "@context": "https://schema.org/",
+  "@id": "https://chapeaux.github.io/blog/2026-05-03-rhds-case-study.html",
+  "@type": "BlogPosting",
+  "about": "Static site generators",
+  "creator": "Red Hat UX",
+  "datePublished": "2026-05-03",
+  "description": "How we migrated the Red Hat Design System documentation site — 711 pages, 46 web components, and 500+ design tokens — from Eleventy to Geoff. SPARQL-driven navigation, Lit SSR, RDFa output, and client-side search powered by the same Oxigraph engine.",
+  "name": "Geoff Case Study: Red Hat Design System",
+  "url": "/blog/2026-05-03-rhds-case-study.html"
+}
+  </script>
+  
+  <script type="module" src="/geoff-search.js"></script>
+  <script type="module" src="/scheme-switcher.js"></script>
+  <script>
+    (function() {
+      var s = localStorage.getItem('scheme-preference');
+      if (s === 'light' || s === 'dark') document.documentElement.style.colorScheme = s;
+    })();
+  </script>
+  
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="site-logo">
+      <img src="/images/chapeaux_logo_wide_default_2026.svg" alt="Chapeaux">
+    </a>
+
+    <nav>
+      <ul class="site-nav">
+        <li><a href="/contribute/">Contribute</a></li>
+        <li><a href="/projects/">Projects</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/chapellerie/">Chapellerie</a></li>
+      </ul>
+    </nav>
+
+    <geoff-search index="/search.nt"></geoff-search>
+    <scheme-switcher></scheme-switcher>
+
+    <details class="mobile-menu">
+      <summary aria-label="Menu">&#9776;</summary>
+      <ul class="mobile-nav">
+        <li><a href="/contribute/">Contribute</a></li>
+        <li><a href="/projects/">Projects</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/chapellerie/">Chapellerie</a></li>
+      </ul>
+    </details>
+  </header>
+
+  <main>
+    
+<div class="page-header">
+  <div class="container">
+    <h1 property="schema:name">Geoff Case Study: Red Hat Design System</h1>
+  </div>
+</div>
+
+<div class="container">
+  <article class="blog-post" vocab="https://schema.org/" typeof="BlogPosting" resource="/blog/2026-05-03-rhds-case-study.html">
+    
+    <div class="post-meta">
+      <time property="schema:datePublished" datetime="2026-05-03">2026-05-03</time>
+    </div>
+    
+    <meta property="schema:creator" content="Red Hat UX">
+<meta property="schema:about" content="Static site generators">
+<meta property="schema:description" content="How we migrated the Red Hat Design System documentation site — 711 pages, 46 web components, and 500+ design tokens — from Eleventy to Geoff. SPARQL-driven navigation, Lit SSR, RDFa output, and client-side search powered by the same Oxigraph engine.">
+<meta property="schema:datePublished" content="2026-05-03">
+    <p>The <a href="https://ux.redhat.com">Red Hat Design System</a> (<abbr title="Red Hat Design System">RHDS</abbr>) documentation site was migrated from <a href="https://www.11ty.dev/">Eleventy</a> 3.x to <a href="https://github.com/chapeaux/geoff">Geoff</a> as a proof-of-concept for a large-scale, real-world site. The original site has 700+ pages, 46 web component element docs, 13 design patterns, 6 foundation sections, design token documentation, and accessibility guides — all built with Lit <abbr title="Server-Side Rendering">SSR</abbr>, custom Eleventy plugins, Nunjucks templates, and <abbr title="YAML Ain't Markup Language">YAML</abbr> frontmatter.</p>
+<p>This post walks through how the migration worked, what Geoff features it exercised, and what we learned.</p>
+<h2>Migration Scope</h2>
+<p>The migration converted 711 pages total: 84 documentation pages, 233 element doc pages (overview, style, guidelines, accessibility, and code tabs for each of the 46 components), 382 interactive demos, and 12 token category pages. Content was converted from <abbr title="YAML Ain't Markup Language">YAML</abbr> frontmatter to <abbr title="Tom's Obvious, Minimal Language">TOML</abbr>, Nunjucks templates to Tera, and the 30+ custom Eleventy plugins were replaced with 7 Deno plugins using Geoff's lifecycle hooks.</p>
+<p>A Node.js migration script handles the bulk conversion:</p>
+<ol>
+<li>Reads each Markdown file's <abbr title="YAML Ain't Markup Language">YAML</abbr> frontmatter and converts it to <abbr title="Tom's Obvious, Minimal Language">TOML</abbr></li>
+<li>Maps Eleventy layouts to Geoff templates (<code>basic.njk</code> → <code>page.html</code>, <code>has-toc.njk</code> → <code>page-toc.html</code>)</li>
+<li>Assigns Schema.org content types (<code>Web Page</code>, <code>Foundation</code>, <code>Guide</code>, <code>Pattern</code>, <code>Element Documentation</code>)</li>
+<li>Generates element doc frontmatter from <code>data.yaml</code> metadata files</li>
+<li>Resolves Nunjucks <code>{% include %}</code> directives (accessibility partials) inline</li>
+<li>Creates demo pages wrapping raw <abbr title="HyperText Markup Language">HTML</abbr> component examples</li>
+</ol>
+<p>The script is idempotent — running it again on a new <abbr title="Red Hat Design System">RHDS</abbr> version regenerates all content cleanly.</p>
+<h2>SPARQL-Driven Navigation</h2>
+<p>The original site hardcodes its sidebar navigation structure in an Eleventy config file, with Nunjucks templates iterating over Eleventy collections. In Geoff, the sidebar is driven entirely by <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> queries against the content graph. Each section — About, Get Started, Foundations, Elements, Patterns, Tokens, Accessibility — is a single <code>sparql()</code> call that filters pages by their <code>navSection</code> property and sorts by <code>order</code>.</p>
+<p>For simple sections, the <code>pages()</code> function is even more concise:</p>
+<pre><code class="language-html">{%- set nav = pages(section="about", sort="order") -%}
+{%- for p in nav -%}
+  &lt;a href="{{ p.url }}"&gt;{{ p.sidenavTitle | default(value=p.title) }}&lt;/a&gt;
+{%- endfor -%}
+</code></pre>
+<p>The Elements section — 46 components, each with multiple sub-pages — required a <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> query that filtered to only <code>overview</code> sections, ensuring the nav showed "Accordion" once rather than listing every tab:</p>
+<pre><code class="language-html">{%- set el = sparql(query="
+  SELECT DISTINCT ?name ?elname WHERE {
+    GRAPH ?g {
+      ?s &lt;urn:rhds:elementName&gt; ?elname ;
+         &lt;urn:rhds:section&gt; 'overview' ;
+         &lt;https://schema.org/name&gt; ?name .
+    }
+  } ORDER BY ?name
+") -%}
+</code></pre>
+<p>Sections with sub-pages (Get Started has Designers and Developers sub-sections, each with their own child pages) use tag-based filtering to show only top-level entries:</p>
+<pre><code class="language-sparql">FILTER(CONTAINS(?tags, 'getstarted'))
+</code></pre>
+<p>The active page state uses Tera's <code>is starting_with</code> test against the built-in <code>page_url</code> variable:</p>
+<pre><code class="language-html">&lt;rh-navigation-vertical-list summary="About"
+  {% if nav_url is starting_with("/about") %}open{% endif %}&gt;
+</code></pre>
+<h2>Plugin Architecture</h2>
+<p>Seven Deno plugins replaced the 30+ Eleventy plugins:</p>
+<p><strong><code>rhds-site-data</code></strong> uses <code>on_graph_updated</code> to inject the package version from <code>package.json</code> as an <abbr title="Resource Description Framework">RDF</abbr> triple. Templates query it with <code>sparql()</code> to populate the masthead version badge. The same plugin also uses <code>on_page_render</code> to inject the version as an <code>extra_var</code>, ensuring it survives incremental rebuilds in dev mode where <code>on_graph_updated</code> may not re-fire.</p>
+<p><strong><code>rhds-toc</code></strong> uses <code>on_page_render</code> to scan the rendered <abbr title="HyperText Markup Language">HTML</abbr> for <code>&lt;h2&gt;</code> headings, generate slugified IDs, and produce <code>&lt;uxdot-toc-item&gt;</code> light <abbr title="Document Object Model">DOM</abbr> content for the table-of-contents web component. The original Eleventy site used <code>markdown-it-anchor</code> and a <code>toc</code> filter — in Geoff, it is a 60-line plugin. One subtlety: the regex uses the <code>g</code> flag, so <code>lastIndex</code> must be reset between pages to avoid inconsistent results.</p>
+<p><strong><code>rhds-token-tables</code></strong> uses both hooks. <code>on_graph_updated</code> inserts every design token as a <code>schema:DefinedTerm</code> triple with <code>schema:termCode</code>, <code>schema:value</code>, and <code>schema:inDefinedTermSet</code> — making all 500+ tokens queryable via <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> and searchable via the <code>&lt;geoff-search&gt;</code> component. <code>on_page_render</code> generates the token reference tables with <code>&lt;samp&gt;</code> elements styled via <abbr title="Cascading Style Sheets">CSS</abbr> custom properties (<code>--samp-color</code>, <code>--samp-width</code>, <code>--samp-font-family</code>), grouped by subcategory with headings from <abbr title="World Wide Web Consortium">W3C</abbr> DTCG <code>$extensions</code> metadata. The tables include <abbr title="Resource Description Framework in Attributes">RDFa</abbr> annotations — each token row is a <code>schema:DefinedTerm</code> with <code>schema:termCode</code> and <code>schema:value</code> properties, making the token documentation machine-readable directly from the page markup.</p>
+<p><strong><code>rhds-import-map</code></strong>, <strong><code>rhds-dynamic-imports</code></strong>, <strong><code>rhds-cem-api</code></strong>, and <strong><code>sitemap</code></strong> handle import map generation, per-page component imports, Custom Elements Manifest <abbr title="Application Programming Interface">API</abbr> tables, and sitemap.xml output respectively.</p>
+<h2>Web Component SSR</h2>
+<p>The <abbr title="Red Hat Design System">RHDS</abbr> site uses 46 <a href="https://lit.dev/">Lit</a>-based web components for its documentation chrome and interactive examples. Geoff's <code>component()</code> template function with <code>renderer="lit"</code> enables server-side rendering via <code>@lit-labs/ssr</code>, producing declarative shadow <abbr title="Document Object Model">DOM</abbr> <code>&lt;template shadowrootmode="open"&gt;</code> elements:</p>
+<pre><code class="language-html">{{ component(name="rh-skip-link", href="#main",
+             slot_content="Skip to main content",
+             renderer="lit") | safe }}
+</code></pre>
+<p>Components with browser-only <abbr title="Application Programming Interface">API</abbr>s in their constructor or <code>connectedCallback</code> — <code>localStorage</code>, <code>window.location</code>, <code>fetch</code>, <code>document.createElement</code> — are flagged <code>no_ssr=true</code> and hydrate client-side only:</p>
+<pre><code class="language-html">{{ component(name="rh-back-to-top", href="#", no_ssr=true) | safe }}
+</code></pre>
+<p>The <abbr title="Server-Side Rendering">SSR</abbr> assessment identified 9 components requiring <code>no_ssr</code>:</p>
+<table><thead><tr><th>Component</th><th>Browser <abbr title="Application Programming Interface">API</abbr></th><th>Location</th></tr></thead><tbody>
+<tr><td><code>rh-alert</code></td><td><code>document.body</code></td><td>event handler</td></tr>
+<tr><td><code>rh-audio-player</code></td><td><code>window.navigator</code></td><td>constructor</td></tr>
+<tr><td><code>rh-dialog</code></td><td><code>document.body.style</code></td><td>method</td></tr>
+<tr><td><code>rh-footer</code></td><td><code>window.location</code></td><td>property getter</td></tr>
+<tr><td><code>rh-menu-dropdown</code></td><td><code>window.open</code></td><td>event handler</td></tr>
+<tr><td><code>rh-scheme-toggle</code></td><td><code>localStorage</code></td><td>constructor</td></tr>
+<tr><td><code>rh-site-status</code></td><td><code>fetch()</code></td><td>connectedCallback</td></tr>
+<tr><td><code>rh-tooltip</code></td><td><code>document.createElement</code></td><td>constructor</td></tr>
+<tr><td><code>rh-back-to-top</code></td><td><code>document.createElement</code></td><td>import-time via pfe-core</td></tr>
+</tbody></table>
+<p>The remaining 37 components are safe for Lit <abbr title="Server-Side Rendering">SSR</abbr>. All assessments are documented without modifying the component source code.</p>
+<p>The Geoff <abbr title="Server-Side Rendering">SSR</abbr> worker strips Lit hydration markers (<code>&lt;?&gt;</code>, <code>&lt;!--lit-part--&gt;</code>, <code>&lt;!--lit-node--&gt;</code>) from the rendered output, producing clean declarative shadow <abbr title="Document Object Model">DOM</abbr> that doesn't interfere with the host element's attributes.</p>
+<h2>Design Tokens and Theming</h2>
+<p>The <abbr title="Red Hat Design System">RHDS</abbr> migration surfaced a fundamental difference between how the current Eleventy site handles tokens and how Geoff's theme system works — and the Geoff approach turns out to be significantly better.</p>
+<h3>The Current RHDS Approach</h3>
+<p>The current <abbr title="Red Hat Design System">RHDS</abbr> site uses <a href="https://amzn.github.io/style-dictionary/">Style Dictionary</a> to compile tokens from <abbr title="YAML Ain't Markup Language">YAML</abbr> source files into multiple output formats — <abbr title="Cascading Style Sheets">CSS</abbr> custom properties, <abbr title="JavaScript">JS</abbr> modules, <abbr title="JavaScript Object Notation">JSON</abbr>, and Sass variables. The token build pipeline is a Node.js dependency chain: source <abbr title="YAML Ain't Markup Language">YAML</abbr> → Style Dictionary transforms → compiled outputs in <code>@rhds/tokens</code>. The documentation site then imports these compiled outputs via <code>node_modules</code> and serves them through an Eleventy passthrough copy and a dynamically generated import map.</p>
+<p>This creates several pain points:</p>
+<ul>
+<li><strong>Build coupling.</strong> Changing a token value requires rebuilding the <code>@rhds/tokens</code> package before the documentation site can reflect the change. The token compilation and the site build are separate pipelines with separate dependency trees.</li>
+<li><strong>Format proliferation.</strong> The same design decision exists in <abbr title="YAML Ain't Markup Language">YAML</abbr> source, compiled <abbr title="JavaScript Object Notation">JSON</abbr>, compiled <abbr title="JavaScript">JS</abbr> modules, compiled <abbr title="Cascading Style Sheets">CSS</abbr>, and Sass variables — five representations of one value. Keeping them in sync is the build tool's job, but debugging mismatches requires understanding the full compilation chain.</li>
+<li><strong>No semantic layer.</strong> Tokens are organized by category (color, space, border) but there is no formal distinction between design system primitives (the raw palette) and theme decisions (how a specific site uses those primitives). A site that wants to override <code>--rh-color-surface-lightest</code> has to know it maps to <code>#ffffff</code> and trace that through the token hierarchy.</li>
+<li><strong>No light/dark mode at the token level.</strong> Dark mode is handled by individual components via <code>color-scheme</code> and <code>light-dark()</code> <abbr title="Cascading Style Sheets">CSS</abbr> functions. There is no single place to say "in dark mode, the page background is <code>#1f1f1f</code>" — each component makes its own decision.</li>
+</ul>
+<h3>Geoff's Design System / Theme Split</h3>
+<p>Geoff introduces a clean separation between <strong>design system tokens</strong> and <strong>theme tokens</strong>:</p>
+<p><strong>Design system tokens</strong> (<code>tokens.json</code>) are the raw palette — the foundational values that exist independently of any site. For <abbr title="Red Hat Design System">RHDS</abbr>, this is the full <code>@rhds/tokens</code> <abbr title="JavaScript Object Notation">JSON</abbr> file, preserved with all metadata. The conversion script simply copies it:</p>
+<pre><code class="language-toml">[design]
+tokens = ["./themes/rhds/tokens.json"]
+</code></pre>
+<p>Geoff's theme system ignores unknown fields (<code>filePath</code>, <code>isSource</code>, <code>original</code>, <code>name</code>, <code>attributes</code>, <code>path</code>) when generating <abbr title="Cascading Style Sheets">CSS</abbr> custom properties, so the full Style Dictionary output works as-is. Plugins can still use the metadata — <code>name</code> has pre-computed <abbr title="Cascading Style Sheets">CSS</abbr> property names, <code>original</code> preserves alias references like <code>{color.gray.20}</code>, and <code>attributes</code> has structured category metadata useful for token documentation.</p>
+<p><strong>Design system tokens</strong> (<code>tokens.json</code>) define the light/dark primitives alongside the palette. The <code>surface-critical</code> group nests <code>on</code> → <code>light</code>/<code>dark</code> under each semantic name, using aliases to the raw palette:</p>
+<pre><code class="language-json">{
+  "surface-critical": {
+    "$type": "color",
+    "background": {
+      "on": {
+        "light": { "$value": "{color-critical.white}" },
+        "dark": { "$value": "{color.gray-90}" }
+      }
+    },
+    "text": {
+      "on": {
+        "light": { "$value": "{color-critical.black}" },
+        "dark": { "$value": "{color.gray-20}" }
+      }
+    },
+    "border": {
+      "on": {
+        "light": { "$value": "{color-critical.gray-light}" },
+        "dark": { "$value": "{color.gray-70}" }
+      }
+    }
+  }
+}
+</code></pre>
+<p><strong>Theme tokens</strong> (<code>theme.json</code>) are semantic — they create the <code>light-dark()</code> aggregates by referencing the design system primitives via dot-path aliases:</p>
+<pre><code class="language-json">{
+  "surface-critical": {
+    "$type": "color",
+    "background": {
+      "$value": "light-dark({surface-critical.background.on.light}, {surface-critical.background.on.dark})",
+      "$description": "Page background"
+    },
+    "text": {
+      "$value": "light-dark({surface-critical.text.on.light}, {surface-critical.text.on.dark})",
+      "$description": "Primary text"
+    },
+    "border": {
+      "$value": "light-dark({surface-critical.border.on.light}, {surface-critical.border.on.dark})",
+      "$description": "Borders"
+    }
+  }
+}
+</code></pre>
+<p>Together, these produce <abbr title="Cascading Style Sheets">CSS</abbr> like:</p>
+<pre><code class="language-css">/* From tokens.json — primitives */
+--surface-critical-background-on-light: #ffffff;
+--surface-critical-background-on-dark: #1f1f1f;
+
+/* From theme.json — aggregate */
+--surface-critical-background: light-dark(
+  var(--surface-critical-background-on-light),
+  var(--surface-critical-background-on-dark)
+);
+</code></pre>
+<p>The group convention (<code>background</code> → <code>on</code> → <code>light</code>/<code>dark</code>) keeps the token hierarchy clean — each semantic concept is a single node with its mode variants nested underneath. Geoff's <code>geoff theme generate</code> auto-detects these pairs and generates the <code>light-dark()</code> aggregates automatically. The result works natively in Shadow <abbr title="Document Object Model">DOM</abbr> without <code>@media (prefers-color-scheme)</code> duplication, and the user can override with <code>&lt;rh-scheme-toggle&gt;</code> which sets <code>color-scheme: light</code> or <code>color-scheme: dark</code> on the body and persists the preference to localStorage.</p>
+<h3>What This Enables</h3>
+<p><strong>Single source of truth with layered overrides.</strong> The design system tokens are the raw palette. The theme tokens reference them by alias (<code>{color-critical.white}</code>) and add semantic meaning. A derivative site can create its own <code>theme.json</code> that overrides only what changes — different brand color, different surface palette — while inheriting everything else through Geoff's theme inheritance chain.</p>
+<p><strong>Light/dark mode as a first-class token concern.</strong> Instead of each component independently implementing dark mode, the theme declares which tokens change between schemes. The <code>light-dark()</code> <abbr title="Cascading Style Sheets">CSS</abbr> function handles the runtime switching, and <code>&lt;rh-scheme-toggle&gt;</code> persists the user's preference to localStorage.</p>
+<p><strong>No build coupling.</strong> The design system <abbr title="JavaScript Object Notation">JSON</abbr> is a static file — no compilation step between changing a value and seeing it on the site. Geoff reads the tokens at build time and generates <abbr title="Cascading Style Sheets">CSS</abbr> directly. The token documentation plugin reads the same file to generate reference tables with <code>&lt;samp&gt;</code> examples and <abbr title="Resource Description Framework in Attributes">RDFa</abbr> annotations.</p>
+<p><strong>Tokens in the knowledge graph.</strong> The <code>rhds-token-tables</code> plugin injects every token as a <code>schema:DefinedTerm</code> triple in the <abbr title="Resource Description Framework">RDF</abbr> graph via <code>on_graph_updated</code>. This means tokens are searchable via <code>&lt;geoff-search&gt;</code> (searching "--rh-color-brand" finds the token), queryable via <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> in templates, and annotated with <abbr title="Resource Description Framework in Attributes">RDFa</abbr> in the <abbr title="HyperText Markup Language">HTML</abbr> output — making the token documentation machine-readable.</p>
+<p><strong><code>geoff theme generate</code></strong> can create a starter <code>theme.json</code> from any design system token file, auto-detecting <code>-on-light</code>/<code>-on-dark</code> pairs and producing <code>light-dark()</code> aggregates. This eliminates the manual work of mapping primitives to semantic tokens.</p>
+<h3>Token Documentation</h3>
+<p>The <code>&lt;samp&gt;</code> element pattern from the original site was preserved — each token example is a <code>&lt;samp&gt;</code> styled via <code>--samp-*</code> <abbr title="Cascading Style Sheets">CSS</abbr> custom properties set on the <code>&lt;tr&gt;</code>. Color tokens show circular swatches, border tokens show styled borders, font tokens show "Aa" specimens, and spacing tokens show proportional bars. All driven by the same <code>samp.css</code> stylesheet as the original.</p>
+<p>Token subpath exports required special handling — the <code>@rhds/tokens</code> package uses Node.js <code>exports</code> map entries (<code>"./media.js"</code> → <code>"./js/media.js"</code>) that don't translate to browser import maps. The migration copies the resolved files to their expected subpaths.</p>
+<h2>RDFa and Structured Data</h2>
+<p>With <code>[linked_data] rdfa = true</code> in <code>geoff.toml</code>, every page includes:</p>
+<ul>
+<li><strong><abbr title="Resource Description Framework in Attributes">RDFa</abbr> prefix declarations</strong> on <code>&lt;html&gt;</code> — <code>prefix="schema: https://schema.org/ dc: http://purl.org/dc/terms/ foaf: http://xmlns.com/foaf/0.1/ rhds: urn:rhds:"</code></li>
+<li><strong><code>typeof</code> and <code>resource</code> attributes</strong> on <code>&lt;article&gt;</code> — <code>vocab="https://schema.org/" typeof="WebPage" resource="/about/"</code></li>
+<li><strong><code>property</code> attributes</strong> on headings — <code>property="schema:name"</code></li>
+<li><strong>Inline Markdown <abbr title="Resource Description Framework in Attributes">RDFa</abbr></strong> — <code>[Red Hat](rdfa:creator)</code> → <code>&lt;span property="schema:creator"&gt;Red Hat&lt;/span&gt;</code></li>
+<li><strong>Hidden <code>&lt;meta&gt;</code> properties</strong> via <code>{{ rdfa_meta(page_uri=page_uri) | safe }}</code> for fields without visible content</li>
+<li><strong><abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr></strong> with <code>[data]</code> frontmatter fields and multi-vocabulary <code>@context</code></li>
+</ul>
+<p>The <code>[data]</code> frontmatter section proved clean for adding structured data without <abbr title="Internationalized Resource Identifier">IRI</abbr>s:</p>
+<pre><code class="language-toml">[data]
+about = "Web Components"
+isPartOf = "Red Hat Design System"
+programmingLanguage = "JavaScript"
+</code></pre>
+<p>These resolve to <code>schema:about</code>, <code>schema:isPartOf</code>, and <code>schema:programmingLanguage</code> via the mapping registry and appear in both <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> and <abbr title="Resource Description Framework in Attributes">RDFa</abbr> output automatically. The <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> block generates a proper <code>@context</code> that includes only the prefixes actually used:</p>
+<pre><code class="language-json">{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "rhds": "urn:rhds:"
+  },
+  "@id": "https://ux.redhat.com/about/",
+  "@type": "WebPage",
+  "about": "Design systems",
+  "name": "About the Design System",
+  "rhds:navSection": "about"
+}
+</code></pre>
+<h2>Client-Side Search</h2>
+<p>The <code>&lt;geoff-search&gt;</code> component queries the site's <abbr title="Resource Description Framework">RDF</abbr> graph — including plugin-injected token triples — so searching "rh-accordion" finds element documentation, searching "--rh-color-brand" finds design tokens by <abbr title="Cascading Style Sheets">CSS</abbr> custom property name, and searching "Accordion" finds both the element and the pattern.</p>
+<p>The search index is an N-Triples file (645<abbr title="Kilobyte">KB</abbr>, 8,500+ triples) loaded by the <code>&lt;geoff-search&gt;</code> web component on first interaction. <a href="https://www.npmjs.com/package/oxigraph">Oxigraph <abbr title="WebAssembly">WASM</abbr></a> runs the same <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> engine in the browser that built the site. Results are deduplicated by <abbr title="Uniform Resource Locator">URL</abbr> and display breadcrumb context ("Elements › Accordion") for pages with generic titles like "Overview" or "Accessibility."</p>
+<p>The search <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> query also checks <code>urn:rhds:sidenavTitle</code> — so searching "Designers" finds the Get Started sub-page even though its <code>schema:name</code> is "Overview."</p>
+<h2>Lessons Learned</h2>
+<p><strong>Tera template operator precedence matters.</strong> <code>{% set x = "a" ~ var | replace(...) ~ "b" %}</code> silently fails in Tera because <code>|</code> binds tighter than <code>~</code> in a <code>{% set %}</code> assignment. The template parses successfully but produces incorrect output. Moving the filter into <code>{{ var | replace(...) }}</code> output expressions works reliably. This consumed significant debugging time because the failure is silent — Tera does not report an error, it just produces wrong results.</p>
+<p><strong>Stray files in <code>templates/</code> crash everything.</strong> Tera attempts to parse all files in the template directory. A <code>.bak</code> or <code>.swp</code> file from an editor causes a cascading "Template not found" error for every template in the directory, with no indication of which file caused the failure.</p>
+<p><strong>Order values need zero-padding for <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> sorting.</strong> <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> sorts strings lexicographically — <code>"10"</code> sorts before <code>"2"</code>. Zero-padding order values to 3 digits (<code>"001"</code>, <code>"010"</code>, <code>"100"</code>) ensures correct ordering without numeric casting. The <code>pages()</code> function sorts the same way, so padding is needed there too.</p>
+<p><strong>The <code>http://</code> vs <code>https://</code> Schema.org namespace split is real.</strong> Geoff's <code>MappingRegistry</code> now uses <code>https://schema.org/</code> (with TLS), but legacy triples or external tools may use <code>http://</code>. The search component's <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> queries must match the namespace the build pipeline actually uses. We discovered this when search returned 2 results instead of 700 — the search index had <code>https://</code> triples but the query used <code>http://</code>.</p>
+<p><strong>Plugin <code>extra_vars</code> are the right abstraction for per-page data.</strong> The <code>on_page_render</code> hook proved more practical than <code>on_graph_updated</code> for data like <abbr title="Table of Contents">TOC</abbr> items and version numbers, because <code>extra_vars</code> are injected directly into the Tera context without requiring <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> queries. Use <code>on_graph_updated</code> for site-wide data that other pages may query; use <code>on_page_render</code> for data specific to the page being rendered.</p>
+<p><strong>Global regex <code>lastIndex</code> persists across plugin calls.</strong> The <abbr title="Table of Contents">TOC</abbr> plugin uses a regex with the <code>g</code> flag to find headings. Because the plugin's <code>on_page_render</code> function is called once per page but the regex is a module-level constant, <code>lastIndex</code> accumulates and causes intermittent failures. Reset it with <code>HEADING_PATTERN.lastIndex = 0</code> before each <code>exec()</code> loop.</p>
+<p><strong><code>@import</code> in constructed stylesheets fails silently.</strong> The <code>uxdot-pattern</code> component had <code>@import url(...)</code> inside a <code>css</code> tagged template literal. Browsers reject <code>@import</code> in constructed stylesheets per spec, but the error is easy to miss. The fix: remove the <code>@import</code> from the component <abbr title="Cascading Style Sheets">CSS</abbr> and load the dependency as a <code>&lt;link&gt;</code> tag in the base template.</p>
+<p><strong>Geoff's Deno plugin bridge uses <code>extra_vars</code>, not <code>templateVars</code>.</strong> The <abbr title="TypeScript">TS</abbr> SDK types define <code>RenderHookResult.templateVars</code>, but the Rust protocol serializes the field as <code>extra_vars</code>. Plugins must return <code>{ page, extra_vars }</code> — not <code>{ templateVars }</code> — for the values to reach templates.</p>
+<h2>Disconnecting from Node</h2>
+<p>The migration is also a step toward disconnecting the <abbr title="Red Hat Design System">RHDS</abbr> tooling from the Node.js ecosystem. Geoff plugins are Deno-native, the migration scripts can be converted to Deno, and the design tokens are served as static assets rather than resolved through <code>node_modules</code>. The compiled web component <abbr title="JavaScript">JS</abbr> is standard <abbr title="ECMAScript Module">ESM</abbr> served via import maps — no bundler required.</p>
+<p>The phased plan: Deno tooling first (already done for plugins), then <a href="https://jsr.io/">JSR</a> publishing for <code>@rhds/elements</code> and <code>@rhds/tokens</code> alongside npm, then optionally migrating the element build pipeline from <code>tsc</code>/wireit to Deno.</p>
+<h2>Build Performance</h2>
+<p>The migrated site builds 711 pages in ~10 seconds on a ThinkPad P1 Gen 7, including 7 Deno plugin dispatches (graph_updated + page_render for each page), <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> queries in every template, token table generation, and <abbr title="Table of Contents">TOC</abbr> extraction. Pages render in parallel via Rayon. The search index is 645<abbr title="Kilobyte">KB</abbr> covering 8,500+ triples across content pages, element metadata, and design tokens.</p>
+<p>The <code>geoff serve</code> dev server re-renders pages on file changes with the full three-phase pipeline — ingest, plugin hooks, render — with hot reload via WebSocket. Plugin hooks including <code>on_graph_updated</code> and <code>on_page_render</code> run on every rebuild, so <abbr title="Table of Contents">TOC</abbr> items, version badges, and token tables update live during development.</p>
+<h2>Try the Migration</h2>
+<p>The <a href="https://github.com/chapeaux/rhds-geoff/blob/main/MIGRATION.md">MIGRATION.md</a> in the <code>rhds-geoff</code> repo documents the full process — content conversion, token conversion, static asset copying, plugin setup, and build configuration. The migration script is idempotent: check out a new <abbr title="Red Hat Design System">RHDS</abbr> version, run the script, build. The v4.0.4 → v4.1.0 upgrade took one command.</p>
+
+    <p><a href="/blog/">&larr; All posts</a></p>
+  </article>
+</div>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <img src="/images/chapeaux_logo_aiux_reverse_2026.svg" alt="Chapeaux">
+          <p>A Digital Supply Chain for Web Assets</p>
+        </div>
+        <ul class="footer-links">
+          <li><a href="/contribute/">Contribute</a></li>
+          <li><a href="/projects/">Projects</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/chapellerie/">Chapellerie</a></li>
+          <li><a href="https://github.com/chapeaux">GitHub</a></li>
+        </ul>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Chapeaux Project. Open source under the MIT License.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -77,11 +77,11 @@
   <div class="container">
     <h2>Latest Updates</h2>
     {% for post in posts %}
-    <div class="post-item">
-      <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
-      {% if post.date %}<div class="post-meta">{{ post.date }}</div>{% endif %}
-      {% if post.desc %}<p>{{ post.desc }}</p>{% endif %}
-    </div>
+    <article class="post-item" vocab="https://schema.org/" typeof="BlogPosting" resource="{{ post.url }}">
+      <h3><a href="{{ post.url }}" property="url"><span property="name">{{ post.title }}</span></a></h3>
+      {% if post.date %}<div class="post-meta"><time property="datePublished" datetime="{{ post.date }}">{{ post.date }}</time></div>{% endif %}
+      {% if post.desc %}<p property="description">{{ post.desc }}</p>{% endif %}
+    </article>
     {% endfor %}
     <p><a href="/blog/">View all posts &rarr;</a></p>
   </div>

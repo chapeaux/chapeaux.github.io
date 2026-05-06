@@ -1,79 +1,399 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="schema: https://schema.org/ dc: http://purl.org/dc/terms/ foaf: http://xmlns.com/foaf/0.1/">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Introducing Geoff: A Static Site Generator with a Knowledge Graph Inside — Chapeaux</title>
   <meta name="description" content="Geoff is a Rust-based static site generator that turns Markdown files into a queryable RDF knowledge graph. Write plain frontmatter, get SPARQL queries in templates, JSON-LD in every page, SHACL validation, and client-side search powered by the same Oxigraph engine via WASM.">
   <link rel="icon" type="image/png" href="/images/favicon_2026.png">
-  <link rel="stylesheet" href="/chapeaux.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Red+Hat+Text:wght@400;500;700&display=swap">
+  <style>
+    :root {
+      color-scheme: light dark;
+        --surface-critical-accent: light-dark(#5e40be, #b6a6e9);
+  --surface-critical-background: light-dark(#ffffff, #1f1f1f);
+  --surface-critical-badge-bg: light-dark(#f5f5f5, #383838);
+  --surface-critical-border: light-dark(#e7e7e7, #383838);
+  --surface-critical-card-bg: light-dark(#e7e7e7, #292929);
+  --surface-critical-card-border: light-dark(#6a6e73, #4d4d4d);
+  --surface-critical-code-bg: light-dark(#f5f5f5, #1f1f1f);
+  --surface-critical-code-inline-bg: light-dark(#f2f2f2, #292929);
+  --surface-critical-code-text: light-dark(#a60000, #92c5f9);
+  --surface-critical-header-bg: light-dark(#ffffff, #151515);
+  --surface-critical-hover-bg: light-dark(#f5f5f5, #292929);
+  --surface-critical-input-bg: light-dark(#f5f5f5, #292929);
+  --surface-critical-input-border: light-dark(#e7e7e7, #383838);
+  --surface-critical-link: light-dark(#0066cc, #f5921b);
+  --surface-critical-nav-text: #5e40be;
+  --surface-critical-surface: light-dark(#f5f5f5, #292929);
+  --surface-critical-text: light-dark(#151515, #e0e0e0);
+  --surface-critical-text-card: light-dark(#4d4d4d, #c7c7c7);
+  --surface-critical-text-muted: light-dark(#6a6e73, #a3a3a3);
+  --surface-critical-text-primary: light-dark(#151515, #e0e0e0);
+  --surface-critical-text-secondary: light-dark(#3c3f42, #c7c7c7);
+
+    }
+    :root {
+  /* Brand colors */
+  --cpx-red-50: #ee0000;
+  --cpx-white: #ffffff;
+  --cpx-black: #151515;
+  --cpx-red: #ee0000;
+  --cpx-blue: #0066cc;
+  --cpx-dark-blue: #003366;
+  --cpx-orange: #f5921b;
+  --cpx-yellow: #ffcc17;
+  --cpx-teal: #37a3a3;
+  --cpx-purple: #5e40be;
+
+  /* Extended palette */
+  --cpx-red-05: #fef0f0;
+  --cpx-red-10: #fce3e3;
+  --cpx-red-20: #fbc5c5;
+  --cpx-red-30: #f9a8a8;
+  --cpx-red-40: #f56e6e;
+  --cpx-red-60: #a60000;
+  --cpx-red-70: #5f0000;
+  --cpx-red-80: #3f0000;
+  --cpx-gray-10: #f2f2f2;
+  --cpx-gray-20: #e0e0e0;
+  --cpx-gray-30: #c7c7c7;
+  --cpx-gray-40: #a3a3a3;
+  --cpx-gray-45: #8c8c8c;
+  --cpx-gray-50: #707070;
+  --cpx-gray-60: #4d4d4d;
+  --cpx-gray-70: #383838;
+  --cpx-gray-80: #292929;
+  --cpx-gray-90: #1f1f1f;
+  --cpx-gray-95: #151515;
+  --cpx-orange-10: #ffe8cc;
+  --cpx-orange-20: #fccb8f;
+  --cpx-orange-30: #f8ae54;
+  --cpx-orange-40: #f5921b;
+  --cpx-orange-50: #ca6c0f;
+  --cpx-orange-60: #9e4a06;
+  --cpx-orange-70: #732e00;
+  --cpx-orange-80: #4d1f00;
+  --cpx-yellow-10: #fff4cc;
+  --cpx-yellow-20: #ffe072;
+  --cpx-yellow-30: #ffcc17;
+  --cpx-yellow-40: #dca614;
+  --cpx-yellow-50: #b98412;
+  --cpx-yellow-60: #96640f;
+  --cpx-yellow-70: #73480b;
+  --cpx-yellow-80: #54330b;
+  --cpx-teal-10: #daf2f2;
+  --cpx-teal-20: #b9e5e5;
+  --cpx-teal-30: #9ad8d8;
+  --cpx-teal-40: #63bdbd;
+  --cpx-teal-50: #37a3a3;
+  --cpx-teal-60: #147878;
+  --cpx-teal-70: #004d4d;
+  --cpx-teal-80: #003333;
+  --cpx-purple-10: #ece6ff;
+  --cpx-purple-20: #d0c5f4;
+  --cpx-purple-30: #b6a6e9;
+  --cpx-purple-40: #876fd4;
+  --cpx-purple-50: #5e40be;
+  --cpx-purple-60: #3d2785;
+  --cpx-purple-70: #21134d;
+  --cpx-purple-80: #1b0d33;
+  --cpx-interaction-blue-50: #0066cc;
+  --cpx-interaction-blue-70: #003366;
+  --cpx-interaction-blue-10: #e0f0ff;
+  --cpx-interaction-blue-20: #b9dafc;
+  --cpx-interaction-blue-30: #92c5f9;
+  --cpx-interaction-blue-40: #4394e5;
+  --cpx-interaction-blue-60: #004d99;
+  --cpx-interaction-blue-80: #032142;
+
+  /* Stage colors */
+  --stage-develop: var(--cpx-teal);
+  --stage-discover: var(--cpx-blue);
+  --stage-deliver: var(--cpx-purple);
+
+  /* Semantic surface tokens — theme pipeline provides light-dark() values */
+  --bg: var(--surface-critical-background, #ffffff);
+  --text: var(--surface-critical-text, #151515);
+  --code-bg: var(--surface-critical-code-bg, #003366);
+  --header-bg: var(--surface-critical-header-bg, #ffffff);
+  --text-primary: var(--surface-critical-text-primary, #151515);
+  --text-secondary: var(--surface-critical-text-secondary, #3c3f42);
+  --text-muted: var(--surface-critical-text-muted, #6a6e73);
+  --text-card: var(--surface-critical-text-card, #4d4d4d);
+  --accent: var(--surface-critical-accent, #5e40be);
+  --link: var(--surface-critical-link, #0066cc);
+  --code-text: var(--surface-critical-code-text, #a60000);
+  --code-inline-bg: var(--surface-critical-code-inline-bg, #f2f2f2);
+  --card-bg: var(--surface-critical-card-bg, #e7e7e7);
+  --card-border: var(--surface-critical-card-border, #6a6e73);
+  --input-bg: var(--surface-critical-input-bg, #f5f5f5);
+  --input-border: var(--surface-critical-input-border, #e7e7e7);
+  --badge-bg: var(--surface-critical-badge-bg, #f5f5f5);
+  --hover-bg: var(--surface-critical-hover-bg, #f5f5f5);
+  --nav-text: var(--surface-critical-nav-text, #5e40be);
+
+  /* Neutral palette */
+  --white: #ffffff;
+  --gray-lightest: #f5f5f5;
+  --gray-light: #e7e7e7;
+  --gray: #6a6e73;
+  --gray-dark: #3c3f42;
+  --black: #151515;
+
+  /* Typography */
+  --font-heading: 'Oswald', sans-serif;
+  --font-body: 'Red Hat Text', sans-serif;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 2rem;
+  --space-xl: 4rem;
+
+  /* Layout */
+  --max-width: 1200px;
+  --nav-height: 64px;
+
+  /* Backgrounds */
+  --cpx-gradient: radial-gradient(ellipse at 20% 80%, rgb(67 173 175 / 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgb(4 153 197 / 0.2) 0%, transparent 50%),
+    linear-gradient(135deg, var(--cpx-gray-70) 0%, var(--cpx-purple-70) 100%);
+  --cpx-conical: conic-gradient(from 110deg, var(--cpx-orange), var(--cpx-teal) 5%, var(--cpx-teal) 18%, var(--cpx-purple) 30%, var(--cpx-purple) 40%, var(--cpx-blue) 85%, var(--cpx-orange) 100%);
+  --cpx-horizontal-rule: linear-gradient(to right, var(--cpx-blue), var(--cpx-teal), var(--cpx-yellow), var(--cpx-orange));
+}
+
+:not(:defined) > template[shadowrootmode] ~ * { display: none; }
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  line-height: 1.2;
+  margin-top: 0;
+  text-transform: uppercase;
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+
+a {
+  color: var(--link);
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+}
+
+img { max-width: 100%; height: auto; }
+
+main { min-height: calc(100vh - var(--nav-height) - 200px); }
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+
+  @media (min-width: 768px) { padding: 0 var(--space-lg); }
+}
+
+.site-header {
+  background: var(--white);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 3px solid var(--cpx-orange);
+  display: grid;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    "logo    .      menu"
+    "search  search switcher";
+
+  @media (min-width: 768px) {
+    padding: var(--space-sm) var(--space-lg);
+    grid-template-columns: auto 1fr auto auto;
+    grid-template-areas:
+      "logo . search switcher"
+      "nav   nav nav  nav";
+  }
+
+  @media (min-width: 1200px) {
+    grid-template-columns: auto 1fr auto auto;
+    grid-template-areas: "logo nav search switcher";
+  }
+
+  & > .site-logo     { grid-area: logo; }
+  & > nav            { grid-area: nav; justify-self: start; @media (min-width: 1200px) { justify-self: center; } }
+  & > geoff-search   { grid-area: search; }
+  & > scheme-switcher { grid-area: switcher; }
+  & > .mobile-menu   { grid-area: menu; justify-self: end; }
+}
+
+.site-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--accent);
+  text-decoration: none;
+
+  & img { height: 40px; width: auto; }
+  &:hover { text-decoration: none; }
+}
+
+.site-nav {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm) var(--space-md);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  & a {
+    color: var(--nav-text);
+    font-size: 1.2rem;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: var(--space-sm) 0;
+    border-bottom: 2px solid transparent;
+
+    &:hover {
+      color: var(--nav-text);
+      border-bottom-color: var(--cpx-orange);
+      text-decoration: none;
+    }
+  }
+}
+
+.mobile-menu {
+  @media (min-width: 768px) { display: none; }
+
+  & summary {
+    list-style: none;
+    cursor: pointer;
+    color: var(--accent);
+    font-size: 1.5rem;
+    padding: var(--space-sm);
+    &::-webkit-details-marker { display: none; }
+  }
+}
+
+geoff-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+scheme-switcher {
+  display: flex;
+  align-items: center;
+}
+
+
+  </style>
+  <link rel="preload" href="/chapeaux.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/chapeaux.css"></noscript>
+  <link rel="preload" href="/theme/tokens.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/theme/tokens.css"></noscript>
   
   <script type="application/ld+json">
   {
   "@context": "https://schema.org/",
-  "@id": "https://chapeaux.github.io/blog/2026-04-27-introducing-geoff",
+  "@id": "https://chapeaux.github.io/blog/2026-04-27-introducing-geoff.html",
   "@type": "BlogPosting",
   "datePublished": "2026-04-27",
-  "name": "Introducing Geoff: A Static Site Generator with a Knowledge Graph Inside"
+  "description": "Geoff is a Rust-based static site generator that turns Markdown files into a queryable RDF knowledge graph. Write plain frontmatter, get SPARQL queries in templates, JSON-LD in every page, SHACL validation, and client-side search powered by the same Oxigraph engine via WASM.",
+  "name": "Introducing Geoff: A Static Site Generator with a Knowledge Graph Inside",
+  "url": "/blog/2026-04-27-introducing-geoff.html"
 }
   </script>
   
   <script type="module" src="/geoff-search.js"></script>
+  <script type="module" src="/scheme-switcher.js"></script>
+  <script>
+    (function() {
+      var s = localStorage.getItem('scheme-preference');
+      if (s === 'light' || s === 'dark') document.documentElement.style.colorScheme = s;
+    })();
+  </script>
   
 </head>
 <body>
   <header class="site-header">
-    <div class="container">
-      <a href="/" class="site-logo">
-        <img src="/images/chapeaux_logo_wide_default_2026.svg" alt="Chapeaux">
-      </a>
+    <a href="/" class="site-logo">
+      <img src="/images/chapeaux_logo_wide_default_2026.svg" alt="Chapeaux">
+    </a>
 
-      <nav>
-        <ul class="site-nav">
-          <li><a href="/contribute/">Contribute</a></li>
-          <li><a href="/projects/">Projects</a></li>
-          <li><a href="/about/">About</a></li>
-          <li><a href="/blog/">Blog</a></li>
-          <li><a href="/chapellerie/">Chapellerie</a></li>
-        </ul>
-      </nav>
+    <nav>
+      <ul class="site-nav">
+        <li><a href="/contribute/">Contribute</a></li>
+        <li><a href="/projects/">Projects</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/chapellerie/">Chapellerie</a></li>
+      </ul>
+    </nav>
 
-      <geoff-search index="/search.nt"></geoff-search>
+    <geoff-search index="/search.nt"></geoff-search>
+    <scheme-switcher></scheme-switcher>
 
-      <details class="mobile-menu">
-        <summary aria-label="Menu">&#9776;</summary>
-        <ul class="mobile-nav">
-          <li><a href="/contribute/">Contribute</a></li>
-          <li><a href="/projects/">Projects</a></li>
-          <li><a href="/about/">About</a></li>
-          <li><a href="/blog/">Blog</a></li>
-          <li><a href="/chapellerie/">Chapellerie</a></li>
-        </ul>
-      </details>
-    </div>
+    <details class="mobile-menu">
+      <summary aria-label="Menu">&#9776;</summary>
+      <ul class="mobile-nav">
+        <li><a href="/contribute/">Contribute</a></li>
+        <li><a href="/projects/">Projects</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/chapellerie/">Chapellerie</a></li>
+      </ul>
+    </details>
   </header>
 
   <main>
     
 <div class="page-header">
   <div class="container">
-    <h1>Introducing Geoff: A Static Site Generator with a Knowledge Graph Inside</h1>
+    <h1 property="schema:name">Introducing Geoff: A Static Site Generator with a Knowledge Graph Inside</h1>
   </div>
 </div>
 
 <div class="container">
-  <article class="blog-post">
+  <article class="blog-post" vocab="https://schema.org/" typeof="BlogPosting" resource="/blog/2026-04-27-introducing-geoff.html">
     
     <div class="post-meta">
-      2026-04-27
+      <time property="schema:datePublished" datetime="2026-04-27">2026-04-27</time>
     </div>
     
+    <meta property="schema:description" content="Geoff is a Rust-based static site generator that turns Markdown files into a queryable RDF knowledge graph. Write plain frontmatter, get SPARQL queries in templates, JSON-LD in every page, SHACL validation, and client-side search powered by the same Oxigraph engine via WASM.">
+<meta property="schema:datePublished" content="2026-04-27">
     <p>Static site generators have a content model problem. You write a blog post in Markdown, add some metadata in frontmatter, and the generator turns it into <abbr title="HyperText Markup Language">HTML</abbr>. But the metadata is trapped. It lives in individual files, accessible only through the generator's proprietary template functions — <code>range .Site.Pages</code> in <a href="https://gohugo.io/">Hugo</a>, <code>section.pages</code> in <a href="https://www.getzola.org/">Zola</a>. Every generator invents its own query language for slicing and filtering content. None of them produce structured data unless you hand-write <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> templates. And none of them can tell you, before you build, whether your content is valid.</p>
 <p><a href="https://github.com/chapeaux/geoff">Geoff</a> takes a different approach. Every content file becomes a node in an <abbr title="Resource Description Framework">RDF</abbr> knowledge graph, queryable with <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> from inside your templates. Structured data (<abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr>) is generated automatically. Content validation rules are expressed as <a href="https://www.w3.org/TR/shacl/"><abbr title="Shapes Constraint Language">SHACL</abbr></a> shapes. And you never need to type an <abbr title="Internationalized Resource Identifier">IRI</abbr> — you write <code>type = "Blog Post"</code> and Geoff maps it to <code>schema:BlogPosting</code> behind the scenes.</p>
 <p>This article introduces what Geoff is, how it compares to Hugo and Zola, and where it is headed.</p>
 <h2>What Geoff Is</h2>
 <p>Geoff is a static site generator written in Rust. Single binary, zero runtime dependencies. You write Markdown with <abbr title="Tom's Obvious, Minimal Language">TOML</abbr> frontmatter, and Geoff builds static <abbr title="HyperText Markup Language">HTML</abbr>. In that sense, it is the same species as Hugo and Zola.</p>
-<p>The difference is what happens between parsing and rendering. Geoff takes every piece of frontmatter — title, date, author, type, tags, custom fields — and inserts it as <abbr title="Resource Description Framework">RDF</abbr> triples into an in-memory graph backed by <a href="https://oxigraph.org/">Oxigraph</a>. By the time templates execute, the entire site is a queryable knowledge graph. Templates can ask questions like "give me all blog posts sorted by date" or "find every page tagged <code>rust</code> that was published this year" using standard <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> — not a generator-specific <abbr title="Application Programming Interface">API</abbr>.</p>
+<p>The difference is what happens between parsing and rendering. Geoff takes every frontmatter field that has a property mapping — title, date, author, type, tags, and any custom fields you map — and inserts it as <abbr title="Resource Description Framework">RDF</abbr> triples into an in-memory graph backed by <a href="https://oxigraph.org/">Oxigraph</a>. By the time templates execute, the entire site is a queryable knowledge graph. Templates can ask questions like "give me all blog posts sorted by date" or "find every page tagged <code>rust</code> that was published this year" using standard <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> — not a generator-specific <abbr title="Application Programming Interface">API</abbr>.</p>
 <p>A minimal Geoff site:</p>
 <pre><code>my-site/
 ├── geoff.toml
@@ -121,11 +441,11 @@ This is a blog post.
 </ol>
 <p>If Geoff finds a high-confidence match (≥ 0.95), it maps automatically and saves the mapping. Otherwise, it prompts you. Either way, the mapping is persisted in <code>ontology/mappings.toml</code> so the next build is instant:</p>
 <pre><code class="language-toml">[types]
-"Blog Post" = "http://schema.org/BlogPosting"
+"Blog Post" = "https://schema.org/BlogPosting"
 
 [properties]
-title = "http://schema.org/name"
-date = "http://schema.org/datePublished"
+title = "https://schema.org/name"
+date = "https://schema.org/datePublished"
 </code></pre>
 <p>Once mapped, the same vocabulary terms are used for <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> output, <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> queries, and <abbr title="Shapes Constraint Language">SHACL</abbr> validation. One mapping drives everything.</p>
 <h2>SPARQL in Templates</h2>
@@ -133,11 +453,11 @@ date = "http://schema.org/datePublished"
 <pre><code class="language-html">{% set posts = sparql(query="
   SELECT ?title ?date ?url WHERE {
     GRAPH ?g {
-      ?s &lt;http://schema.org/name&gt; ?title .
+      ?s &lt;https://schema.org/name&gt; ?title .
       ?s &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt;
-         &lt;http://schema.org/BlogPosting&gt; .
-      OPTIONAL { ?s &lt;http://schema.org/datePublished&gt; ?date }
-      OPTIONAL { ?s &lt;http://schema.org/url&gt; ?url }
+         &lt;https://schema.org/BlogPosting&gt; .
+      OPTIONAL { ?s &lt;https://schema.org/datePublished&gt; ?date }
+      OPTIONAL { ?s &lt;https://schema.org/url&gt; ?url }
     }
   }
   ORDER BY DESC(?date)
@@ -154,11 +474,11 @@ date = "http://schema.org/datePublished"
 <p>The query language is more expressive, too. Want blog posts that share a tag with the current page? Hugo requires a multi-step <code>intersect</code> pipeline. Zola cannot do it without taxonomy pages. In Geoff, it is a <code>JOIN</code>:</p>
 <pre><code class="language-html">{% set related = sparql(query="
   SELECT DISTINCT ?title ?url WHERE {
-    GRAPH ?g1 { &lt;" ~ page_uri ~ "&gt; &lt;http://schema.org/keywords&gt; ?tag }
+    GRAPH ?g1 { &lt;" ~ page_uri ~ "&gt; &lt;https://schema.org/keywords&gt; ?tag }
     GRAPH ?g2 {
-      ?other &lt;http://schema.org/keywords&gt; ?tag .
-      ?other &lt;http://schema.org/name&gt; ?title .
-      ?other &lt;http://schema.org/url&gt; ?url .
+      ?other &lt;https://schema.org/keywords&gt; ?tag .
+      ?other &lt;https://schema.org/name&gt; ?title .
+      ?other &lt;https://schema.org/url&gt; ?url .
       FILTER(?other != &lt;" ~ page_uri ~ "&gt;)
     }
   }
@@ -174,7 +494,7 @@ date = "http://schema.org/datePublished"
   "@type": "BlogPosting",
   "name": "Hello World",
   "datePublished": "2026-04-27",
-  "author": "Jane Smith"
+  "author": { "@type": "Person", "name": "Jane Smith" }
 }
 &lt;/script&gt;
 </code></pre>
@@ -195,11 +515,14 @@ date = "http://schema.org/datePublished"
 <tr><td><strong>Templates</strong></td><td>Go templates</td><td>Tera (Jinja2)</td><td>Tera (Jinja2)</td></tr>
 <tr><td><strong>Content queries</strong></td><td>Go template functions</td><td>Tera filters</td><td><abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> (<abbr title="World Wide Web Consortium">W3C</abbr> standard)</td></tr>
 <tr><td><strong>Structured data</strong></td><td>Manual templates</td><td>Manual templates</td><td>Automatic <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr></td></tr>
+<tr><td><strong>RDFa output</strong></td><td>None</td><td>None</td><td>Native (template helpers + Markdown syntax)</td></tr>
 <tr><td><strong>Content validation</strong></td><td>None</td><td>None</td><td><abbr title="Shapes Constraint Language">SHACL</abbr> shapes</td></tr>
 <tr><td><strong>Data model</strong></td><td>Filesystem hierarchy</td><td>Filesystem hierarchy</td><td><abbr title="Resource Description Framework">RDF</abbr> knowledge graph</td></tr>
 <tr><td><strong>Plugin system</strong></td><td>None (Go modules)</td><td>None</td><td>Rust (cdylib) + Deno (TypeScript)</td></tr>
 <tr><td><strong>Dev server</strong></td><td>Built-in</td><td>Built-in</td><td>Built-in (hot reload via WebSocket)</td></tr>
-<tr><td><strong>Client-side search</strong></td><td>None (bring your own)</td><td>Elasticlunr.js (text index)</td><td>Oxigraph <abbr title="WebAssembly">WASM</abbr> (<abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> queries)</td></tr>
+<tr><td><strong>Theming</strong></td><td>Go template partials</td><td>Sass variables</td><td><abbr title="World Wide Web Consortium">W3C</abbr> Design Tokens → <abbr title="Cascading Style Sheets">CSS</abbr> custom properties</td></tr>
+<tr><td><strong>Asset optimization</strong></td><td>Hugo Pipes (built-in)</td><td>None</td><td>lightningcss + WebP + cache hashes</td></tr>
+<tr><td><strong>Client-side search</strong></td><td>None (bring your own)</td><td>Elasticlunr.js (text index)</td><td>Oxigraph <abbr title="WebAssembly">WASM</abbr> (<abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr>, structured queries, <abbr title="Accessible Rich Internet Applications">ARIA</abbr> combobox)</td></tr>
 <tr><td><strong>Incremental builds</strong></td><td>Yes</td><td>No</td><td>Yes (cache-aware)</td></tr>
 <tr><td><strong>Ecosystem</strong></td><td>Massive (themes, docs)</td><td>Growing</td><td>Early</td></tr>
 </tbody></table>
@@ -272,25 +595,73 @@ enabled = true
 <pre><code class="language-html">&lt;script type="module" src="/geoff-search.js"&gt;&lt;/script&gt;
 &lt;geoff-search&gt;&lt;/geoff-search&gt;
 </code></pre>
-<p>That is it. The build writes a <code>search.nt</code> file (20<abbr title="Kilobyte">KB</abbr> for a 42-page site), and the component loads it on first interaction. Oxigraph <abbr title="WebAssembly">WASM</abbr> is ~300<abbr title="Kilobyte">KB</abbr> gzipped, lazy-loaded — it does not affect initial page load.</p>
-<p>Because the index is <abbr title="Resource Description Framework">RDF</abbr>, not a flat text index, the search is inherently faceted. The component's <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> query can filter by content type, tag, date range, or any combination — the same kinds of queries you write in templates:</p>
-<pre><code class="language-sparql">SELECT ?title ?url ?desc WHERE {
-  ?s &lt;http://schema.org/name&gt; ?title .
-  ?s &lt;http://schema.org/url&gt; ?url .
-  OPTIONAL { ?s &lt;http://schema.org/description&gt; ?desc }
-  FILTER(CONTAINS(LCASE(?title), LCASE("sparql")))
+<p>That is it. The build writes a <code>search.nt</code> file (20<abbr title="Kilobyte">KB</abbr> for a 42-page site), and the component loads it on first interaction. Oxigraph <abbr title="WebAssembly">WASM</abbr> is ~300<abbr title="Kilobyte">KB</abbr> gzipped, lazy-loaded — it does not affect initial page load. The search index is also available during <code>geoff serve</code> — no build required to test search during development.</p>
+<p>The search component supports structured query syntax:</p>
+<ul>
+<li><strong>Multiple terms:</strong> <code>rust sparql</code> matches pages containing both words (implicit AND)</li>
+<li><strong>Quoted phrases:</strong> <code>"knowledge graph"</code> matches the exact phrase</li>
+<li><strong>OR:</strong> <code>rust OR python</code> matches pages containing either term</li>
+<li><strong>AND:</strong> <code>rust AND sparql</code> is explicit AND (same as a space)</li>
+</ul>
+<p>Queries search both titles and descriptions. <code>OR</code> binds looser than AND, so <code>rust sparql OR python</code> means "(rust AND sparql) OR python."</p>
+<p>The component follows the <abbr title="Accessible Rich Internet Applications">ARIA</abbr> combobox pattern — keyboard navigation with Arrow keys, Enter to select, Escape to close — and positions its results dropdown using <abbr title="Cascading Style Sheets">CSS</abbr> anchor positioning with a fallback for browsers that do not support it yet. Styling is customizable via <abbr title="Cascading Style Sheets">CSS</abbr> custom properties (<code>--geoff-search-bg</code>, <code>--geoff-search-highlight</code>, etc.) and adapts to dark mode automatically.</p>
+<p>Because the index is <abbr title="Resource Description Framework">RDF</abbr>, not a flat text index, the search is inherently faceted. The component's <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> query can filter by content type, tag, date range, or any combination — the same kinds of queries you write in templates. The search index uses the same predicates, the same <abbr title="Internationalized Resource Identifier">IRI</abbr>s, and the same Oxigraph engine as the build-time graph. There is no translation layer between what the server knows and what the client can query. No other static site generator can make that claim.</p>
+<h2>Design Token Theming</h2>
+<p>Geoff now includes a standards-based theming system built on the <a href="https://www.designtokens.org/"><abbr title="World Wide Web Consortium">W3C</abbr> Design Tokens</a> format (DTCG 2025.10). Themes are <abbr title="JavaScript Object Notation">JSON</abbr> token files that produce <abbr title="Cascading Style Sheets">CSS</abbr> custom properties, with inheritance for derivative themes and <abbr title="Resource Description Framework">RDF</abbr> integration for querying tokens in templates.</p>
+<p>A theme file:</p>
+<pre><code class="language-json">{
+  "color-critical": {
+    "$type": "color",
+    "primary": { "$value": "#0066cc" },
+    "text": { "$value": "#1a1a1a" }
+  }
 }
-ORDER BY DESC(?date)
 </code></pre>
-<p>The search index uses the same predicates, the same <abbr title="Internationalized Resource Identifier">IRI</abbr>s, and the same Oxigraph engine as the build-time graph. There is no translation layer between what the server knows and what the client can query. No other static site generator can make that claim.</p>
+<p>Becomes <abbr title="Cascading Style Sheets">CSS</abbr> custom properties:</p>
+<pre><code class="language-css">:root {
+  --color-critical-primary: #0066cc;
+  --color-critical-text: #1a1a1a;
+}
+</code></pre>
+<p>Token groups with <code>-critical</code> in the name are inlined in <code>&lt;head&gt;</code> for the critical rendering path. Everything else loads as a deferred external stylesheet via <code>&lt;link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'"&gt;</code> with a <code>&lt;noscript&gt;</code> fallback.</p>
+<p>Light and dark modes use the <abbr title="Cascading Style Sheets">CSS</abbr> <code>light-dark()</code> function with <code>-on-light</code> and <code>-on-dark</code> primitive variables — no <code>@media</code> query duplication, works natively in Shadow <abbr title="Document Object Model">DOM</abbr>.</p>
+<p>Themes inherit from parent themes — a derivative theme overrides only what changes, inheriting everything else through deep merge. The <code>share = true</code> config publishes the resolved tokens as both DTCG <abbr title="JavaScript Object Notation">JSON</abbr> and N-Triples, so other Geoff sites can reference them as a remote base theme.</p>
+<p>Two <abbr title="Command-Line Interface">CLI</abbr> commands support theme development:</p>
+<ul>
+<li><code>geoff theme preview</code> generates a specimen site with color swatches, typography samples, spacing scales, and every template variation</li>
+<li><code>geoff theme edit</code> serves a visual editor with web component <abbr title="User Interface">UI</abbr>, type-adaptive inputs, <abbr title="Shapes Constraint Language">SHACL</abbr> validation, and live <abbr title="Cascading Style Sheets">CSS</abbr> injection into preview iframes</li>
+</ul>
+<h3>Asset Optimization</h3>
+<p>The build pipeline now includes configurable post-processing:</p>
+<pre><code class="language-toml">[theme.optimize]
+minify_css = true
+minify_js = true
+hash_assets = true
+
+[theme.optimize.images]
+webp = true
+quality = 80
+max_width = 1920
+</code></pre>
+<p><abbr title="Cascading Style Sheets">CSS</abbr> is minified via <a href="https://lightningcss.dev/">lightningcss</a>. <abbr title="JavaScript">JS</abbr> gets basic comment and whitespace stripping. Images are converted to WebP and optionally resized. Cache-busting content hashes are appended to <abbr title="Cascading Style Sheets">CSS</abbr>/<abbr title="JavaScript">JS</abbr> filenames with <abbr title="HyperText Markup Language">HTML</abbr> references updated automatically.</p>
+<h2>What's New Since Launch</h2>
+<p>Since the initial release, Geoff has added several major capabilities:</p>
+<p><strong>RDFa output.</strong> Templates can emit RDFa Lite 1.1 attributes using <code>{{ rdfa_attrs | safe }}</code>, <code>{{ rdfa_prop(name="title") | safe }}</code>, and the <code>rdfa</code> filter. Markdown supports inline annotations with <code>[text](rdfa:property)</code> syntax. All property names are resolved through the mapping registry — no <abbr title="Internationalized Resource Identifier">IRI</abbr>s needed.</p>
+<p><strong><code>[data]</code> frontmatter.</strong> A new frontmatter section for structured data with friendly names: <code>[data]\nwordCount = 1500</code>. Keys are resolved through the mapping registry, and values appear automatically in <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> output.</p>
+<p><strong>Navigation helpers.</strong> <code>pages()</code> filters and sorts pages by any frontmatter field. <code>tree()</code> builds hierarchical navigation from the <abbr title="Uniform Resource Locator">URL</abbr> structure. Both replace the need for <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> in common navigation patterns.</p>
+<p><strong>Custom vocabulary prefixes.</strong> Declare additional namespaces in <code>[linked_data.prefixes]</code> — <abbr title="Simple Knowledge Organization System">SKOS</abbr>, W3C ORG, <abbr title="Data Catalog Vocabulary">DCAT</abbr>, or any custom ontology. They flow to <abbr title="Internationalized Resource Identifier">IRI</abbr> expansion, <abbr title="Resource Description Framework in Attributes">RDFa</abbr> output, and <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> contexts.</p>
+<p><strong>Richer JSON-LD.</strong> The <code>&lt;script type="application/ld+json"&gt;</code> block now includes all page triples from the graph, not just the five standard fields. Custom fields from <code>[data]</code> and <code>[rdf.custom]</code> appear automatically. Multi-vocabulary <code>@context</code> is generated with only the prefixes actually used.</p>
+<p><strong>URL style.</strong> <code>[build] url_style = "directory"</code> produces <code>/about/</code> instead of <code>/about.html</code>.</p>
+<p><strong>Search improvements.</strong> The <code>&lt;geoff-search&gt;</code> component now supports structured query syntax (quotes, AND, OR, multi-term), full keyboard navigation with the <abbr title="Accessible Rich Internet Applications">ARIA</abbr> combobox pattern, <abbr title="Cascading Style Sheets">CSS</abbr> anchor positioning for the results overlay, and dark mode. The search index is also served live during <code>geoff serve</code>.</p>
+<p><strong>Default property mappings.</strong> Common frontmatter fields (title, author, date, description, tags, and others) are mapped to Schema.org <abbr title="Internationalized Resource Identifier">IRI</abbr>s by default — no <code>ontology/mappings.toml</code> required for standard use cases. User-defined mappings override the defaults.</p>
+<p><strong>Design system / theme separation.</strong> A new <code>[design]</code> config section references external design system token files (e.g. from <code>node_modules</code>). <code>geoff theme generate my-brand</code> reads the design system, detects <code>-on-light</code>/<code>-on-dark</code> pairs, and generates a <code>theme.json</code> with <code>light-dark()</code> aggregates and <abbr title="Cascading Style Sheets">CSS</abbr> <code>var()</code> fallbacks. The design system is the palette; the theme is the paint scheme. Multiple themes can reference the same design system.</p>
+<p><strong>Critical <abbr title="Cascading Style Sheets">CSS</abbr> from files.</strong> Place <code>critical.css</code> in <code>static/</code> and it is inlined on every page via <code>{{ critical_css | safe }}</code>. Template-specific critical <abbr title="Cascading Style Sheets">CSS</abbr> uses the naming convention <code>critical-{template}.css</code> — e.g. <code>critical-blog-page.css</code> is inlined only on pages using the <code>blog-page.html</code> template. Combines with <code>theme_css(critical=true)</code> for a single above-the-fold <code>&lt;style&gt;</code> block.</p>
+<p><strong>Automatic frontmatter mapping.</strong> Any top-level frontmatter field with a property mapping in <code>ontology/mappings.toml</code> is now stored as an <abbr title="Resource Description Framework">RDF</abbr> triple — no <code>[rdf.custom]</code> or <code>[data]</code> section required. Write <code>navSection = "about"</code> and map it to <code>urn:mysite:navSection</code> in the registry, and it appears in <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr>, <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr>, and <code>&lt;geoff-search&gt;</code> results automatically.</p>
 <h2>What Is Planned</h2>
-<p>Geoff is functional but early. Here is what is coming:</p>
-<p><strong>Authoring <abbr title="User Interface">UI</abbr>.</strong> A set of web components — built with Chapeaux tools, naturally — for editing content in the browser: a frontmatter editor that shows available vocabulary terms, a graph visualizer for content relationships, a <abbr title="Shapes Constraint Language">SHACL</abbr> validation panel that shows constraint violations as you type.</p>
+<p>Geoff is functional and growing. Here is what is coming:</p>
 <p><strong>Federation.</strong> Linking to external <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> endpoints or other Geoff sites via federated queries. A documentation site could query an <abbr title="Application Programming Interface">API</abbr> reference site's graph at build time to pull in type signatures or changelogs without duplicating content.</p>
 <p><strong><abbr title="Internationalization — adapting software for different languages and regions">i18n</abbr> driven by <abbr title="Resource Description Framework">RDF</abbr> labels.</strong> The bundled vocabularies already include multilingual labels (<code>rdfs:label "Product"@en, "Producto"@es</code>). A future version could generate localized pages by resolving labels to the target language.</p>
-<p><strong>Image optimization pipeline.</strong> Automatic resizing, format conversion (WebP/AVIF), and responsive <code>&lt;picture&gt;</code> elements — driven by the build pipeline and cacheable across incremental builds.</p>
 <p><strong>Theme ecosystem.</strong> Starter templates exist for blogs, documentation, and portfolios. A theme registry with installable templates is the next step toward making Geoff practical for people who want to publish, not configure.</p>
-<p><strong>Richer <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> integration.</strong> Prefix support in template queries (so you can write <code>schema:BlogPosting</code> instead of the full <abbr title="Internationalized Resource Identifier">IRI</abbr>), parameterized queries (pass template variables into <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> bindings), and query result caching for repeated queries across pages.</p>
 <h2>Try It</h2>
 <pre><code class="language-bash"># Install
 cargo install chapeaux-geoff

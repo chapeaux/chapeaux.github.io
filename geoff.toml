@@ -3,6 +3,18 @@ title = "Chapeaux"
 content_dir = "content"
 template_dir = "templates"
 output_dir = "dist"
-
 [search]
 enabled = true
+[design]
+tokens = ["./themes/chapeaux/tokens.json"]
+
+[theme]
+name = "chapeaux"
+share = true
+
+[theme.optimize]
+minify_css = true
+minify_js = true
+
+[linked_data]
+rdfa = true

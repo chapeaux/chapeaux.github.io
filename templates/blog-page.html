@@ -5,17 +5,18 @@
 {% block content %}
 <div class="page-header">
   <div class="container">
-    <h1>{{ title }}</h1>
+    <h1 {{ rdfa_prop(name="title") | safe }}>{{ title }}</h1>
   </div>
 </div>
 
 <div class="container">
-  <article class="blog-post">
+  <article class="blog-post" {{ rdfa_attrs | safe }}>
     {% if date %}
     <div class="post-meta">
-      {{ date }}
+      <time {{ rdfa_prop(name="date") | safe }} datetime="{{ date }}">{{ date }}</time>
     </div>
     {% endif %}
+    {{ rdfa_meta(page_uri=page_uri) | safe }}
     {{ content | safe }}
     <p><a href="/blog/">&larr; All posts</a></p>
   </article>

@@ -1,0 +1,117 @@
+{
+  "$description": "Chapeaux site theme — semantic tokens built on the design system",
+  "stage": {
+    "$type": "color",
+    "deliver": {
+      "$value": "{color-critical.purple}"
+    },
+    "develop": {
+      "$value": "{color-critical.teal}"
+    },
+    "discover": {
+      "$value": "{color-critical.blue}"
+    }
+  },
+  "status": {
+    "$type": "color",
+    "danger": {
+      "$value": "{color.danger-orange-50}"
+    },
+    "info": {
+      "$value": "{color-critical.blue}"
+    },
+    "success": {
+      "$value": "{color.success-green-50}"
+    },
+    "warning": {
+      "$value": "{color-critical.orange}"
+    }
+  },
+  "surface-critical": {
+    "$type": "color",
+    "accent": {
+      "$description": "Accent color for headings, logo",
+      "$value": "light-dark({color-critical.purple}, {color.purple-30})"
+    },
+    "background": {
+      "$description": "Page background",
+      "$value": "light-dark({surface-critical.background.on.light}, {surface-critical.background.on.dark})"
+    },
+    "badge-bg": {
+      "$description": "Badge background",
+      "$value": "light-dark({color-critical.gray-lightest}, {color.gray-70})"
+    },
+    "border": {
+      "$description": "Borders",
+      "$value": "light-dark({surface-critical.border.on.light}, {surface-critical.border.on.dark})"
+    },
+    "card-bg": {
+      "$description": "Card background",
+      "$value": "light-dark({color-critical.gray-light}, {color.gray-80})"
+    },
+    "card-border": {
+      "$description": "Card border",
+      "$value": "light-dark({color-critical.gray}, {color.gray-60})"
+    },
+    "code-bg": {
+      "$description": "Code block background",
+      "$value": "light-dark({surface-critical.code-bg.on.light}, {surface-critical.code-bg.on.dark})"
+    },
+    "code-inline-bg": {
+      "$description": "Inline code background",
+      "$value": "light-dark({color.gray-10}, {color.gray-80})"
+    },
+    "code-text": {
+      "$description": "Inline code text",
+      "$value": "light-dark({color.red-60}, {color.blue-30})"
+    },
+    "header-bg": {
+      "$description": "Site header background",
+      "$value": "light-dark({surface-critical.header-bg.on.light}, {surface-critical.header-bg.on.dark})"
+    },
+    "hover-bg": {
+      "$description": "Hover background for interactive elements",
+      "$value": "light-dark({color-critical.gray-lightest}, {color.gray-80})"
+    },
+    "input-bg": {
+      "$description": "Input field background",
+      "$value": "light-dark({color-critical.gray-lightest}, {color.gray-80})"
+    },
+    "input-border": {
+      "$description": "Input field border",
+      "$value": "light-dark({color-critical.gray-light}, {color.gray-70})"
+    },
+    "link": {
+      "$description": "Hyperlink text",
+      "$value": "light-dark({color-critical.blue}, {color-critical.orange})"
+    },
+    "nav-text": {
+      "$description": "Nav link text — fixed since header bg is always white",
+      "$value": "{color-critical.purple}"
+    },
+    "surface": {
+      "$description": "Card/section background",
+      "$value": "light-dark({surface-critical.surface.on.light}, {surface-critical.surface.on.dark})"
+    },
+    "text": {
+      "$description": "Primary text",
+      "$value": "light-dark({surface-critical.text.on.light}, {surface-critical.text.on.dark})"
+    },
+    "text-card": {
+      "$description": "Card paragraph text",
+      "$value": "light-dark({color.gray-60}, {color.gray-30})"
+    },
+    "text-muted": {
+      "$description": "Secondary text",
+      "$value": "light-dark({surface-critical.text-muted.on.light}, {surface-critical.text-muted.on.dark})"
+    },
+    "text-primary": {
+      "$description": "Primary body/heading text",
+      "$value": "light-dark({color-critical.black}, {color.gray-20})"
+    },
+    "text-secondary": {
+      "$description": "Secondary text (blockquotes, details)",
+      "$value": "light-dark({color-critical.gray-dark}, {color.gray-30})"
+    }
+  }
+}

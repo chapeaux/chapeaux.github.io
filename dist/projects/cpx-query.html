@@ -1,55 +1,376 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="schema: https://schema.org/ dc: http://purl.org/dc/terms/ foaf: http://xmlns.com/foaf/0.1/">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>cpx-query — Chapeaux</title>
   <meta name="description" content="Search query web component">
   <link rel="icon" type="image/png" href="/images/favicon_2026.png">
-  <link rel="stylesheet" href="/chapeaux.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Red+Hat+Text:wght@400;500;700&display=swap">
+  <style>
+    :root {
+      color-scheme: light dark;
+        --surface-critical-accent: light-dark(#5e40be, #b6a6e9);
+  --surface-critical-background: light-dark(#ffffff, #1f1f1f);
+  --surface-critical-badge-bg: light-dark(#f5f5f5, #383838);
+  --surface-critical-border: light-dark(#e7e7e7, #383838);
+  --surface-critical-card-bg: light-dark(#e7e7e7, #292929);
+  --surface-critical-card-border: light-dark(#6a6e73, #4d4d4d);
+  --surface-critical-code-bg: light-dark(#f5f5f5, #1f1f1f);
+  --surface-critical-code-inline-bg: light-dark(#f2f2f2, #292929);
+  --surface-critical-code-text: light-dark(#a60000, #92c5f9);
+  --surface-critical-header-bg: light-dark(#ffffff, #151515);
+  --surface-critical-hover-bg: light-dark(#f5f5f5, #292929);
+  --surface-critical-input-bg: light-dark(#f5f5f5, #292929);
+  --surface-critical-input-border: light-dark(#e7e7e7, #383838);
+  --surface-critical-link: light-dark(#0066cc, #f5921b);
+  --surface-critical-nav-text: #5e40be;
+  --surface-critical-surface: light-dark(#f5f5f5, #292929);
+  --surface-critical-text: light-dark(#151515, #e0e0e0);
+  --surface-critical-text-card: light-dark(#4d4d4d, #c7c7c7);
+  --surface-critical-text-muted: light-dark(#6a6e73, #a3a3a3);
+  --surface-critical-text-primary: light-dark(#151515, #e0e0e0);
+  --surface-critical-text-secondary: light-dark(#3c3f42, #c7c7c7);
+
+    }
+    :root {
+  /* Brand colors */
+  --cpx-red-50: #ee0000;
+  --cpx-white: #ffffff;
+  --cpx-black: #151515;
+  --cpx-red: #ee0000;
+  --cpx-blue: #0066cc;
+  --cpx-dark-blue: #003366;
+  --cpx-orange: #f5921b;
+  --cpx-yellow: #ffcc17;
+  --cpx-teal: #37a3a3;
+  --cpx-purple: #5e40be;
+
+  /* Extended palette */
+  --cpx-red-05: #fef0f0;
+  --cpx-red-10: #fce3e3;
+  --cpx-red-20: #fbc5c5;
+  --cpx-red-30: #f9a8a8;
+  --cpx-red-40: #f56e6e;
+  --cpx-red-60: #a60000;
+  --cpx-red-70: #5f0000;
+  --cpx-red-80: #3f0000;
+  --cpx-gray-10: #f2f2f2;
+  --cpx-gray-20: #e0e0e0;
+  --cpx-gray-30: #c7c7c7;
+  --cpx-gray-40: #a3a3a3;
+  --cpx-gray-45: #8c8c8c;
+  --cpx-gray-50: #707070;
+  --cpx-gray-60: #4d4d4d;
+  --cpx-gray-70: #383838;
+  --cpx-gray-80: #292929;
+  --cpx-gray-90: #1f1f1f;
+  --cpx-gray-95: #151515;
+  --cpx-orange-10: #ffe8cc;
+  --cpx-orange-20: #fccb8f;
+  --cpx-orange-30: #f8ae54;
+  --cpx-orange-40: #f5921b;
+  --cpx-orange-50: #ca6c0f;
+  --cpx-orange-60: #9e4a06;
+  --cpx-orange-70: #732e00;
+  --cpx-orange-80: #4d1f00;
+  --cpx-yellow-10: #fff4cc;
+  --cpx-yellow-20: #ffe072;
+  --cpx-yellow-30: #ffcc17;
+  --cpx-yellow-40: #dca614;
+  --cpx-yellow-50: #b98412;
+  --cpx-yellow-60: #96640f;
+  --cpx-yellow-70: #73480b;
+  --cpx-yellow-80: #54330b;
+  --cpx-teal-10: #daf2f2;
+  --cpx-teal-20: #b9e5e5;
+  --cpx-teal-30: #9ad8d8;
+  --cpx-teal-40: #63bdbd;
+  --cpx-teal-50: #37a3a3;
+  --cpx-teal-60: #147878;
+  --cpx-teal-70: #004d4d;
+  --cpx-teal-80: #003333;
+  --cpx-purple-10: #ece6ff;
+  --cpx-purple-20: #d0c5f4;
+  --cpx-purple-30: #b6a6e9;
+  --cpx-purple-40: #876fd4;
+  --cpx-purple-50: #5e40be;
+  --cpx-purple-60: #3d2785;
+  --cpx-purple-70: #21134d;
+  --cpx-purple-80: #1b0d33;
+  --cpx-interaction-blue-50: #0066cc;
+  --cpx-interaction-blue-70: #003366;
+  --cpx-interaction-blue-10: #e0f0ff;
+  --cpx-interaction-blue-20: #b9dafc;
+  --cpx-interaction-blue-30: #92c5f9;
+  --cpx-interaction-blue-40: #4394e5;
+  --cpx-interaction-blue-60: #004d99;
+  --cpx-interaction-blue-80: #032142;
+
+  /* Stage colors */
+  --stage-develop: var(--cpx-teal);
+  --stage-discover: var(--cpx-blue);
+  --stage-deliver: var(--cpx-purple);
+
+  /* Semantic surface tokens — theme pipeline provides light-dark() values */
+  --bg: var(--surface-critical-background, #ffffff);
+  --text: var(--surface-critical-text, #151515);
+  --code-bg: var(--surface-critical-code-bg, #003366);
+  --header-bg: var(--surface-critical-header-bg, #ffffff);
+  --text-primary: var(--surface-critical-text-primary, #151515);
+  --text-secondary: var(--surface-critical-text-secondary, #3c3f42);
+  --text-muted: var(--surface-critical-text-muted, #6a6e73);
+  --text-card: var(--surface-critical-text-card, #4d4d4d);
+  --accent: var(--surface-critical-accent, #5e40be);
+  --link: var(--surface-critical-link, #0066cc);
+  --code-text: var(--surface-critical-code-text, #a60000);
+  --code-inline-bg: var(--surface-critical-code-inline-bg, #f2f2f2);
+  --card-bg: var(--surface-critical-card-bg, #e7e7e7);
+  --card-border: var(--surface-critical-card-border, #6a6e73);
+  --input-bg: var(--surface-critical-input-bg, #f5f5f5);
+  --input-border: var(--surface-critical-input-border, #e7e7e7);
+  --badge-bg: var(--surface-critical-badge-bg, #f5f5f5);
+  --hover-bg: var(--surface-critical-hover-bg, #f5f5f5);
+  --nav-text: var(--surface-critical-nav-text, #5e40be);
+
+  /* Neutral palette */
+  --white: #ffffff;
+  --gray-lightest: #f5f5f5;
+  --gray-light: #e7e7e7;
+  --gray: #6a6e73;
+  --gray-dark: #3c3f42;
+  --black: #151515;
+
+  /* Typography */
+  --font-heading: 'Oswald', sans-serif;
+  --font-body: 'Red Hat Text', sans-serif;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 2rem;
+  --space-xl: 4rem;
+
+  /* Layout */
+  --max-width: 1200px;
+  --nav-height: 64px;
+
+  /* Backgrounds */
+  --cpx-gradient: radial-gradient(ellipse at 20% 80%, rgb(67 173 175 / 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgb(4 153 197 / 0.2) 0%, transparent 50%),
+    linear-gradient(135deg, var(--cpx-gray-70) 0%, var(--cpx-purple-70) 100%);
+  --cpx-conical: conic-gradient(from 110deg, var(--cpx-orange), var(--cpx-teal) 5%, var(--cpx-teal) 18%, var(--cpx-purple) 30%, var(--cpx-purple) 40%, var(--cpx-blue) 85%, var(--cpx-orange) 100%);
+  --cpx-horizontal-rule: linear-gradient(to right, var(--cpx-blue), var(--cpx-teal), var(--cpx-yellow), var(--cpx-orange));
+}
+
+:not(:defined) > template[shadowrootmode] ~ * { display: none; }
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  line-height: 1.2;
+  margin-top: 0;
+  text-transform: uppercase;
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+
+a {
+  color: var(--link);
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+}
+
+img { max-width: 100%; height: auto; }
+
+main { min-height: calc(100vh - var(--nav-height) - 200px); }
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+
+  @media (min-width: 768px) { padding: 0 var(--space-lg); }
+}
+
+.site-header {
+  background: var(--white);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 3px solid var(--cpx-orange);
+  display: grid;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    "logo    .      menu"
+    "search  search switcher";
+
+  @media (min-width: 768px) {
+    padding: var(--space-sm) var(--space-lg);
+    grid-template-columns: auto 1fr auto auto;
+    grid-template-areas:
+      "logo . search switcher"
+      "nav   nav nav  nav";
+  }
+
+  @media (min-width: 1200px) {
+    grid-template-columns: auto 1fr auto auto;
+    grid-template-areas: "logo nav search switcher";
+  }
+
+  & > .site-logo     { grid-area: logo; }
+  & > nav            { grid-area: nav; justify-self: start; @media (min-width: 1200px) { justify-self: center; } }
+  & > geoff-search   { grid-area: search; }
+  & > scheme-switcher { grid-area: switcher; }
+  & > .mobile-menu   { grid-area: menu; justify-self: end; }
+}
+
+.site-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--accent);
+  text-decoration: none;
+
+  & img { height: 40px; width: auto; }
+  &:hover { text-decoration: none; }
+}
+
+.site-nav {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm) var(--space-md);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  & a {
+    color: var(--nav-text);
+    font-size: 1.2rem;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: var(--space-sm) 0;
+    border-bottom: 2px solid transparent;
+
+    &:hover {
+      color: var(--nav-text);
+      border-bottom-color: var(--cpx-orange);
+      text-decoration: none;
+    }
+  }
+}
+
+.mobile-menu {
+  @media (min-width: 768px) { display: none; }
+
+  & summary {
+    list-style: none;
+    cursor: pointer;
+    color: var(--accent);
+    font-size: 1.5rem;
+    padding: var(--space-sm);
+    &::-webkit-details-marker { display: none; }
+  }
+}
+
+geoff-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+scheme-switcher {
+  display: flex;
+  align-items: center;
+}
+
+
+  </style>
+  <link rel="preload" href="/chapeaux.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/chapeaux.css"></noscript>
+  <link rel="preload" href="/theme/tokens.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/theme/tokens.css"></noscript>
   
   <script type="application/ld+json">
   {
   "@context": "https://schema.org/",
-  "@id": "https://chapeaux.github.io/projects/cpx-query",
+  "@id": "https://chapeaux.github.io/projects/cpx-query.html",
   "@type": "WebPage",
-  "name": "cpx-query"
+  "codeRepository": "https://github.com/chapeaux/cpx-query",
+  "creativeWorkStatus": "Active",
+  "description": "Search query web component",
+  "name": "cpx-query",
+  "programmingLanguage": "TypeScript",
+  "url": "/projects/cpx-query.html"
 }
   </script>
   
   <script type="module" src="/geoff-search.js"></script>
+  <script type="module" src="/scheme-switcher.js"></script>
+  <script>
+    (function() {
+      var s = localStorage.getItem('scheme-preference');
+      if (s === 'light' || s === 'dark') document.documentElement.style.colorScheme = s;
+    })();
+  </script>
   
 </head>
 <body>
   <header class="site-header">
-    <div class="container">
-      <a href="/" class="site-logo">
-        <img src="/images/chapeaux_logo_wide_default_2026.svg" alt="Chapeaux">
-      </a>
+    <a href="/" class="site-logo">
+      <img src="/images/chapeaux_logo_wide_default_2026.svg" alt="Chapeaux">
+    </a>
 
-      <nav>
-        <ul class="site-nav">
-          <li><a href="/contribute/">Contribute</a></li>
-          <li><a href="/projects/">Projects</a></li>
-          <li><a href="/about/">About</a></li>
-          <li><a href="/blog/">Blog</a></li>
-          <li><a href="/chapellerie/">Chapellerie</a></li>
-        </ul>
-      </nav>
+    <nav>
+      <ul class="site-nav">
+        <li><a href="/contribute/">Contribute</a></li>
+        <li><a href="/projects/">Projects</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/chapellerie/">Chapellerie</a></li>
+      </ul>
+    </nav>
 
-      <geoff-search index="/search.nt"></geoff-search>
+    <geoff-search index="/search.nt"></geoff-search>
+    <scheme-switcher></scheme-switcher>
 
-      <details class="mobile-menu">
-        <summary aria-label="Menu">&#9776;</summary>
-        <ul class="mobile-nav">
-          <li><a href="/contribute/">Contribute</a></li>
-          <li><a href="/projects/">Projects</a></li>
-          <li><a href="/about/">About</a></li>
-          <li><a href="/blog/">Blog</a></li>
-          <li><a href="/chapellerie/">Chapellerie</a></li>
-        </ul>
-      </details>
-    </div>
+    <details class="mobile-menu">
+      <summary aria-label="Menu">&#9776;</summary>
+      <ul class="mobile-nav">
+        <li><a href="/contribute/">Contribute</a></li>
+        <li><a href="/projects/">Projects</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/chapellerie/">Chapellerie</a></li>
+      </ul>
+    </details>
   </header>
 
   <main>
