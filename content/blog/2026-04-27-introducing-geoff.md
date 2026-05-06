@@ -16,7 +16,7 @@ This article introduces what Geoff is, how it compares to Hugo and Zola, and whe
 
 Geoff is a static site generator written in Rust. Single binary, zero runtime dependencies. You write Markdown with <abbr title="Tom's Obvious, Minimal Language">TOML</abbr> frontmatter, and Geoff builds static <abbr title="HyperText Markup Language">HTML</abbr>. In that sense, it is the same species as Hugo and Zola.
 
-The difference is what happens between parsing and rendering. Geoff takes every piece of frontmatter — title, date, author, type, tags, custom fields — and inserts it as <abbr title="Resource Description Framework">RDF</abbr> triples into an in-memory graph backed by [Oxigraph](https://oxigraph.org/). By the time templates execute, the entire site is a queryable knowledge graph. Templates can ask questions like "give me all blog posts sorted by date" or "find every page tagged `rust` that was published this year" using standard <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> — not a generator-specific <abbr title="Application Programming Interface">API</abbr>.
+The difference is what happens between parsing and rendering. Geoff takes every frontmatter field that has a property mapping — title, date, author, type, tags, and any custom fields you map — and inserts it as <abbr title="Resource Description Framework">RDF</abbr> triples into an in-memory graph backed by [Oxigraph](https://oxigraph.org/). By the time templates execute, the entire site is a queryable knowledge graph. Templates can ask questions like "give me all blog posts sorted by date" or "find every page tagged `rust` that was published this year" using standard <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> — not a generator-specific <abbr title="Application Programming Interface">API</abbr>.
 
 A minimal Geoff site:
 
@@ -389,6 +389,8 @@ Since the initial release, Geoff has added several major capabilities:
 **Design system / theme separation.** A new `[design]` config section references external design system token files (e.g. from `node_modules`). `geoff theme generate my-brand` reads the design system, detects `-on-light`/`-on-dark` pairs, and generates a `theme.json` with `light-dark()` aggregates and <abbr title="Cascading Style Sheets">CSS</abbr> `var()` fallbacks. The design system is the palette; the theme is the paint scheme. Multiple themes can reference the same design system.
 
 **Critical <abbr title="Cascading Style Sheets">CSS</abbr> from files.** Place `critical.css` in `static/` and it is inlined on every page via `{{ critical_css | safe }}`. Template-specific critical <abbr title="Cascading Style Sheets">CSS</abbr> uses the naming convention `critical-{template}.css` — e.g. `critical-blog-page.css` is inlined only on pages using the `blog-page.html` template. Combines with `theme_css(critical=true)` for a single above-the-fold `<style>` block.
+
+**Automatic frontmatter mapping.** Any top-level frontmatter field with a property mapping in `ontology/mappings.toml` is now stored as an <abbr title="Resource Description Framework">RDF</abbr> triple — no `[rdf.custom]` or `[data]` section required. Write `navSection = "about"` and map it to `urn:mysite:navSection` in the registry, and it appears in <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr>, <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr>, and `<geoff-search>` results automatically.
 
 ## What Is Planned
 
