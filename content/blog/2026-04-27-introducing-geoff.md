@@ -392,6 +392,10 @@ Since the initial release, Geoff has added several major capabilities:
 
 **Automatic frontmatter mapping.** Any top-level frontmatter field with a property mapping in `ontology/mappings.toml` is now stored as an <abbr title="Resource Description Framework">RDF</abbr> triple — no `[rdf.custom]` or `[data]` section required. Write `navSection = "about"` and map it to `urn:mysite:navSection` in the registry, and it appears in <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr>, <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr>, and `<geoff-search>` results automatically.
 
+**Faceted search with graph partitioning.** `[search] partition = "section"` splits the search index into per-topic N-Triples files loaded on demand. A built-in `/search/` page with the `<geoff-faceted-search>` component discovers available facets from the manifest, displays toggle buttons, and fetches partition graphs when activated. Partition strategies include `section`, `type`, `date-year`, `date-month`, or any mapped frontmatter field. The search page is theme-replaceable — provide a `search.html` template to wrap it in your site's chrome.
+
+**Page hierarchy triples.** Every page now has `urn:geoff:meta:depth`, `urn:geoff:meta:parent`, and `schema:isPartOf` triples, enabling breadcrumb generation and tree queries in <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr>.
+
 ## What Is Planned
 
 Geoff is functional and growing. Here is what is coming:
