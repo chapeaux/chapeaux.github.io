@@ -221,8 +221,6 @@ main { min-height: calc(100vh - var(--nav-height) - 200px); }
   display: grid;
   align-items: center;
   gap: var(--space-sm);
-  max-width: var(--max-width);
-  margin: 0 auto;
   padding: var(--space-sm) var(--space-md);
   grid-template-columns: auto 1fr auto;
   grid-template-areas:
@@ -243,10 +241,10 @@ main { min-height: calc(100vh - var(--nav-height) - 200px); }
   }
 
   & > .site-logo     { grid-area: logo; }
-  & > nav            { grid-area: nav; }
+  & > nav            { grid-area: nav; justify-self: start; @media (min-width: 1200px) { justify-self: center; } }
   & > geoff-search   { grid-area: search; }
   & > scheme-switcher { grid-area: switcher; }
-  & > .mobile-menu   { grid-area: menu; }
+  & > .mobile-menu   { grid-area: menu; justify-self: end; }
 }
 
 .site-logo {
@@ -329,6 +327,7 @@ scheme-switcher {
   "creator": "Red Hat UX",
   "datePublished": "2026-05-03",
   "description": "How we migrated the Red Hat Design System documentation site — 711 pages, 46 web components, and 500+ design tokens — from Eleventy to Geoff. SPARQL-driven navigation, Lit SSR, RDFa output, and client-side search powered by the same Oxigraph engine.",
+  "isPartOf": "urn:geoff:content:blog/index.md",
   "name": "Geoff Case Study: Red Hat Design System",
   "url": "/blog/2026-05-03-rhds-case-study.html"
 }
@@ -357,6 +356,7 @@ scheme-switcher {
         <li><a href="/about/">About</a></li>
         <li><a href="/blog/">Blog</a></li>
         <li><a href="/chapellerie/">Chapellerie</a></li>
+        <li><a href="/search">Search</a></li>
       </ul>
     </nav>
 
@@ -371,6 +371,7 @@ scheme-switcher {
         <li><a href="/about/">About</a></li>
         <li><a href="/blog/">Blog</a></li>
         <li><a href="/chapellerie/">Chapellerie</a></li>
+        <li><a href="/search">Search</a></li>
       </ul>
     </details>
   </header>
@@ -390,8 +391,9 @@ scheme-switcher {
       <time property="schema:datePublished" datetime="2026-05-03">2026-05-03</time>
     </div>
     
-    <meta property="schema:creator" content="Red Hat UX">
-<meta property="schema:about" content="Static site generators">
+    <meta property="schema:about" content="Static site generators">
+<meta property="schema:creator" content="Red Hat UX">
+<meta property="schema:isPartOf" content="<urn:geoff:content:blog/index.md>">
 <meta property="schema:description" content="How we migrated the Red Hat Design System documentation site — 711 pages, 46 web components, and 500+ design tokens — from Eleventy to Geoff. SPARQL-driven navigation, Lit SSR, RDFa output, and client-side search powered by the same Oxigraph engine.">
 <meta property="schema:datePublished" content="2026-05-03">
     <p>The <a href="https://ux.redhat.com">Red Hat Design System</a> (<abbr title="Red Hat Design System">RHDS</abbr>) documentation site was migrated from <a href="https://www.11ty.dev/">Eleventy</a> 3.x to <a href="https://github.com/chapeaux/geoff">Geoff</a> as a proof-of-concept for a large-scale, real-world site. The original site has 700+ pages, 46 web component element docs, 13 design patterns, 6 foundation sections, design token documentation, and accessibility guides — all built with Lit <abbr title="Server-Side Rendering">SSR</abbr>, custom Eleventy plugins, Nunjucks templates, and <abbr title="YAML Ain't Markup Language">YAML</abbr> frontmatter.</p>

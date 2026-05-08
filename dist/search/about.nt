@@ -1,0 +1,7 @@
+<urn:geoff:content:about/index.md> <https://schema.org/isPartOf> <urn:geoff:content:index.md> .
+<urn:geoff:content:about/index.md> <urn:geoff:meta:parent> "//" .
+<urn:geoff:content:about/index.md> <urn:geoff:meta:depth> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:about/index.md> <https://schema.org/url> "/about/" .
+<urn:geoff:content:about/index.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:about/index.md> <https://schema.org/description> "The philosophy and history behind the Chapeaux Project" .
+<urn:geoff:content:about/index.md> <https://schema.org/name> "About Chapeaux" .

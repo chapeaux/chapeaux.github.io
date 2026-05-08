@@ -325,6 +325,7 @@ scheme-switcher {
   "@type": "BlogPosting",
   "datePublished": "2026-04-27",
   "description": "Geoff is a Rust-based static site generator that turns Markdown files into a queryable RDF knowledge graph. Write plain frontmatter, get SPARQL queries in templates, JSON-LD in every page, SHACL validation, and client-side search powered by the same Oxigraph engine via WASM.",
+  "isPartOf": "urn:geoff:content:blog/index.md",
   "name": "Introducing Geoff: A Static Site Generator with a Knowledge Graph Inside",
   "url": "/blog/2026-04-27-introducing-geoff.html"
 }
@@ -353,6 +354,7 @@ scheme-switcher {
         <li><a href="/about/">About</a></li>
         <li><a href="/blog/">Blog</a></li>
         <li><a href="/chapellerie/">Chapellerie</a></li>
+        <li><a href="/search">Search</a></li>
       </ul>
     </nav>
 
@@ -367,6 +369,7 @@ scheme-switcher {
         <li><a href="/about/">About</a></li>
         <li><a href="/blog/">Blog</a></li>
         <li><a href="/chapellerie/">Chapellerie</a></li>
+        <li><a href="/search">Search</a></li>
       </ul>
     </details>
   </header>
@@ -386,7 +389,8 @@ scheme-switcher {
       <time property="schema:datePublished" datetime="2026-04-27">2026-04-27</time>
     </div>
     
-    <meta property="schema:description" content="Geoff is a Rust-based static site generator that turns Markdown files into a queryable RDF knowledge graph. Write plain frontmatter, get SPARQL queries in templates, JSON-LD in every page, SHACL validation, and client-side search powered by the same Oxigraph engine via WASM.">
+    <meta property="schema:isPartOf" content="<urn:geoff:content:blog/index.md>">
+<meta property="schema:description" content="Geoff is a Rust-based static site generator that turns Markdown files into a queryable RDF knowledge graph. Write plain frontmatter, get SPARQL queries in templates, JSON-LD in every page, SHACL validation, and client-side search powered by the same Oxigraph engine via WASM.">
 <meta property="schema:datePublished" content="2026-04-27">
     <p>Static site generators have a content model problem. You write a blog post in Markdown, add some metadata in frontmatter, and the generator turns it into <abbr title="HyperText Markup Language">HTML</abbr>. But the metadata is trapped. It lives in individual files, accessible only through the generator's proprietary template functions — <code>range .Site.Pages</code> in <a href="https://gohugo.io/">Hugo</a>, <code>section.pages</code> in <a href="https://www.getzola.org/">Zola</a>. Every generator invents its own query language for slicing and filtering content. None of them produce structured data unless you hand-write <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> templates. And none of them can tell you, before you build, whether your content is valid.</p>
 <p><a href="https://github.com/chapeaux/geoff">Geoff</a> takes a different approach. Every content file becomes a node in an <abbr title="Resource Description Framework">RDF</abbr> knowledge graph, queryable with <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> from inside your templates. Structured data (<abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr>) is generated automatically. Content validation rules are expressed as <a href="https://www.w3.org/TR/shacl/"><abbr title="Shapes Constraint Language">SHACL</abbr></a> shapes. And you never need to type an <abbr title="Internationalized Resource Identifier">IRI</abbr> — you write <code>type = "Blog Post"</code> and Geoff maps it to <code>schema:BlogPosting</code> behind the scenes.</p>
@@ -648,7 +652,7 @@ max_width = 1920
 <p>Since the initial release, Geoff has added several major capabilities:</p>
 <p><strong>RDFa output.</strong> Templates can emit RDFa Lite 1.1 attributes using <code>{{ rdfa_attrs | safe }}</code>, <code>{{ rdfa_prop(name="title") | safe }}</code>, and the <code>rdfa</code> filter. Markdown supports inline annotations with <code>[text](rdfa:property)</code> syntax. All property names are resolved through the mapping registry — no <abbr title="Internationalized Resource Identifier">IRI</abbr>s needed.</p>
 <p><strong><code>[data]</code> frontmatter.</strong> A new frontmatter section for structured data with friendly names: <code>[data]\nwordCount = 1500</code>. Keys are resolved through the mapping registry, and values appear automatically in <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> output.</p>
-<p><strong>Navigation helpers.</strong> <code>pages()</code> filters and sorts pages by any frontmatter field. <code>tree()</code> builds hierarchical navigation from the <abbr title="Uniform Resource Locator">URL</abbr> structure. Both replace the need for <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> in common navigation patterns.</p>
+<p><strong>Navigation helpers.</strong> <code>pages()</code> filters and sorts pages by any frontmatter field, with a <code>depth</code> parameter for hierarchical sections — <code>pages(section="foundations", depth=1)</code> returns only direct children, not grandchildren. <code>tree()</code> builds full navigation trees from the <abbr title="Uniform Resource Locator">URL</abbr> structure. Both replace the need for <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> in common navigation patterns. Auto-generated <code>urn:geoff:meta:depth</code> and <code>urn:geoff:meta:parent</code> triples make hierarchy queries trivial in <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> too.</p>
 <p><strong>Custom vocabulary prefixes.</strong> Declare additional namespaces in <code>[linked_data.prefixes]</code> — <abbr title="Simple Knowledge Organization System">SKOS</abbr>, W3C ORG, <abbr title="Data Catalog Vocabulary">DCAT</abbr>, or any custom ontology. They flow to <abbr title="Internationalized Resource Identifier">IRI</abbr> expansion, <abbr title="Resource Description Framework in Attributes">RDFa</abbr> output, and <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr> contexts.</p>
 <p><strong>Richer JSON-LD.</strong> The <code>&lt;script type="application/ld+json"&gt;</code> block now includes all page triples from the graph, not just the five standard fields. Custom fields from <code>[data]</code> and <code>[rdf.custom]</code> appear automatically. Multi-vocabulary <code>@context</code> is generated with only the prefixes actually used.</p>
 <p><strong>URL style.</strong> <code>[build] url_style = "directory"</code> produces <code>/about/</code> instead of <code>/about.html</code>.</p>
@@ -657,6 +661,8 @@ max_width = 1920
 <p><strong>Design system / theme separation.</strong> A new <code>[design]</code> config section references external design system token files (e.g. from <code>node_modules</code>). <code>geoff theme generate my-brand</code> reads the design system, detects <code>-on-light</code>/<code>-on-dark</code> pairs, and generates a <code>theme.json</code> with <code>light-dark()</code> aggregates and <abbr title="Cascading Style Sheets">CSS</abbr> <code>var()</code> fallbacks. The design system is the palette; the theme is the paint scheme. Multiple themes can reference the same design system.</p>
 <p><strong>Critical <abbr title="Cascading Style Sheets">CSS</abbr> from files.</strong> Place <code>critical.css</code> in <code>static/</code> and it is inlined on every page via <code>{{ critical_css | safe }}</code>. Template-specific critical <abbr title="Cascading Style Sheets">CSS</abbr> uses the naming convention <code>critical-{template}.css</code> — e.g. <code>critical-blog-page.css</code> is inlined only on pages using the <code>blog-page.html</code> template. Combines with <code>theme_css(critical=true)</code> for a single above-the-fold <code>&lt;style&gt;</code> block.</p>
 <p><strong>Automatic frontmatter mapping.</strong> Any top-level frontmatter field with a property mapping in <code>ontology/mappings.toml</code> is now stored as an <abbr title="Resource Description Framework">RDF</abbr> triple — no <code>[rdf.custom]</code> or <code>[data]</code> section required. Write <code>navSection = "about"</code> and map it to <code>urn:mysite:navSection</code> in the registry, and it appears in <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr>, <abbr title="JavaScript Object Notation for Linked Data">JSON-LD</abbr>, and <code>&lt;geoff-search&gt;</code> results automatically.</p>
+<p><strong>Faceted search with graph partitioning.</strong> <code>[search] partition = "section"</code> splits the search index into per-topic N-Triples files loaded on demand. A built-in <code>/search/</code> page with the <code>&lt;geoff-faceted-search&gt;</code> component discovers available facets from the manifest, displays toggle buttons, and fetches partition graphs when activated. Partition strategies include <code>section</code>, <code>type</code>, <code>date-year</code>, <code>date-month</code>, or any mapped frontmatter field. The search page is theme-replaceable — provide a <code>search.html</code> template to wrap it in your site's chrome.</p>
+<p><strong>Page hierarchy triples.</strong> Every page now has <code>urn:geoff:meta:depth</code>, <code>urn:geoff:meta:parent</code>, and <code>schema:isPartOf</code> triples, enabling breadcrumb generation and tree queries in <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr>.</p>
 <h2>What Is Planned</h2>
 <p>Geoff is functional and growing. Here is what is coming:</p>
 <p><strong>Federation.</strong> Linking to external <abbr title="SPARQL Protocol and RDF Query Language">SPARQL</abbr> endpoints or other Geoff sites via federated queries. A documentation site could query an <abbr title="Application Programming Interface">API</abbr> reference site's graph at build time to pull in type signatures or changelogs without duplicating content.</p>

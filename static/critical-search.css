@@ -1,0 +1,53 @@
+geoff-faceted-search {
+  --gfs-border: var(--gray-light);
+  --gfs-radius: 4px;
+  --gfs-focus: var(--cpx-blue);
+  --gfs-divider: var(--gray-lightest);
+  --gfs-facet-hover: var(--gray-lightest);
+  --gfs-facet-active: var(--cpx-teal-10);
+  --gfs-facet-active-border: var(--cpx-teal);
+  --gfs-result-hover: var(--gray-lightest);
+}
+
+.gfs-input {
+  font-family: var(--font-body);
+  background: var(--gray-lightest);
+  color: var(--black);
+  border-color: var(--gray-light);
+}
+
+.gfs-input:focus {
+  background: var(--white);
+}
+
+.gfs-sidebar h3 {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  font-size: 1rem;
+  margin-bottom: var(--space-sm);
+}
+
+.gfs-facet {
+  font-family: var(--font-body);
+  text-transform: capitalize;
+}
+
+.gfs-result strong {
+  color: var(--cpx-blue);
+}
+
+.gfs-result:hover strong {
+  color: var(--cpx-purple);
+}
+
+.gfs-result .gfs-context {
+  color: var(--gray);
+}
+
+.gfs-result time {
+  color: var(--cpx-teal);
+}
+
+.gfs-status {
+  color: var(--gray-dark);
+}

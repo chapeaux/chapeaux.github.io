@@ -221,8 +221,6 @@ main { min-height: calc(100vh - var(--nav-height) - 200px); }
   display: grid;
   align-items: center;
   gap: var(--space-sm);
-  max-width: var(--max-width);
-  margin: 0 auto;
   padding: var(--space-sm) var(--space-md);
   grid-template-columns: auto 1fr auto;
   grid-template-areas:
@@ -243,10 +241,10 @@ main { min-height: calc(100vh - var(--nav-height) - 200px); }
   }
 
   & > .site-logo     { grid-area: logo; }
-  & > nav            { grid-area: nav; }
+  & > nav            { grid-area: nav; justify-self: start; @media (min-width: 1200px) { justify-self: center; } }
   & > geoff-search   { grid-area: search; }
   & > scheme-switcher { grid-area: switcher; }
-  & > .mobile-menu   { grid-area: menu; }
+  & > .mobile-menu   { grid-area: menu; justify-self: end; }
 }
 
 .site-logo {
@@ -327,6 +325,7 @@ scheme-switcher {
   "@type": "BlogPosting",
   "datePublished": "2026-04-16",
   "description": "A practical walkthrough of cross-tab state synchronization using cpx-store — a reactive Web Component that turns localStorage into a real-time communication channel between browser tabs.",
+  "isPartOf": "urn:geoff:content:blog/index.md",
   "name": "Syncing State Across Browser Tabs with CPX Store",
   "url": "/blog/2026-04-16-cpx-store-cross-tab.html"
 }
@@ -355,6 +354,7 @@ scheme-switcher {
         <li><a href="/about/">About</a></li>
         <li><a href="/blog/">Blog</a></li>
         <li><a href="/chapellerie/">Chapellerie</a></li>
+        <li><a href="/search">Search</a></li>
       </ul>
     </nav>
 
@@ -369,6 +369,7 @@ scheme-switcher {
         <li><a href="/about/">About</a></li>
         <li><a href="/blog/">Blog</a></li>
         <li><a href="/chapellerie/">Chapellerie</a></li>
+        <li><a href="/search">Search</a></li>
       </ul>
     </details>
   </header>
@@ -388,7 +389,8 @@ scheme-switcher {
       <time property="schema:datePublished" datetime="2026-04-16">2026-04-16</time>
     </div>
     
-    <meta property="schema:description" content="A practical walkthrough of cross-tab state synchronization using cpx-store — a reactive Web Component that turns localStorage into a real-time communication channel between browser tabs.">
+    <meta property="schema:isPartOf" content="<urn:geoff:content:blog/index.md>">
+<meta property="schema:description" content="A practical walkthrough of cross-tab state synchronization using cpx-store — a reactive Web Component that turns localStorage into a real-time communication channel between browser tabs.">
 <meta property="schema:datePublished" content="2026-04-16">
     <p>Open two browser tabs to the same page. Click a button in one. Nothing happens in the other. That is the default. Every tab is an island — separate JavaScript runtime, separate DOM, separate state. Most applications simply accept this and move on.</p>
 <p>But browsers already have a mechanism for tabs to talk to each other, and it requires zero servers, zero WebSockets, and zero configuration. It is the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/storage_event"><code>storage</code></a> event — fired automatically by the browser whenever <code>localStorage</code> changes, delivered to every other tab on the same origin. <a href="https://github.com/chapeaux/cpx-store">CPX Store</a> builds on this to make cross-tab state synchronization a one-line feature.</p>

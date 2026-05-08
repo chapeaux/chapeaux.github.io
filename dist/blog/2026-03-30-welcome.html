@@ -221,8 +221,6 @@ main { min-height: calc(100vh - var(--nav-height) - 200px); }
   display: grid;
   align-items: center;
   gap: var(--space-sm);
-  max-width: var(--max-width);
-  margin: 0 auto;
   padding: var(--space-sm) var(--space-md);
   grid-template-columns: auto 1fr auto;
   grid-template-areas:
@@ -243,10 +241,10 @@ main { min-height: calc(100vh - var(--nav-height) - 200px); }
   }
 
   & > .site-logo     { grid-area: logo; }
-  & > nav            { grid-area: nav; }
+  & > nav            { grid-area: nav; justify-self: start; @media (min-width: 1200px) { justify-self: center; } }
   & > geoff-search   { grid-area: search; }
   & > scheme-switcher { grid-area: switcher; }
-  & > .mobile-menu   { grid-area: menu; }
+  & > .mobile-menu   { grid-area: menu; justify-self: end; }
 }
 
 .site-logo {
@@ -327,6 +325,7 @@ scheme-switcher {
   "@type": "BlogPosting",
   "datePublished": "2026-03-30",
   "description": "Introducing the redesigned Chapeaux website — a central hub for the project's three stages: Develop, Discover, and Deliver.",
+  "isPartOf": "urn:geoff:content:blog/index.md",
   "name": "Welcome to the New Chapeaux Project Site",
   "url": "/blog/2026-03-30-welcome.html"
 }
@@ -355,6 +354,7 @@ scheme-switcher {
         <li><a href="/about/">About</a></li>
         <li><a href="/blog/">Blog</a></li>
         <li><a href="/chapellerie/">Chapellerie</a></li>
+        <li><a href="/search">Search</a></li>
       </ul>
     </nav>
 
@@ -369,6 +369,7 @@ scheme-switcher {
         <li><a href="/about/">About</a></li>
         <li><a href="/blog/">Blog</a></li>
         <li><a href="/chapellerie/">Chapellerie</a></li>
+        <li><a href="/search">Search</a></li>
       </ul>
     </details>
   </header>
@@ -388,7 +389,8 @@ scheme-switcher {
       <time property="schema:datePublished" datetime="2026-03-30">2026-03-30</time>
     </div>
     
-    <meta property="schema:description" content="Introducing the redesigned Chapeaux website — a central hub for the project's three stages: Develop, Discover, and Deliver.">
+    <meta property="schema:isPartOf" content="<urn:geoff:content:blog/index.md>">
+<meta property="schema:description" content="Introducing the redesigned Chapeaux website — a central hub for the project's three stages: Develop, Discover, and Deliver.">
 <meta property="schema:datePublished" content="2026-03-30">
     <p>We're excited to launch the new Chapeaux Project website. This site serves as the central hub for everything related to Chapeaux — a digital supply chain for web assets.</p>
 <h2>What's Here</h2>

@@ -221,8 +221,6 @@ main { min-height: calc(100vh - var(--nav-height) - 200px); }
   display: grid;
   align-items: center;
   gap: var(--space-sm);
-  max-width: var(--max-width);
-  margin: 0 auto;
   padding: var(--space-sm) var(--space-md);
   grid-template-columns: auto 1fr auto;
   grid-template-areas:
@@ -243,10 +241,10 @@ main { min-height: calc(100vh - var(--nav-height) - 200px); }
   }
 
   & > .site-logo     { grid-area: logo; }
-  & > nav            { grid-area: nav; }
+  & > nav            { grid-area: nav; justify-self: start; @media (min-width: 1200px) { justify-self: center; } }
   & > geoff-search   { grid-area: search; }
   & > scheme-switcher { grid-area: switcher; }
-  & > .mobile-menu   { grid-area: menu; }
+  & > .mobile-menu   { grid-area: menu; justify-self: end; }
 }
 
 .site-logo {
@@ -327,6 +325,7 @@ scheme-switcher {
   "@type": "BlogPosting",
   "datePublished": "2026-04-05",
   "description": "An exploration of using semantic web technologies as the backbone of a modern web application — lessons learned from an experimental application project.",
+  "isPartOf": "urn:geoff:content:blog/index.md",
   "name": "RDF, SPARQL, and SHACL as a Foundation for Web Applications",
   "url": "/blog/2026-04-05-sparql.html"
 }
@@ -355,6 +354,7 @@ scheme-switcher {
         <li><a href="/about/">About</a></li>
         <li><a href="/blog/">Blog</a></li>
         <li><a href="/chapellerie/">Chapellerie</a></li>
+        <li><a href="/search">Search</a></li>
       </ul>
     </nav>
 
@@ -369,6 +369,7 @@ scheme-switcher {
         <li><a href="/about/">About</a></li>
         <li><a href="/blog/">Blog</a></li>
         <li><a href="/chapellerie/">Chapellerie</a></li>
+        <li><a href="/search">Search</a></li>
       </ul>
     </details>
   </header>
@@ -388,7 +389,8 @@ scheme-switcher {
       <time property="schema:datePublished" datetime="2026-04-05">2026-04-05</time>
     </div>
     
-    <meta property="schema:description" content="An exploration of using semantic web technologies as the backbone of a modern web application — lessons learned from an experimental application project.">
+    <meta property="schema:isPartOf" content="<urn:geoff:content:blog/index.md>">
+<meta property="schema:description" content="An exploration of using semantic web technologies as the backbone of a modern web application — lessons learned from an experimental application project.">
 <meta property="schema:datePublished" content="2026-04-05">
     <p>Most web applications are built on relational databases (<a href="https://www.postgresql.org/">PostgreSQL</a>, <a href="https://www.mysql.com/">MySQL</a>) or document stores (<a href="https://www.mongodb.com/">MongoDB</a>, <a href="https://aws.amazon.com/dynamodb/">DynamoDB</a>). The data model is defined in application code — <abbr title="Object-Relational Mapping">ORM</abbr> schemas, <a href="https://graphql.org/">GraphQL</a> type definitions, or <abbr title="JavaScript Object Notation">JSON</abbr> schemas — and the database is treated as a dumb persistence layer. The <abbr title="Application Programming Interface">API</abbr>, the validation rules, and the <abbr title="User Interface">UI</abbr> forms are all separate concerns, maintained separately, and often drift apart.</p>
 <p>What if the data model itself could drive all of those?</p>

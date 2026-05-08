@@ -1,0 +1,347 @@
+<urn:geoff:content:projects/s20e.md> <https://schema.org/programmingLanguage> "Rust" .
+<urn:geoff:content:projects/s20e.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/s20e.md> <urn:geoff:ontology:stage> "tools" .
+<urn:geoff:content:projects/s20e.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/s20e" .
+<urn:geoff:content:projects/s20e.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/s20e.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/s20e.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/s20e.md> <https://schema.org/url> "/projects/s20e.html" .
+<urn:geoff:content:projects/s20e.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/s20e.md> <https://schema.org/description> "Serverless triplestore for distributed RDF data management" .
+<urn:geoff:content:projects/s20e.md> <https://schema.org/name> "s20e" .
+<urn:geoff:content:projects/poire.md> <urn:geoff:ontology:stage> "tools" .
+<urn:geoff:content:projects/poire.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/poire.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/poire" .
+<urn:geoff:content:projects/poire.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/poire.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/poire.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/poire.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/poire.md> <https://schema.org/url> "/projects/poire.html" .
+<urn:geoff:content:projects/poire.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/poire.md> <https://schema.org/description> "Pair programming devfile and repository example" .
+<urn:geoff:content:projects/poire.md> <https://schema.org/name> "poire" .
+<urn:geoff:content:projects/oxigraph-cloud.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/oxigraph-cloud" .
+<urn:geoff:content:projects/oxigraph-cloud.md> <https://schema.org/creativeWorkStatus> "In Progress" .
+<urn:geoff:content:projects/oxigraph-cloud.md> <urn:geoff:ontology:stage> "discover" .
+<urn:geoff:content:projects/oxigraph-cloud.md> <https://schema.org/programmingLanguage> "Rust" .
+<urn:geoff:content:projects/oxigraph-cloud.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/oxigraph-cloud.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/oxigraph-cloud.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/oxigraph-cloud.md> <https://schema.org/url> "/projects/oxigraph-cloud.html" .
+<urn:geoff:content:projects/oxigraph-cloud.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/oxigraph-cloud.md> <https://schema.org/description> "Distributed Oxigraph deployment with SHACL validation" .
+<urn:geoff:content:projects/oxigraph-cloud.md> <https://schema.org/name> "oxigraph-cloud" .
+<urn:geoff:content:projects/index.md> <https://schema.org/isPartOf> <urn:geoff:content:index.md> .
+<urn:geoff:content:projects/index.md> <urn:geoff:meta:parent> "//" .
+<urn:geoff:content:projects/index.md> <urn:geoff:meta:depth> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/index.md> <https://schema.org/url> "/projects/" .
+<urn:geoff:content:projects/index.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/index.md> <https://schema.org/description> "Explore the Chapeaux ecosystem of web development tools" .
+<urn:geoff:content:projects/index.md> <https://schema.org/name> "Projects" .
+<urn:geoff:content:projects/geoff.md> <urn:geoff:ontology:stage> "deliver" .
+<urn:geoff:content:projects/geoff.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/geoff" .
+<urn:geoff:content:projects/geoff.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/geoff.md> <https://schema.org/programmingLanguage> "Rust" .
+<urn:geoff:content:projects/geoff.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/geoff.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/geoff.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/geoff.md> <https://schema.org/url> "/projects/geoff.html" .
+<urn:geoff:content:projects/geoff.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/geoff.md> <https://schema.org/description> "Semantic static site generator with RDF knowledge graph" .
+<urn:geoff:content:projects/geoff.md> <https://schema.org/name> "geoff" .
+<urn:geoff:content:projects/cpx-websocket.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-websocket.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-websocket.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-websocket" .
+<urn:geoff:content:projects/cpx-websocket.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-websocket.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-websocket.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-websocket.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-websocket.md> <https://schema.org/url> "/projects/cpx-websocket.html" .
+<urn:geoff:content:projects/cpx-websocket.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-websocket.md> <https://schema.org/description> "WebSocket communication web component" .
+<urn:geoff:content:projects/cpx-websocket.md> <https://schema.org/name> "cpx-websocket" .
+<urn:geoff:content:projects/cpx-user.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-user.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-user" .
+<urn:geoff:content:projects/cpx-user.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-user.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-user.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-user.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-user.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-user.md> <https://schema.org/url> "/projects/cpx-user.html" .
+<urn:geoff:content:projects/cpx-user.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-user.md> <https://schema.org/description> "User authentication and management components" .
+<urn:geoff:content:projects/cpx-user.md> <https://schema.org/name> "cpx-user" .
+<urn:geoff:content:projects/cpx-url.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-url.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-url.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-url" .
+<urn:geoff:content:projects/cpx-url.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-url.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-url.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-url.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-url.md> <https://schema.org/url> "/projects/cpx-url.html" .
+<urn:geoff:content:projects/cpx-url.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-url.md> <https://schema.org/description> "URL state management web component" .
+<urn:geoff:content:projects/cpx-url.md> <https://schema.org/name> "cpx-url" .
+<urn:geoff:content:projects/cpx-target.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-target" .
+<urn:geoff:content:projects/cpx-target.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-target.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-target.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-target.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-target.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-target.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-target.md> <https://schema.org/url> "/projects/cpx-target.html" .
+<urn:geoff:content:projects/cpx-target.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-target.md> <https://schema.org/description> "JWT targeting web component" .
+<urn:geoff:content:projects/cpx-target.md> <https://schema.org/name> "cpx-target" .
+<urn:geoff:content:projects/cpx-tab-stream.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-tab-stream.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-tab-stream" .
+<urn:geoff:content:projects/cpx-tab-stream.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-tab-stream.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-tab-stream.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-tab-stream.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-tab-stream.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-tab-stream.md> <https://schema.org/url> "/projects/cpx-tab-stream.html" .
+<urn:geoff:content:projects/cpx-tab-stream.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-tab-stream.md> <https://schema.org/description> "Media streaming web component" .
+<urn:geoff:content:projects/cpx-tab-stream.md> <https://schema.org/name> "cpx-tab-stream" .
+<urn:geoff:content:projects/cpx-store.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-store.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-store.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-store.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-store" .
+<urn:geoff:content:projects/cpx-store.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-store.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-store.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-store.md> <https://schema.org/url> "/projects/cpx-store.html" .
+<urn:geoff:content:projects/cpx-store.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-store.md> <https://schema.org/description> "Reactive state management web component" .
+<urn:geoff:content:projects/cpx-store.md> <https://schema.org/name> "cpx-store" .
+<urn:geoff:content:projects/cpx-shaper.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-shaper.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-shaper.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-shaper.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-shaper" .
+<urn:geoff:content:projects/cpx-shaper.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-shaper.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-shaper.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-shaper.md> <https://schema.org/url> "/projects/cpx-shaper.html" .
+<urn:geoff:content:projects/cpx-shaper.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-shaper.md> <https://schema.org/description> "Data shaping web component" .
+<urn:geoff:content:projects/cpx-shaper.md> <https://schema.org/name> "cpx-shaper" .
+<urn:geoff:content:projects/cpx-search.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-search.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-search.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-search" .
+<urn:geoff:content:projects/cpx-search.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-search.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-search.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-search.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-search.md> <https://schema.org/url> "/projects/cpx-search.html" .
+<urn:geoff:content:projects/cpx-search.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-search.md> <https://schema.org/description> "Search querying and filtering components" .
+<urn:geoff:content:projects/cpx-search.md> <https://schema.org/name> "cpx-search" .
+<urn:geoff:content:projects/cpx-scaffold.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-scaffold.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-scaffold" .
+<urn:geoff:content:projects/cpx-scaffold.md> <urn:geoff:ontology:stage> "tools" .
+<urn:geoff:content:projects/cpx-scaffold.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-scaffold.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-scaffold.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-scaffold.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-scaffold.md> <https://schema.org/url> "/projects/cpx-scaffold.html" .
+<urn:geoff:content:projects/cpx-scaffold.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-scaffold.md> <https://schema.org/description> "Shared build, serve, and test tooling for Chapeaux web components" .
+<urn:geoff:content:projects/cpx-scaffold.md> <https://schema.org/name> "cpx-scaffold" .
+<urn:geoff:content:projects/cpx-result.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-result.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-result.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-result.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-result" .
+<urn:geoff:content:projects/cpx-result.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-result.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-result.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-result.md> <https://schema.org/url> "/projects/cpx-result.html" .
+<urn:geoff:content:projects/cpx-result.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-result.md> <https://schema.org/description> "Search result display web component" .
+<urn:geoff:content:projects/cpx-result.md> <https://schema.org/name> "cpx-result" .
+<urn:geoff:content:projects/cpx-reporter.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-reporter.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-reporter" .
+<urn:geoff:content:projects/cpx-reporter.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-reporter.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-reporter.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-reporter.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-reporter.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-reporter.md> <https://schema.org/url> "/projects/cpx-reporter.html" .
+<urn:geoff:content:projects/cpx-reporter.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-reporter.md> <https://schema.org/description> "Analytics and reporting web component" .
+<urn:geoff:content:projects/cpx-reporter.md> <https://schema.org/name> "cpx-reporter" .
+<urn:geoff:content:projects/cpx-query.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-query.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-query.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-query" .
+<urn:geoff:content:projects/cpx-query.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-query.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-query.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-query.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-query.md> <https://schema.org/url> "/projects/cpx-query.html" .
+<urn:geoff:content:projects/cpx-query.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-query.md> <https://schema.org/description> "Search query web component" .
+<urn:geoff:content:projects/cpx-query.md> <https://schema.org/name> "cpx-query" .
+<urn:geoff:content:projects/cpx-operator-graph.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-operator-graph.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-operator-graph.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-operator-graph.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-operator-graph" .
+<urn:geoff:content:projects/cpx-operator-graph.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-operator-graph.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-operator-graph.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-operator-graph.md> <https://schema.org/url> "/projects/cpx-operator-graph.html" .
+<urn:geoff:content:projects/cpx-operator-graph.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-operator-graph.md> <https://schema.org/description> "Operator graph visualization web component" .
+<urn:geoff:content:projects/cpx-operator-graph.md> <https://schema.org/name> "cpx-operator-graph" .
+<urn:geoff:content:projects/cpx-newsdesk.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-newsdesk.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-newsdesk.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-newsdesk.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-newsdesk" .
+<urn:geoff:content:projects/cpx-newsdesk.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-newsdesk.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-newsdesk.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-newsdesk.md> <https://schema.org/url> "/projects/cpx-newsdesk.html" .
+<urn:geoff:content:projects/cpx-newsdesk.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-newsdesk.md> <https://schema.org/description> "News and content display web component" .
+<urn:geoff:content:projects/cpx-newsdesk.md> <https://schema.org/name> "cpx-newsdesk" .
+<urn:geoff:content:projects/cpx-keycloak.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-keycloak.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-keycloak.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-keycloak.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-keycloak" .
+<urn:geoff:content:projects/cpx-keycloak.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-keycloak.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-keycloak.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-keycloak.md> <https://schema.org/url> "/projects/cpx-keycloak.html" .
+<urn:geoff:content:projects/cpx-keycloak.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-keycloak.md> <https://schema.org/description> "Keycloak authentication web component" .
+<urn:geoff:content:projects/cpx-keycloak.md> <https://schema.org/name> "cpx-keycloak" .
+<urn:geoff:content:projects/cpx-filter.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-filter.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-filter" .
+<urn:geoff:content:projects/cpx-filter.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-filter.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-filter.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-filter.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-filter.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-filter.md> <https://schema.org/url> "/projects/cpx-filter.html" .
+<urn:geoff:content:projects/cpx-filter.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-filter.md> <https://schema.org/description> "Filter UI web component" .
+<urn:geoff:content:projects/cpx-filter.md> <https://schema.org/name> "cpx-filter" .
+<urn:geoff:content:projects/cpx-eddl.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-eddl.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-eddl.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-eddl" .
+<urn:geoff:content:projects/cpx-eddl.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-eddl.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-eddl.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-eddl.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-eddl.md> <https://schema.org/url> "/projects/cpx-eddl.html" .
+<urn:geoff:content:projects/cpx-eddl.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-eddl.md> <https://schema.org/description> "Event-Driven Data Layer components for analytics and tracking" .
+<urn:geoff:content:projects/cpx-eddl.md> <https://schema.org/name> "cpx-eddl" .
+<urn:geoff:content:projects/cpx-cookie.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-cookie.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-cookie.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-cookie" .
+<urn:geoff:content:projects/cpx-cookie.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-cookie.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-cookie.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-cookie.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-cookie.md> <https://schema.org/url> "/projects/cpx-cookie.html" .
+<urn:geoff:content:projects/cpx-cookie.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-cookie.md> <https://schema.org/description> "Browser cookie management web component" .
+<urn:geoff:content:projects/cpx-cookie.md> <https://schema.org/name> "cpx-cookie" .
+<urn:geoff:content:projects/cpx-content.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-content.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-content.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-content" .
+<urn:geoff:content:projects/cpx-content.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-content.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-content.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-content.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-content.md> <https://schema.org/url> "/projects/cpx-content.html" .
+<urn:geoff:content:projects/cpx-content.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-content.md> <https://schema.org/description> "Content injection with dynamic templates" .
+<urn:geoff:content:projects/cpx-content.md> <https://schema.org/name> "cpx-content" .
+<urn:geoff:content:projects/cpx-blank.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-blank.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-blank.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-blank" .
+<urn:geoff:content:projects/cpx-blank.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-blank.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-blank.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-blank.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-blank.md> <https://schema.org/url> "/projects/cpx-blank.html" .
+<urn:geoff:content:projects/cpx-blank.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-blank.md> <https://schema.org/description> "Scaffold and template for creating new Chapeaux web components" .
+<urn:geoff:content:projects/cpx-blank.md> <https://schema.org/name> "cpx-blank" .
+<urn:geoff:content:projects/cpx-auth.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/cpx-auth.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cpx-auth" .
+<urn:geoff:content:projects/cpx-auth.md> <urn:geoff:ontology:stage> "develop" .
+<urn:geoff:content:projects/cpx-auth.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cpx-auth.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cpx-auth.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cpx-auth.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cpx-auth.md> <https://schema.org/url> "/projects/cpx-auth.html" .
+<urn:geoff:content:projects/cpx-auth.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cpx-auth.md> <https://schema.org/description> "Authentication web component" .
+<urn:geoff:content:projects/cpx-auth.md> <https://schema.org/name> "cpx-auth" .
+<urn:geoff:content:projects/cncpx.md> <urn:geoff:ontology:stage> "tools" .
+<urn:geoff:content:projects/cncpx.md> <https://schema.org/programmingLanguage> "Shell" .
+<urn:geoff:content:projects/cncpx.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/cncpx.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/cncpx" .
+<urn:geoff:content:projects/cncpx.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/cncpx.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/cncpx.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/cncpx.md> <https://schema.org/url> "/projects/cncpx.html" .
+<urn:geoff:content:projects/cncpx.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/cncpx.md> <https://schema.org/description> "Cloud Native Developer Ephemera — containerized development tools" .
+<urn:geoff:content:projects/cncpx.md> <https://schema.org/name> "cncpx" .
+<urn:geoff:content:projects/chapka.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/chapka.md> <urn:geoff:ontology:stage> "tools" .
+<urn:geoff:content:projects/chapka.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/chapka" .
+<urn:geoff:content:projects/chapka.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/chapka.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/chapka.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/chapka.md> <https://schema.org/url> "/projects/chapka.html" .
+<urn:geoff:content:projects/chapka.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/chapka.md> <https://schema.org/description> "Starter kit for open source participation in Chapeaux" .
+<urn:geoff:content:projects/chapka.md> <https://schema.org/name> "chapka" .
+<urn:geoff:content:projects/chapellerie.md> <urn:geoff:ontology:stage> "tools" .
+<urn:geoff:content:projects/chapellerie.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/chapellerie.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/chapellerie" .
+<urn:geoff:content:projects/chapellerie.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/chapellerie.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/chapellerie.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/chapellerie.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/chapellerie.md> <https://schema.org/url> "/projects/chapellerie.html" .
+<urn:geoff:content:projects/chapellerie.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/chapellerie.md> <https://schema.org/description> "Playground for demos, testing, and experimentation" .
+<urn:geoff:content:projects/chapellerie.md> <https://schema.org/name> "chapellerie" .
+<urn:geoff:content:projects/chapeaux-delivery.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/chapeaux-delivery" .
+<urn:geoff:content:projects/chapeaux-delivery.md> <https://schema.org/creativeWorkStatus> "Coming Soon" .
+<urn:geoff:content:projects/chapeaux-delivery.md> <https://schema.org/programmingLanguage> "TypeScript" .
+<urn:geoff:content:projects/chapeaux-delivery.md> <urn:geoff:ontology:stage> "deliver" .
+<urn:geoff:content:projects/chapeaux-delivery.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/chapeaux-delivery.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/chapeaux-delivery.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/chapeaux-delivery.md> <https://schema.org/url> "/projects/chapeaux-delivery.html" .
+<urn:geoff:content:projects/chapeaux-delivery.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/chapeaux-delivery.md> <https://schema.org/description> "Asset delivery server for multi-channel web asset distribution" .
+<urn:geoff:content:projects/chapeaux-delivery.md> <https://schema.org/name> "chapeaux-delivery" .
+<urn:geoff:content:projects/chapeaux-catalog.md> <https://schema.org/programmingLanguage> "HTML" .
+<urn:geoff:content:projects/chapeaux-catalog.md> <urn:geoff:ontology:stage> "discover" .
+<urn:geoff:content:projects/chapeaux-catalog.md> <https://schema.org/creativeWorkStatus> "In Progress" .
+<urn:geoff:content:projects/chapeaux-catalog.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/chapeaux-catalog" .
+<urn:geoff:content:projects/chapeaux-catalog.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/chapeaux-catalog.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/chapeaux-catalog.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/chapeaux-catalog.md> <https://schema.org/url> "/projects/chapeaux-catalog.html" .
+<urn:geoff:content:projects/chapeaux-catalog.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/chapeaux-catalog.md> <https://schema.org/description> "Central catalog server for web asset discovery and metadata" .
+<urn:geoff:content:projects/chapeaux-catalog.md> <https://schema.org/name> "chapeaux-catalog" .
+<urn:geoff:content:projects/beret.md> <https://schema.org/programmingLanguage> "Rust" .
+<urn:geoff:content:projects/beret.md> <urn:geoff:ontology:stage> "tools" .
+<urn:geoff:content:projects/beret.md> <https://schema.org/codeRepository> "https://github.com/chapeaux/beret" .
+<urn:geoff:content:projects/beret.md> <https://schema.org/creativeWorkStatus> "Active" .
+<urn:geoff:content:projects/beret.md> <https://schema.org/isPartOf> <urn:geoff:content:projects/index.md> .
+<urn:geoff:content:projects/beret.md> <urn:geoff:meta:parent> "/projects/" .
+<urn:geoff:content:projects/beret.md> <urn:geoff:meta:depth> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<urn:geoff:content:projects/beret.md> <https://schema.org/url> "/projects/beret.html" .
+<urn:geoff:content:projects/beret.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
+<urn:geoff:content:projects/beret.md> <https://schema.org/description> "MCP server that builds an in-memory RDF knowledge graph of codebases" .
+<urn:geoff:content:projects/beret.md> <https://schema.org/name> "beret" .

@@ -5,6 +5,9 @@ template_dir = "templates"
 output_dir = "dist"
 [search]
 enabled = true
+partition = "section"
+title = "Search"
+page = false
 [design]
 tokens = ["./themes/chapeaux/tokens.json"]
 
@@ -18,3 +21,7 @@ minify_js = true
 
 [linked_data]
 rdfa = true
+
+[mcp]
+enabled = true
+wasm_source = "local"

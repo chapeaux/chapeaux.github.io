@@ -1,0 +1,59 @@
+{
+  "description": "Structured knowledge base for Chapeaux",
+  "mcp_version": "1.0",
+  "name": "chapeaux.github.io-knowledge",
+  "tools": [
+    {
+      "binary_url": "https://chapeaux.github.io/bin/geoff-sparql.wasm",
+      "datasets": [
+        {
+          "name": "about",
+          "url": "https://chapeaux.github.io/search/about.nt"
+        },
+        {
+          "name": "blog",
+          "url": "https://chapeaux.github.io/search/blog.nt"
+        },
+        {
+          "name": "chapellerie",
+          "url": "https://chapeaux.github.io/search/chapellerie.nt"
+        },
+        {
+          "name": "contribute",
+          "url": "https://chapeaux.github.io/search/contribute.nt"
+        },
+        {
+          "name": "design-tokens",
+          "url": "https://chapeaux.github.io/search/design-tokens.nt"
+        },
+        {
+          "name": "projects",
+          "url": "https://chapeaux.github.io/search/projects.nt"
+        }
+      ],
+      "description": "Execute a SPARQL SELECT or ASK query against the site's RDF knowledge graph",
+      "fixed_arguments": {
+        "dataset_url": "https://chapeaux.github.io/search.nt"
+      },
+      "input_schema": {
+        "properties": {
+          "dataset_url": {
+            "description": "URL of the N-Triples dataset to query (optional)",
+            "type": "string"
+          },
+          "query": {
+            "description": "SPARQL SELECT or ASK query",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "name": "sparql_query",
+      "runtime": "wasm-wasi",
+      "wit_url": "https://chapeaux.github.io/bin/geoff-sparql.wit"
+    }
+  ]
+}
