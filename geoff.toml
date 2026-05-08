@@ -3,11 +3,13 @@ title = "Chapeaux"
 content_dir = "content"
 template_dir = "templates"
 output_dir = "dist"
+
 [search]
 enabled = true
-partition = "section"
+# partition = "section"
 title = "Search"
-page = false
+page = true
+
 [design]
 tokens = ["./themes/chapeaux/tokens.json"]
 

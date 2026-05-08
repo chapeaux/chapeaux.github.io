@@ -1,0 +1,12 @@
+{
+  "vendor": true,
+  "nodeModulesDir": "auto",
+  "tasks": {
+    "dev": "deno run --watch main.ts"
+  },
+  "imports": {
+    "@chapeaux/cpx-store": "jsr:@chapeaux/cpx-store@^0.7.4",
+    "@rhds/tokens": "npm:@rhds/tokens@^3.1.0",
+    "@std/assert": "jsr:@std/assert@1"
+  }
+}
