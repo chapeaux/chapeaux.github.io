@@ -1,7 +1,0 @@
-<urn:geoff:content:contribute/index.md> <https://schema.org/isPartOf> <urn:geoff:content:index.md> .
-<urn:geoff:content:contribute/index.md> <urn:geoff:meta:parent> "//" .
-<urn:geoff:content:contribute/index.md> <urn:geoff:meta:depth> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
-<urn:geoff:content:contribute/index.md> <https://schema.org/url> "/contribute/" .
-<urn:geoff:content:contribute/index.md> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://schema.org/WebPage> .
-<urn:geoff:content:contribute/index.md> <https://schema.org/description> "Join the club!" .
-<urn:geoff:content:contribute/index.md> <https://schema.org/name> "Contribute" .
